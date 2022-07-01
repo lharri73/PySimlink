@@ -10,11 +10,12 @@ class Compiler:
     model_folder: str    ## The root folder that contains 2 directories, the model_name and a MAtlAB or R202XX folder
     model_name: str      ## The name of the simulink model
     path_to_model: str            ## path to the directory containing {root_model, slprj}
-    def __init__(self, model_name, path_to_model, compile_type='grt', suffix='rtw'):
+    def __init__(self, model_name, path_to_model, compile_type='grt', suffix='rtw', tmp_dir=None):
         self.model_name = model_name
         self.model_folder = path_to_model
         self.compile_type = compile_type
         self.suffix = suffix
+        self.tmp_dir = tmp_dir
         self._validate_root(model_name)
 
 
@@ -22,6 +23,8 @@ class Compiler:
         self._get_simulink_deps()
         self._build_deps_tree()
         self._gen_cmake()
+        with open('CMakeLists.txt', 'w') as f:
+            f.write(self.cmake_text)
 
 
     def _validate_root(self, model_name):
@@ -45,9 +48,8 @@ class Compiler:
         starting at the root model. 
         
         """
-        models = DepGraph()
-        self.update_recurse(self.root_model, models, is_root=True)
-        print(models.dep_map)
+        self.models = DepGraph()
+        self.update_recurse(self.root_model, self.models, is_root=True)
         
 
     def update_recurse(self, 
@@ -74,6 +76,7 @@ class Compiler:
         models.add_dependency(model_name, deps)
         for dep in deps:
             self.update_recurse(dep, models)
+        
 
 
     def _get_deps(self, path, model_name):
@@ -122,8 +125,16 @@ class Compiler:
                     includes.append(dir[0])
                     break
 
-        maker = cmake_template()
-        cmake_text = maker.header(self.model_name.replace(' ', '_').replace('-', '_').lower())
+        maker = cmake_template(self.model_name.replace(' ', '_').replace('-', '_').lower())
+        cmake_text = maker.header()
         cmake_text += maker.set_includes(includes)
 
-        print(cmake_text)
+        for lib in self.models.dep_map.keys():
+            if lib == self.root_model:
+                files = glob.glob(self.path_to_root + "/*.c")
+            else:
+                files = glob.glob(os.path.join(self.slprj, lib) + "/*.c")
+            cmake_text += maker.add_library(lib, files)
+
+        cmake_text += maker.set_lib_props()
+        self.cmake_text = cmake_text
