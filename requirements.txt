@@ -1,2 +1,4 @@
 numpy
 cmake
+pybind11
+*.o

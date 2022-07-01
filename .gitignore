@@ -3,3 +3,6 @@ models/
 __pycache__
 .DS_Store
 *.egg-info
+*.so
+*.dll
+build/
