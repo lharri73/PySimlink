@@ -15,7 +15,7 @@ class Compiler:
     path_to_model: str            ## path to the directory containing {root_model, slprj}
     def __init__(self, model_name, path_to_model, compile_type='grt', suffix='rtw', tmp_dir=None):
         self.model_name = model_name
-        self.model_folder = path_to_model
+        self.model_folder = os.path.normpath(path_to_model)
         self.compile_type = compile_type
         self.suffix = suffix
         if tmp_dir is None:
@@ -125,6 +125,14 @@ class Compiler:
         self.simulink_deps = set(map(iter, files))
         self.simulink_deps_path = files
 
+        simulink_deps = glob.glob(self.simulink_native + '/**/*.c', recursive=True)
+        try: 
+            simulink_deps.remove('rt_main.c')
+        except ValueError:
+            pass
+        _shared_utils = glob.glob(os.path.join(self.slprj, '_sharedutils') + '/**/*.c', recursive=True)
+        self.shared_utils_sources = simulink_deps + _shared_utils
+
     def _gen_cmake(self):
         includes = [self.custom_includes]
         for dir in os.walk(self.model_folder, followlinks=False):
@@ -143,10 +151,17 @@ class Compiler:
             else:
                 files = glob.glob(os.path.join(self.slprj, lib) + "/*.c")
             cmake_text += maker.add_library(lib, files)
+        
+        cmake_text += maker.add_library('shared_utils', self.shared_utils_sources)
+        ## the custom code depends on the root model. 
+        self.models.add_dependency("model_interface_c", [self.root_model])
+        self.models.add_dependency(self.root_model, ['shared_utils'])
 
         cmake_text += maker.add_custom_libs(self.custom_sources)
         cmake_text += maker.set_lib_props()
         cmake_text += maker.add_link_libs(self.models.dep_map)
+        cmake_text += maker.add_compile_defs(self.defines)
+        cmake_text += maker.footer()
 
         with open(os.path.join(self.tmp_dir, 'CMakeLists.txt'), 'w') as f:
             f.write(cmake_text)
@@ -156,23 +171,29 @@ class Compiler:
         process = Popen([os.path.join(cmake.CMAKE_BIN_DIR, "cmake"), "-S", self.tmp_dir, "-B", build_dir], stdout=PIPE, stderr=PIPE)
         (output1, err1) = process.communicate()
         build = process.wait() 
+        if build != 0:
+            from datetime import datetime
+            now = datetime.now()
+            err_file = os.path.join(os.getcwd(), now.strftime("%Y-%m-%d_%H-%M-%S_PySimlink_Generation_Error.log"))
+            with open(err_file, 'w') as f:
+                f.write(output1.decode() if output1 else "")
+                f.write(err1.decode() if err1 else "")
+            raise Exception("Generating the CMakeLists for this model failed. This could be a c/c++/cmake setup issue, bad paths, or a bug!\n" 
+                f"Output from CMake generation is in {err_file}")
 
         process = Popen([os.path.join(cmake.CMAKE_BIN_DIR, "cmake"), '--build', build_dir], stdout=PIPE, stderr=PIPE)
         (output2, err2) = process.communicate()
         make = process.wait() 
-        if build+make != 0:
+        if make != 0:
             from datetime import datetime
             now = datetime.now()
-            err_file = os.path.join(os.getcwd(), now.strftime("%Y-%m-%d_%H-%M-%S_PySimlink_Error.log"))
+            err_file = os.path.join(os.getcwd(), now.strftime("%Y-%m-%d_%H-%M-%S_PySimlink_Build_Error.log"))
             with open(err_file, 'w') as f:
-                f.write(output1.decode() if output1 else "")
-                f.write(err1.decode() if err1 else "")
-                f.write("\n\n----Compile Errors----\n")
                 f.write(output2.decode() if output2 else "")
                 f.write(err2.decode() if err2 else "")
 
-            raise Exception("Compiling or building the model failed. This could be a c/c++/cmake setup issue, bad paths, or a bug!\n" 
-                f"Output from CMake generation and the build process are in {err_file}")
+            raise Exception("Building the model failed. This could be a c/c++/cmake setup issue, bad paths, or a bug!\n" 
+                f"Output from the build process is in {err_file}")
 
     def _gen_custom_srcs(self):
         shutil.rmtree(os.path.join(self.tmp_dir, 'c_files'), ignore_errors=True)
@@ -189,12 +210,9 @@ class Compiler:
             f.writelines(model_utils)
 
         defines = os.path.join(self.path_to_root, "defines.txt")
+        assert os.path.exists(defines), "Cannot find `defines.txt` in your root model. Try using the grt template. "
+
         with open(defines, 'r') as f:
-            defines = f.readlines()
-        with open(os.path.join(self.custom_includes, 'defines.hpp'), 'w') as f:
-            for define in defines:
-                define = define.strip()
-                f.write("#define " + define.replace('=', ' '))
-                f.write('\n')
+            self.defines = [line.strip() for line in f.readlines()]
 
         

@@ -1,9 +1,8 @@
-from pysimlink.compile import Compiler
+from pysimlink.model import Model
 import argparse
 
 def main(args):
-    comp = Compiler(args.model_name, args.model_path)
-    comp.compile()
+    comp = Model(args.model_name, args.model_path, force_rebuild=True)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

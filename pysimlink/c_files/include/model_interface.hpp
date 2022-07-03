@@ -19,25 +19,31 @@ extern "C"{
 #include "pybind11/pybind11.h"
 #include "pybind11/numpy.h"
 #include "pybind11/stl.h"
-#include "defines.hpp"
+
+/* create generic macros that work with any model */
+# define EXPAND_CONCAT(name1,name2) name1 ## name2
+# define CONCAT(name1,name2) EXPAND_CONCAT(name1,name2)
+# define MODEL_INITIALIZE CONCAT(MODEL,_initialize)
+# define MODEL_STEP       CONCAT(MODEL,_step)
+# define MODEL_TERMINATE  CONCAT(MODEL,_terminate)
+# define RT_MDL           CONCAT(MODEL,_M)
 
 namespace py = pybind11;
 
 namespace PYSIMLINK{
     class Model{
         public:
-            Model(bool v2x, bool automatic_control, double alt, int ni);
+            Model();
             ~Model();
 
-            void debug_params();
+            //void debug_params();
             double step_size() const;
 
         protected:
             bool initialized;
             void print_params(const rtwCAPI_ModelMappingInfo *mmi);
-            void common_reset();
-            virtual void step() = 0;
-            virtual double tFinal() const = 0;
+            //void step();
+            //double tFinal() const;
 
             rtwCAPI_ModelMappingInfo *mmi;
             boolean_T OverrunFlags[NUMST];    /* ISR overrun flags */
