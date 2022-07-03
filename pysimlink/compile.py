@@ -126,6 +126,8 @@ class Compiler:
         self.simulink_deps_path = files
 
         simulink_deps = glob.glob(self.simulink_native + '/**/*.c', recursive=True)
+        print(simulink_deps)
+        exit(1)
         try: 
             simulink_deps.remove('rt_main.c')
         except ValueError:

@@ -13,7 +13,7 @@ def get_other_in_dir(directory, known):
     assert len(model_folders) == 2, \
         f"Directory '{directory}' contains more than 2 folders (not counting .DS_Store on Mac)"
     assert known in model_folders, \
-        f"File does not exist in {directory}. Should be one of {known}"
+        f"File does not exist in {directory}. Should be one of {model_folders}"
     model_folders.remove(known)
 
     return model_folders.pop()
