@@ -1,4 +1,6 @@
 import pybind11
+import os
+import glob
 
 class cmake_template:
     def __init__(self, model_name):
@@ -16,13 +18,13 @@ find_package(pybind11 PATHS {pybind11.get_cmake_dir()})"""
 
 
     def set_includes(self, includes):
+        ## Add the include path for model runner code
+
         includes = [include.translate(self.space_trans) for include in includes]
         include_dirs = '\n    '.join(includes)
         return f"""
 include_directories(
     {include_dirs}
-    src/extern/include
-    src/extern/src
     ${{pybind11_INCLUDE_DIR}}
     #${{PYTHON_INCLUDE_DIRS}}
 )
@@ -47,8 +49,21 @@ set_target_properties(
 )        
 """
 
+    def add_custom_libs(self, sources):
+        sources = glob.glob(sources + "/*.cpp")
+        sources = [source.translate(self.space_trans) for source in sources]
+        source_paths = '\n    '.join(sources)
+        return f"""
+pybind11_add_module(
+    model_interface_c
+        {source_paths}
+)        
 """
 
+    def add_link_libs(self, dep_map):
+        return ""
+
+"""
 set_target_properties(
     sharedUtils_PID 
     rtw_PID 

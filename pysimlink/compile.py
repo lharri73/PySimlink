@@ -1,6 +1,9 @@
 import os
 import re
 import glob
+from subprocess import Popen, PIPE
+import cmake
+import shutil
 
 from .utils.file_utils import get_other_in_dir
 from .lib.dependency_graph import DepGraph
@@ -15,17 +18,22 @@ class Compiler:
         self.model_folder = path_to_model
         self.compile_type = compile_type
         self.suffix = suffix
-        self.tmp_dir = tmp_dir
+        if tmp_dir is None:
+            import sys
+            self.tmp_dir = os.path.join(os.path.dirname(sys.argv[0]), "__pycache__", "pysimlink", self.model_name)
+        else:
+            self.tmp_dir = os.path.join(tmp_dir, model_name)
+        os.makedirs(self.tmp_dir, exist_ok=True)
         self._validate_root(model_name)
 
 
     def compile(self):
         self._get_simulink_deps()
         self._build_deps_tree()
+        self._gen_custom_srcs()
         self._gen_cmake()
-        with open('CMakeLists.txt', 'w') as f:
-            f.write(self.cmake_text)
-
+        self._build()
+        
 
     def _validate_root(self, model_name):
         ## Validate that this is a real model
@@ -118,7 +126,7 @@ class Compiler:
         self.simulink_deps_path = files
 
     def _gen_cmake(self):
-        includes = []
+        includes = [self.custom_includes]
         for dir in os.walk(self.model_folder, followlinks=False):
             for file in dir[2]:
                 if ".h" in file:
@@ -136,5 +144,57 @@ class Compiler:
                 files = glob.glob(os.path.join(self.slprj, lib) + "/*.c")
             cmake_text += maker.add_library(lib, files)
 
+        cmake_text += maker.add_custom_libs(self.custom_sources)
         cmake_text += maker.set_lib_props()
-        self.cmake_text = cmake_text
+        cmake_text += maker.add_link_libs(self.models.dep_map)
+
+        with open(os.path.join(self.tmp_dir, 'CMakeLists.txt'), 'w') as f:
+            f.write(cmake_text)
+
+    def _build(self):
+        build_dir = os.path.join(self.tmp_dir, "build")
+        process = Popen([os.path.join(cmake.CMAKE_BIN_DIR, "cmake"), "-S", self.tmp_dir, "-B", build_dir], stdout=PIPE, stderr=PIPE)
+        (output1, err1) = process.communicate()
+        build = process.wait() 
+
+        process = Popen([os.path.join(cmake.CMAKE_BIN_DIR, "cmake"), '--build', build_dir], stdout=PIPE, stderr=PIPE)
+        (output2, err2) = process.communicate()
+        make = process.wait() 
+        if build+make != 0:
+            from datetime import datetime
+            now = datetime.now()
+            err_file = os.path.join(os.getcwd(), now.strftime("%Y-%m-%d_%H-%M-%S_PySimlink_Error.log"))
+            with open(err_file, 'w') as f:
+                f.write(output1.decode() if output1 else "")
+                f.write(err1.decode() if err1 else "")
+                f.write("\n\n----Compile Errors----\n")
+                f.write(output2.decode() if output2 else "")
+                f.write(err2.decode() if err2 else "")
+
+            raise Exception("Compiling or building the model failed. This could be a c/c++/cmake setup issue, bad paths, or a bug!\n" 
+                f"Output from CMake generation and the build process are in {err_file}")
+
+    def _gen_custom_srcs(self):
+        shutil.rmtree(os.path.join(self.tmp_dir, 'c_files'), ignore_errors=True)
+        shutil.copytree(os.path.abspath(os.path.join(os.path.dirname(__file__), 'c_files')), os.path.join(self.tmp_dir, 'c_files'))
+        self.custom_includes = os.path.join(self.tmp_dir, 'c_files', 'include')
+        self.custom_sources = os.path.join(self.tmp_dir, 'c_files', 'src')
+        
+        with open(os.path.join(self.custom_includes, 'model_utils.hpp'), 'r') as f:
+            model_utils = f.readlines()
+        repl = lambda f: f.replace("<<ROOT_MODEL>>", self.root_model+".h")
+        model_utils = list(map(repl, model_utils))
+
+        with open(os.path.join(self.custom_includes, 'model_utils.hpp'), 'w') as f:
+            f.writelines(model_utils)
+
+        defines = os.path.join(self.path_to_root, "defines.txt")
+        with open(defines, 'r') as f:
+            defines = f.readlines()
+        with open(os.path.join(self.custom_includes, 'defines.hpp'), 'w') as f:
+            for define in defines:
+                define = define.strip()
+                f.write("#define " + define.replace('=', ' '))
+                f.write('\n')
+
+        
