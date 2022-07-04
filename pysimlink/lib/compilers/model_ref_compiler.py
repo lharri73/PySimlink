@@ -5,26 +5,17 @@ from subprocess import Popen, PIPE
 import cmake
 import shutil
 
-from .utils.file_utils import get_other_in_dir
-from .lib.dependency_graph import DepGraph
-from .lib.cmake_gen import cmake_template
+from pysimlink.utils.file_utils import get_other_in_dir
+from pysimlink.utils.model_utils import ModelPaths
+from pysimlink.lib.dependency_graph import DepGraph
+from pysimlink.lib.cmake_gen import cmake_template
+from compiler import Compiler
 
-class Compiler:
-    model_folder: str    ## The root folder that contains 2 directories, the model_name and a MAtlAB or R202XX folder
-    model_name: str      ## The name of the simulink model
-    path_to_model: str            ## path to the directory containing {root_model, slprj}
-    def __init__(self, model_name, path_to_model, compile_type='grt', suffix='rtw', tmp_dir=None):
-        self.model_name = model_name
-        self.model_folder = os.path.normpath(path_to_model)
-        self.compile_type = compile_type
-        self.suffix = suffix
-        if tmp_dir is None:
-            import sys
-            self.tmp_dir = os.path.join(os.path.dirname(sys.argv[0]), "__pycache__", "pysimlink", self.model_name)
-        else:
-            self.tmp_dir = os.path.join(tmp_dir, model_name)
-        os.makedirs(self.tmp_dir, exist_ok=True)
-        self._validate_root(model_name)
+
+class ModelRefCompiler(Compiler):
+    def __init__(self, model_paths: ModelPaths):
+        super().__init__(self, model_paths)
+        self._validate_root(model_paths.model_name)
 
 
     def compile(self):
@@ -126,8 +117,6 @@ class Compiler:
         self.simulink_deps_path = files
 
         simulink_deps = glob.glob(self.simulink_native + '/**/*.c', recursive=True)
-        print(simulink_deps)
-        exit(1)
         try: 
             simulink_deps.remove('rt_main.c')
         except ValueError:

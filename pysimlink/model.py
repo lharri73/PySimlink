@@ -1,26 +1,26 @@
-import os
-import glob
-from .compile import Compiler
 import ctypes
+import glob
+import os
+
+from pysimlink.lib.compilers.model_ref_compiler import Compiler
+from pysimlink.utils.model_utils import ModelPaths
+
 
 class Model:
-    def __init__(self, 
-        model_name, 
-        path_to_model, 
-        compile_type='grt', 
-        suffix='rtw', 
-        tmp_dir=None,
-        force_rebuild=False):
-        self.model_name = model_name
-        self.path_to_model = path_to_model
-        self.compile_type = compile_type
-        self.suffix = suffix
+    model_paths: ModelPaths
+    compiler: Compiler
+    model: ctypes.CDLL
 
-        if tmp_dir is None:
-            import sys
-            self.tmp_dir = os.path.join(os.path.dirname(sys.argv[0]), "__pycache__", "pysimlink", self.model_name)
-        else:
-            self.tmp_dir = os.path.join(tmp_dir, model_name)
+    def __init__(self, 
+            model_name, 
+            path_to_model, 
+            compile_type='grt', 
+            suffix='rtw', 
+            tmp_dir=None,
+            force_rebuild=False):
+        
+        self.model_paths = ModelPaths(path_to_model, model_name, compile_type, suffix, tmp_dir)
+        self.compiler = self.model_paths.compiler_factory()
 
         ## Check need to compile
         lib = glob.glob(os.path.join(self.tmp_dir, 'build', 'libmodel_interface_c.*'))
