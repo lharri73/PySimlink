@@ -20,7 +20,7 @@ find_package(pybind11 PATHS {pybind11.get_cmake_dir()})"""
     def set_includes(self, includes):
         ## Add the include path for model runner code
 
-        includes = [include.translate(self.space_trans) for include in includes]
+        includes = [os.path.abspath(include).translate(self.space_trans) for include in includes]
         include_dirs = '\n    '.join(includes)
         return f"""
 include_directories(
@@ -32,7 +32,7 @@ include_directories(
 
     def add_library(self, lib_name, sources):
         self.libs.append(lib_name)
-        sources = [source.translate(self.space_trans) for source in sources]
+        sources = [os.path.abspath(source).translate(self.space_trans) for source in sources]
         source_paths = '\n        '.join(sources)
         return f"""
 add_library(
@@ -52,7 +52,7 @@ set_target_properties(
 
     def add_custom_libs(self, sources):
         sources = glob.glob(sources + "/*.cpp")
-        sources = [source.translate(self.space_trans) for source in sources]
+        sources = [os.path.abspath(source).translate(self.space_trans) for source in sources]
         source_paths = '\n        '.join(sources)
         return f"""
 add_library(

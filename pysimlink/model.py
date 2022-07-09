@@ -1,6 +1,7 @@
 import ctypes
 import glob
 import os
+import platform
 
 from pysimlink.lib.compilers.model_ref_compiler import Compiler
 from pysimlink.utils.model_utils import ModelPaths
@@ -23,12 +24,12 @@ class Model:
         self.compiler = self.model_paths.compiler_factory()
 
         ## Check need to compile
-        lib = glob.glob(os.path.join(self.tmp_dir, 'build', 'libmodel_interface_c.*'))
+        lib = glob.glob(os.path.join(self.model_paths.tmp_dir, 'build', 'libmodel_interface_c.*'))
         if force_rebuild or not lib:
             ## Need to compile
-            self.compiler = Compiler(model_name, path_to_model, compile_type, suffix, tmp_dir)
             self.compiler.compile()
 
-        lib = glob.glob(os.path.join(self.tmp_dir, 'build', 'libmodel_interface_c.*'))
+        lib = glob.glob(os.path.join(self.model_paths.tmp_dir, 'build', 'libmodel_interface_c.*'))
+
         self.model = ctypes.CDLL(lib[0])
 

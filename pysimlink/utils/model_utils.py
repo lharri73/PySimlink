@@ -1,11 +1,9 @@
 import glob
 import os
 from typing import Union
+import re
 
 from pysimlink.utils.file_utils import get_other_in_dir
-
-from pysimlink.lib.compilers.one_shot_compiler import NoRefCompiler
-from pysimlink.lib.compilers.model_ref_compiler import ModelRefCompiler
 
 
 class ModelPaths:
@@ -21,6 +19,14 @@ class ModelPaths:
                  compile_type: str='grt',
                  suffix: str='rtw',
                  tmp_dir: Union[str,None]=None):
+        """
+
+        :param root_dir: Directory created during codegen. Should have two directories in it.
+        :param model_name: Name of the root model.
+        :param compile_type: grt, ert, etc...
+        :param suffix: the suffix added to the model name directory. usually 'rtw'
+        :param tmp_dir: Where to store the build files. Defaults to __pycache__
+        """
         walk = os.walk(root_dir, followlinks=False)
         for (cur_path, folders, files) in walk:
             if 'simulink' in folders: 
@@ -43,13 +49,13 @@ class ModelPaths:
             self.root_model_path = os.path.join(self.models_dir, model_name+"_"+compile_type+"_"+suffix)
             if not os.path.exists(self.root_model_path):
                 raise RuntimeError(f"Cannot find folder with name '{model_name}' in '{self.models_dir}'")
-        self.model_name = model_name
+        self.root_model_name = model_name
         if self.has_references:
             self.slprj_dir = os.path.join(self.models_dir, 'slprj', compile_type)
 
         if tmp_dir is None:
             import sys
-            self.tmp_dir = os.path.join(os.path.dirname(sys.argv[0]), "__pycache__", "pysimlink", self.model_name)
+            self.tmp_dir = os.path.join(os.path.dirname(sys.argv[0]), "__pycache__", "pysimlink", self.root_model_name)
         else:
             self.tmp_dir = os.path.join(tmp_dir, model_name)
         os.makedirs(self.tmp_dir, exist_ok=True)
@@ -62,7 +68,7 @@ class ModelPaths:
         """
         files = glob.glob(self.root_model_path + "/*.c", recursive=False)
         files = map(os.path.basename, files)
-        assert self.model_name + "_capi.c" in files, \
+        assert self.root_model_name + "_capi.c" in files, \
             "Model not generated with capi"
 
     def compiler_factory(self):
@@ -71,6 +77,26 @@ class ModelPaths:
         compilers could be added if we want to use something other than cmake. 
         """
         if self.has_references:
+            from pysimlink.lib.compilers.model_ref_compiler import ModelRefCompiler
             return ModelRefCompiler(self)
         else:
+            from pysimlink.lib.compilers.one_shot_compiler import NoRefCompiler
             return NoRefCompiler(self)
+
+def infer_defines(model_paths: ModelPaths):
+    ret = [f"MODEL={model_paths.root_model_name}"]
+    with open(os.path.join(model_paths.root_model_path, f"{model_paths.root_model_name}.h"), "r") as f:
+        contents = f.readlines()
+
+    regex = re.compile('uint\d+_T TID\[(\d+)]')
+    for line in contents:
+        match = re.search(regex, line)
+        if match:
+            numst = match.group(1)
+            break
+    else:
+        raise RuntimeError(f"Unable to infer number of states from simulink mode. Can't find TID in {model_paths.root_model_name}.h")
+    ret.append(f"NUMST={numst}")
+    ret.append("ONESTEPFCN=1")
+    ret.append("TERMFCN=1")
+    return ret
