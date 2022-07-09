@@ -29,9 +29,8 @@ class Compiler:
 
     def _get_simulink_deps(self):
         files = glob.glob(self.model_paths.simulink_native + '/**/*.h', recursive=True)
-        
-        iter = lambda file: os.path.basename(file).split('.')[0]
-        self.simulink_deps = set(map(iter, files))
+
+        self.simulink_deps = set([os.path.basename(f).split('.')[0] for f in files])
         self.simulink_deps_path = files
 
         simulink_deps = glob.glob(self.model_paths.simulink_native + '/**/*.c', recursive=True)

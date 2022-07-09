@@ -13,7 +13,6 @@ from pysimlink.lib.compilers.compiler import Compiler
 class ModelRefCompiler(Compiler):
     def __init__(self, model_paths: ModelPaths):
         super().__init__(model_paths)
-        self._validate_root(model_paths.model_name)
 
     def compile(self):
         self._get_simulink_deps()
@@ -22,20 +21,6 @@ class ModelRefCompiler(Compiler):
         self._gen_cmake()
         self._build()
 
-    def _validate_root(self, model_name):
-        ## Validate that this is a real model
-        assert os.path.exists(self.model_folder), \
-            f"Model path does not exists: {self.model_folder}"
-
-        self.simulink_native = os.path.join(self.model_folder, get_other_in_dir(self.model_folder, self.model_name))
-        self.path_to_model = os.path.join(self.model_folder, model_name)
-        root_model_raw = get_other_in_dir(self.path_to_model, 'slprj')
-        self.slprj = os.path.join(self.path_to_model, 'slprj', self.compile_type)
-        self.path_to_root = os.path.join(self.path_to_model, root_model_raw)
-        
-        sub_idx = root_model_raw.find("_"+self.compile_type+"_"+self.suffix)
-        self.root_model = root_model_raw[:sub_idx]
-        
     def _build_deps_tree(self):
         """
         Get the dependencies for this model and all child models recursively,
@@ -43,7 +28,7 @@ class ModelRefCompiler(Compiler):
         
         """
         self.models = DepGraph()
-        self.update_recurse(self.root_model, self.models, is_root=True)
+        self.update_recurse(self.model_paths.root_model_name, self.models, is_root=True)
 
     def update_recurse(self, 
                        model_name: str, 
@@ -64,7 +49,7 @@ class ModelRefCompiler(Compiler):
         """
         if model_name in models: return None
 
-        model_path = self.path_to_root if is_root else os.path.join(self.slprj, model_name)
+        model_path = self.model_paths.root_model_path if is_root else os.path.join(self.model_paths.slprj_dir, model_name)
         deps = self._get_deps(model_path, model_name)
         models.add_dependency(model_name, deps)
         for dep in deps:
@@ -100,33 +85,36 @@ class ModelRefCompiler(Compiler):
         return this_deps.difference(to_remove)
 
     def _get_simulink_deps(self):
-        super()._get_simulink_deps(self)
-        _shared_utils = glob.glob(os.path.join(self.slprj, '_sharedutils') + '/**/*.c', recursive=True)
+        super()._get_simulink_deps()
+        _shared_utils = glob.glob(os.path.join(self.model_paths.slprj_dir, '_sharedutils') + '/**/*.c', recursive=True)
         self.simulink_deps_src += _shared_utils
+
+        _shared_utils = glob.glob(os.path.join(self.model_paths.slprj_dir, '_sharedutils') + '/**/*.h', recursive=True)
+        self.simulink_deps = self.simulink_deps.union([os.path.basename(f).split('.')[0] for f in _shared_utils])
 
     def _gen_cmake(self):
         includes = [self.custom_includes]
-        for dir in os.walk(self.model_folder, followlinks=False):
+        for dir in os.walk(self.model_paths.root_dir, followlinks=False):
             for file in dir[2]:
                 if ".h" in file:
                     includes.append(dir[0])
                     break
 
-        maker = cmake_template(self.model_name.replace(' ', '_').replace('-', '_').lower())
+        maker = cmake_template(self.model_paths.root_model_name.replace(' ', '_').replace('-', '_').lower())
         cmake_text = maker.header()
         cmake_text += maker.set_includes(includes)
 
         for lib in self.models.dep_map.keys():
-            if lib == self.root_model:
-                files = glob.glob(self.path_to_root + "/*.c")
+            if lib == self.model_paths.root_model_name:
+                files = glob.glob(self.model_paths.root_model_path + "/*.c")
             else:
-                files = glob.glob(os.path.join(self.slprj, lib) + "/*.c")
+                files = glob.glob(os.path.join(self.model_paths.slprj_dir, lib) + "/*.c")
             cmake_text += maker.add_library(lib, files)
         
-        cmake_text += maker.add_library('shared_utils', self.shared_utils_sources)
+        cmake_text += maker.add_library('shared_utils', self.simulink_deps_src)
         ## the custom code depends on the root model. 
-        self.models.add_dependency("model_interface_c", [self.root_model])
-        self.models.add_dependency(self.root_model, ['shared_utils'])
+        self.models.add_dependency("model_interface_c", [self.model_paths.root_model_name])
+        self.models.add_dependency(self.model_paths.root_model_name, ['shared_utils'])
 
         cmake_text += maker.add_custom_libs(self.custom_sources)
         cmake_text += maker.set_lib_props()
@@ -134,7 +122,7 @@ class ModelRefCompiler(Compiler):
         cmake_text += maker.add_compile_defs(self.defines)
         cmake_text += maker.footer()
 
-        with open(os.path.join(self.tmp_dir, 'CMakeLists.txt'), 'w') as f:
+        with open(os.path.join(self.model_paths.tmp_dir, 'CMakeLists.txt'), 'w') as f:
             f.write(cmake_text)
 
     def check_up_to_date(self):
