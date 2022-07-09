@@ -124,6 +124,3 @@ class ModelRefCompiler(Compiler):
 
         with open(os.path.join(self.model_paths.tmp_dir, 'CMakeLists.txt'), 'w') as f:
             f.write(cmake_text)
-
-    def check_up_to_date(self):
-        raise NotImplementedError

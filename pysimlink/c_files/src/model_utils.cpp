@@ -268,3 +268,12 @@ double PYSIMLINK::set_block_param(rtwCAPI_ModelMappingInfo *mmi, const char *blo
 
     return 0;   // makes compiler happy
 }
+
+void PYSIMLINK::print_params_recursive(const rtwCAPI_ModelMappingInfo *child_mmi){
+    print_model_params(child_mmi);
+    print_block_params(child_mmi);
+    print_signals(child_mmi);
+    for(size_t i = 0; i < child_mmi->InstanceMap.childMMIArrayLen; i++){
+        print_params_recursive(child_mmi->InstanceMap.childMMIArray[i]);
+    }
+}

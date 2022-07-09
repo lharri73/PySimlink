@@ -36,12 +36,12 @@ namespace PYSIMLINK{
             Model();
             ~Model();
 
-            //void debug_params();
+            void print_params() const;
             double step_size() const;
+            void reset();
 
         protected:
             bool initialized;
-            void print_params(const rtwCAPI_ModelMappingInfo *mmi);
             //void step();
             //double tFinal() const;
 

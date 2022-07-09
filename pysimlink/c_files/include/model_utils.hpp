@@ -61,6 +61,7 @@ namespace PYSIMLINK{
     void print_model_params(const rtwCAPI_ModelMappingInfo *mmi);
     void print_block_params(const rtwCAPI_ModelMappingInfo *mmi);
     void print_signals(const rtwCAPI_ModelMappingInfo *mmi);
+    void print_params_recursive(const rtwCAPI_ModelMappingInfo *child_mmi);
 
     template <typename T>
     void validate_scalar(const rtwCAPI_ModelMappingInfo *mmi, T param, const char* funcName, const char* identifier){

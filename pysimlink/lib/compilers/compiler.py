@@ -24,8 +24,9 @@ class Compiler:
     def compile(self):
         raise NotImplementedError
 
-    def check_up_to_date(self):
-        raise NotImplementedError
+    def needs_to_compile(self):
+        lib = glob.glob(os.path.join(self.model_paths.tmp_dir, 'build', 'libmodel_interface_c.*'))
+        return len(lib) != 0
 
     def _get_simulink_deps(self):
         files = glob.glob(self.model_paths.simulink_native + '/**/*.h', recursive=True)
