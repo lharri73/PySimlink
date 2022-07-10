@@ -42,10 +42,11 @@ class NoRefCompiler(Compiler):
 
         cmake_text += maker.set_lib_props()
         dep_map = {
-                self.model_paths.root_model_name: ['shared_utils'],
-                'model_interface_c': [self.model_paths.root_model_name]
+                self.model_paths.root_model_name: ['shared_utils']
         }
         cmake_text += maker.add_link_libs(dep_map)
+        cmake_text += maker.add_private_link(self.model_paths.root_model_name)
+        cmake_text += maker.set_lib_props()
         cmake_text += maker.add_compile_defs(self.defines)
         cmake_text += maker.footer()
 

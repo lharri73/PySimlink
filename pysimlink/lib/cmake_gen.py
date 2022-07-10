@@ -55,8 +55,8 @@ set_target_properties(
         sources = [os.path.abspath(source).translate(self.space_trans) for source in sources]
         source_paths = '\n        '.join(sources)
         return f"""
-add_library(
-    model_interface_c SHARED
+pybind11_add_module(
+    model_interface_c
         {source_paths}
 )        
 """
@@ -73,6 +73,14 @@ target_link_libraries(
 )
 """
         return ret
+
+    def add_private_link(self, root_model):
+        return f"""
+target_link_libraries(
+    model_interface_c
+        PRIVATE {root_model}
+)        
+"""
 
     def footer(self):
         return f"""

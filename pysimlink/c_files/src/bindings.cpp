@@ -1,25 +1,12 @@
 #include "model_interface.hpp"
-#define CClass PYSIMLINK::Model
+#include <pybind11/pybind11.h>
 
-extern "C"{
-    void* new_model(void){
-        return new CClass;
-    }
+namespace py = pybind11;
 
-    void delete_model (void *ptr){
-        CClass * ref = reinterpret_cast<CClass *>(ptr);
-        ref->~Model();
-        delete ptr;
-    }
-
-    void call_reset(void *ptr){
-        CClass * ref = reinterpret_cast<CClass *>(ptr);
-        ref->reset();
-    }
-
-    void call_print_params(void *ptr){
-        CClass * ref = reinterpret_cast<CClass *>(ptr);
-        ref->print_params();
-    }
-
+PYBIND11_MODULE(model_interface_c, m) {
+    py::class_<PYSIMLINK::Model>(m, "Model")
+            .def(py::init<>())
+            .def("reset", &PYSIMLINK::Model::reset)
+            .def("step_size", &PYSIMLINK::Model::step_size)
+            .def("print_params", &PYSIMLINK::Model::print_params);
 }

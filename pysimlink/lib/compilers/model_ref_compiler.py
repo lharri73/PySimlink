@@ -112,11 +112,11 @@ class ModelRefCompiler(Compiler):
             cmake_text += maker.add_library(lib, files)
         
         cmake_text += maker.add_library('shared_utils', self.simulink_deps_src)
-        ## the custom code depends on the root model. 
-        self.models.add_dependency("model_interface_c", [self.model_paths.root_model_name])
+        ## the custom code depends on the root model.
         self.models.add_dependency(self.model_paths.root_model_name, ['shared_utils'])
 
         cmake_text += maker.add_custom_libs(self.custom_sources)
+        cmake_text += maker.add_private_link(self.model_paths.root_model_name)
         cmake_text += maker.set_lib_props()
         cmake_text += maker.add_link_libs(self.models.dep_map)
         cmake_text += maker.add_compile_defs(self.defines)
