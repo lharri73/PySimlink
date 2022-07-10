@@ -70,7 +70,7 @@ namespace PYSIMLINK{
     std::vector<struct PYSIMLINK::ModelParam> debug_model_params(const rtwCAPI_ModelMappingInfo *mmi);
     std::vector<struct PYSIMLINK::BlockParam> debug_block_param(const rtwCAPI_ModelMappingInfo *mmi);
     std::vector<struct PYSIMLINK::Signal> debug_signals(const rtwCAPI_ModelMappingInfo *mmi);
-    struct PYSIMLINK::ModelInfo debug_model_info(const rtwCAPI_ModelMappingInfo *mmi);
+    PYSIMLINK::ModelInfo debug_model_info(const rtwCAPI_ModelMappingInfo *mmi);
 
 
     template <typename T>

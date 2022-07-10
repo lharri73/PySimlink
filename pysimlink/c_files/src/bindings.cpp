@@ -9,7 +9,7 @@ PYBIND11_MODULE(model_interface_c, m) {
             .def(py::init<>())
             .def("reset", &PYSIMLINK::Model::reset)
             .def("step_size", &PYSIMLINK::Model::step_size)
-            .def("print_params", &PYSIMLINK::Model::print_params);
+            .def("get_params", &PYSIMLINK::Model::get_params);
 
     py::class_<PYSIMLINK::BlockParam>(m, "BlockParam")
             .def_readonly("block_name", &PYSIMLINK::BlockParam::block_name)

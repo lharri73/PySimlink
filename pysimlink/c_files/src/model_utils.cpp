@@ -324,9 +324,9 @@ std::vector<struct PYSIMLINK::Signal> PYSIMLINK::debug_signals(const rtwCAPI_Mod
     return ret;
 }
 
-struct PYSIMLINK::ModelInfo PYSIMLINK::debug_model_info(const rtwCAPI_ModelMappingInfo *mmi) {
+PYSIMLINK::ModelInfo PYSIMLINK::debug_model_info(const rtwCAPI_ModelMappingInfo *mmi) {
     struct PYSIMLINK::ModelInfo ret;
-    ret.model_name = mmi->InstanceMap.path == nullptr ? "None" : std::string(mmi->InstanceMap.path);
+    ret.model_name = mmi->InstanceMap.path == nullptr ? "root" : std::string(mmi->InstanceMap.path);
     ret.block_params = debug_block_param(mmi);
     ret.model_params = debug_model_params(mmi);
     ret.signals = debug_signals(mmi);

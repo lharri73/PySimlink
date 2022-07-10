@@ -34,8 +34,8 @@ class Model:
         self.model = model_interface_c.Model()
 
 
-    def print_params(self):
-        return self.model.print_params()
+    def get_params(self):
+        return self.model.get_params()
 
     def reset(self):
         self.model.reset()
