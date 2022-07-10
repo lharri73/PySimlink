@@ -35,7 +35,7 @@ class Model:
 
 
     def print_params(self):
-        self.model.print_params()
+        return self.model.print_params()
 
     def reset(self):
         self.model.reset()

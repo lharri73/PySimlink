@@ -266,7 +266,7 @@ double PYSIMLINK::set_block_param(rtwCAPI_ModelMappingInfo *mmi, const char *blo
     err << "set_block_param: Parameter (" << block << ',' << param << ") does not exist in mmi";
     throw std::runtime_error(err.str().c_str());
 
-    return 0;   // makes compiler happy
+    return 0.0;   // makes compiler happy
 }
 
 void PYSIMLINK::print_params_recursive(const rtwCAPI_ModelMappingInfo *child_mmi){
@@ -276,4 +276,60 @@ void PYSIMLINK::print_params_recursive(const rtwCAPI_ModelMappingInfo *child_mmi
     for(size_t i = 0; i < child_mmi->InstanceMap.childMMIArrayLen; i++){
         print_params_recursive(child_mmi->InstanceMap.childMMIArray[i]);
     }
+}
+
+std::vector<struct PYSIMLINK::ModelParam> PYSIMLINK::debug_model_params(const rtwCAPI_ModelMappingInfo *mmi){
+    uint_T numParams = get_num_model_params(mmi);
+    const rtwCAPI_ModelParameters* capiModelParams = rtwCAPI_GetModelParameters(mmi);
+    std::vector<struct PYSIMLINK::ModelParam> ret;
+    ret.reserve(numParams);
+    for (size_t i=0; i < numParams; i++) {
+        struct PYSIMLINK::ModelParam to_add;
+        to_add.model_param = capiModelParams[i].varName;
+        to_add.data_type = mmi->staticMap->Maps.dataTypeMap[capiModelParams[i].dataTypeIndex].cDataName;
+        ret.push_back(to_add);
+    }
+    return ret;
+}
+
+std::vector<struct PYSIMLINK::BlockParam> PYSIMLINK::debug_block_param(const rtwCAPI_ModelMappingInfo *mmi) {
+    const rtwCAPI_BlockParameters *capiBlockParams = rtwCAPI_GetBlockParameters(mmi);
+    uint_T nParams = get_num_block_params(mmi);
+    std::vector<struct PYSIMLINK::BlockParam> ret;
+    ret.reserve(nParams);
+
+    for (size_t i=0; i < nParams; i++) {
+        struct PYSIMLINK::BlockParam to_add;
+        to_add.block_name = capiBlockParams[i].blockPath;
+        to_add.block_param = capiBlockParams[i].paramName;
+        to_add.data_type = mmi->staticMap->Maps.dataTypeMap[capiBlockParams[i].dataTypeIndex].cDataName;
+        ret.push_back(to_add);
+    }
+    return ret;
+}
+
+std::vector<struct PYSIMLINK::Signal> PYSIMLINK::debug_signals(const rtwCAPI_ModelMappingInfo *mmi) {
+    uint_T numSigs = get_num_signals(mmi);
+    const rtwCAPI_Signals *capiSignals = rtwCAPI_GetSignals(mmi);
+
+    std::vector<struct PYSIMLINK::Signal> ret;
+    ret.reserve(numSigs);
+    for(size_t i = 0; i < numSigs; i++){
+        struct PYSIMLINK::Signal to_add;
+        to_add.block_name = PYSIMLINK::safe_string(capiSignals[i].blockPath);
+        to_add.signal_name = PYSIMLINK::safe_string(capiSignals[i].signalName);
+        to_add.data_type =  mmi->staticMap->Maps.dataTypeMap[capiSignals[i].dataTypeIndex].cDataName;
+        ret.push_back(to_add);
+    }
+    return ret;
+}
+
+struct PYSIMLINK::ModelInfo PYSIMLINK::debug_model_info(const rtwCAPI_ModelMappingInfo *mmi) {
+    struct PYSIMLINK::ModelInfo ret;
+    ret.model_name = mmi->InstanceMap.path == nullptr ? "None" : std::string(mmi->InstanceMap.path);
+    ret.block_params = debug_block_param(mmi);
+    ret.model_params = debug_model_params(mmi);
+    ret.signals = debug_signals(mmi);
+
+    return ret;
 }

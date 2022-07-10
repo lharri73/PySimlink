@@ -35,7 +35,7 @@ void Model::reset(){
     MODEL_INITIALIZE();
 
     // get the MMI
-    mmi = &(rtmGetDataMapInfo(RT_MDL).mmi);
+    root_mmi = &(rtmGetDataMapInfo(RT_MDL).mmi);
 
     initialized = true;
 }
@@ -44,9 +44,10 @@ double Model::step_size() const{
     return RT_MDL->Timing.stepSize0;
 }
 
-void Model::print_params() const{
+struct ModelInfo Model::print_params() const{
     if(!initialized){
         throw std::runtime_error("Model must be initialized before calling print_params. Call reset() first");
     }
-    print_params_recursive(mmi);
+    printf("Here! %p\n", root_mmi);
+    return debug_model_info(root_mmi);
 }

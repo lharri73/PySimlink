@@ -36,7 +36,7 @@ namespace PYSIMLINK{
             Model();
             ~Model();
 
-            void print_params() const;
+            struct ModelInfo print_params() const;
             double step_size() const;
             void reset();
 
@@ -45,7 +45,7 @@ namespace PYSIMLINK{
             //void step();
             //double tFinal() const;
 
-            rtwCAPI_ModelMappingInfo *mmi;
+            rtwCAPI_ModelMappingInfo *root_mmi;
             boolean_T OverrunFlags[NUMST];    /* ISR overrun flags */
             boolean_T eventFlags[NUMST];      /* necessary for overlapping preemption */
             std::unordered_map<PYSIMLINK::map_key_1s,size_t,PYSIMLINK::pair_hash,PYSIMLINK::Compare> model_param;

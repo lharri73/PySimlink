@@ -5,7 +5,7 @@ def main(args):
     model = Model(args.model_name, args.model_path, force_rebuild=True)
 
     model.reset()
-    model.print_params()
+    ret = model.print_params()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

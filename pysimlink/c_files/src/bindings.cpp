@@ -1,4 +1,5 @@
 #include "model_interface.hpp"
+#include "param_structs.hpp"
 #include <pybind11/pybind11.h>
 
 namespace py = pybind11;
@@ -9,4 +10,24 @@ PYBIND11_MODULE(model_interface_c, m) {
             .def("reset", &PYSIMLINK::Model::reset)
             .def("step_size", &PYSIMLINK::Model::step_size)
             .def("print_params", &PYSIMLINK::Model::print_params);
+
+    py::class_<PYSIMLINK::BlockParam>(m, "BlockParam")
+            .def_readonly("block_name", &PYSIMLINK::BlockParam::block_name)
+            .def_readonly("block_param", &PYSIMLINK::BlockParam::block_param)
+            .def_readonly("data_type", &PYSIMLINK::BlockParam::data_type);
+
+    py::class_<PYSIMLINK::Signal>(m, "Signal")
+            .def_readonly("block_name", &PYSIMLINK::Signal::block_name)
+            .def_readonly("signal_name", &PYSIMLINK::Signal::signal_name)
+            .def_readonly("data_type", &PYSIMLINK::Signal::data_type);
+
+    py::class_<PYSIMLINK::ModelParam>(m, "ModelParam")
+            .def_readonly("model_param", &PYSIMLINK::ModelParam::model_param)
+            .def_readonly("data_type", &PYSIMLINK::ModelParam::data_type);
+    
+    py::class_<PYSIMLINK::ModelInfo>(m, "ModelInfo")
+            .def_readonly("model_name", &PYSIMLINK::ModelInfo::model_name)
+            .def_readonly("model_params", &PYSIMLINK::ModelInfo::model_params)
+            .def_readonly("block_params", &PYSIMLINK::ModelInfo::block_params)
+            .def_readonly("signals", &PYSIMLINK::ModelInfo::signals);
 }
