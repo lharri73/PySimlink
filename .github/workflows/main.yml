@@ -14,39 +14,24 @@ jobs:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2.3.4
+      - uses: actions/checkout@v2
 
-      - name: Set up Python
-        uses: actions/setup-python@v2.2.1
+      - name: Create the new documentation
+        uses: ammaraskar/sphinx-action@master
         with:
-          python-version: 3.9
+          pre-build-command: "python -m pip install pip sphinx_rtd_theme numpy -U"
+          docs-folder: "docs/"
 
-      - name: Install dependencies
-        run: |
-          python -m pip install -U sphinx
-          python -m pip install sphinx-rtd-theme
-    
-      - name: make the sphinx docs
-        run: |
-          make -C docs clean
-          make -C docs html
-              
-      - name: Init new repo in dist folder and commit
-        run: |
-          cd docs/_build/html/
-          git init
-          touch .nojekyll
-          git config --local --add safe.directory .
-          git add -A
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git commit -m 'deploy'
-
-      - name: Force push to destination branch
-        uses: ad-m/github-push-action@v0.5.0
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: gh-pages
-          force: true
-          directory: ./docs/_build/html 
+          #deploy_key: ${{ secrets.DEPLOY_PRIVATE_KEY }}
+          publish_dir: docs/_build/html
+          allow_empty_commit: true
+
+      - name: Artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: DocumentationHTML
+          path: docs/_build/html/
