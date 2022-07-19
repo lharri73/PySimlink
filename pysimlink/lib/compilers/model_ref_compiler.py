@@ -22,19 +22,16 @@ class ModelRefCompiler(Compiler):
     def _build_deps_tree(self):
         """
         Get the dependencies for this model and all child models recursively,
-        starting at the root model. 
-        
+        starting at the root model.
+
         """
         self.models = DepGraph()
         self.update_recurse(self.model_paths.root_model_name, self.models, is_root=True)
 
-    def update_recurse(self, 
-                       model_name: str, 
-                       models: DepGraph, 
-                       is_root=False):
+    def update_recurse(self, model_name: str, models: DepGraph, is_root=False):
         """
         Recursively gathers dependencies for a model and adds them to the
-        dependency graph. 
+        dependency graph.
         Argument:
             model_name: Name of the model. This is used to locate the model in
                 the slprj/{compile_type} folder
@@ -45,9 +42,14 @@ class ModelRefCompiler(Compiler):
         Returns:
             None: always
         """
-        if model_name in models: return None
+        if model_name in models:
+            return None
 
-        model_path = self.model_paths.root_model_path if is_root else os.path.join(self.model_paths.slprj_dir, model_name)
+        model_path = (
+            self.model_paths.root_model_path
+            if is_root
+            else os.path.join(self.model_paths.slprj_dir, model_name)
+        )
         deps = self._get_deps(model_path, model_name)
         models.add_dependency(model_name, deps)
         for dep in deps:
@@ -60,20 +62,20 @@ class ModelRefCompiler(Compiler):
             path: Path to the model (including it's name). Must contain
                 {model_name}.h
             model_name: Name of the model. path must contain {model_name}.h
-        
+
         Returns:
-            deps: list of dependencies for this model. 
+            deps: list of dependencies for this model.
         """
         deps = set()
-        with open(os.path.join(path, model_name+".h")) as f:
+        with open(os.path.join(path, model_name + ".h")) as f:
             regex = re.compile('^#include "(.*?)"')
-            end = re.compile('^typedef')
+            end = re.compile("^typedef")
             for line in f.readlines():
                 inc_test = re.match(regex, line)
                 if inc_test:
                     dep = inc_test.groups()[0]
                     ## Could probably replace this with .split('.')[0] but can model names have a '.'?
-                    suffix_idx = dep.find('.h')
+                    suffix_idx = dep.find(".h")
                     deps.add(dep[:suffix_idx])
                     continue
                 elif re.match(end, line):
@@ -84,11 +86,19 @@ class ModelRefCompiler(Compiler):
 
     def _get_simulink_deps(self):
         super()._get_simulink_deps()
-        _shared_utils = glob.glob(os.path.join(self.model_paths.slprj_dir, '_sharedutils') + '/**/*.c', recursive=True)
+        _shared_utils = glob.glob(
+            os.path.join(self.model_paths.slprj_dir, "_sharedutils") + "/**/*.c",
+            recursive=True,
+        )
         self.simulink_deps_src += _shared_utils
 
-        _shared_utils = glob.glob(os.path.join(self.model_paths.slprj_dir, '_sharedutils') + '/**/*.h', recursive=True)
-        self.simulink_deps = self.simulink_deps.union([os.path.basename(f).split('.')[0] for f in _shared_utils])
+        _shared_utils = glob.glob(
+            os.path.join(self.model_paths.slprj_dir, "_sharedutils") + "/**/*.h",
+            recursive=True,
+        )
+        self.simulink_deps = self.simulink_deps.union(
+            [os.path.basename(f).split(".")[0] for f in _shared_utils]
+        )
 
     def _gen_cmake(self):
         includes = [self.custom_includes]
@@ -98,7 +108,9 @@ class ModelRefCompiler(Compiler):
                     includes.append(dir[0])
                     break
 
-        maker = cmake_template(self.model_paths.root_model_name.replace(' ', '_').replace('-', '_').lower())
+        maker = cmake_template(
+            self.model_paths.root_model_name.replace(" ", "_").replace("-", "_").lower()
+        )
         cmake_text = maker.header()
         cmake_text += maker.set_includes(includes)
 
@@ -108,10 +120,10 @@ class ModelRefCompiler(Compiler):
             else:
                 files = glob.glob(os.path.join(self.model_paths.slprj_dir, lib) + "/*.c")
             cmake_text += maker.add_library(lib, files)
-        
-        cmake_text += maker.add_library('shared_utils', self.simulink_deps_src)
+
+        cmake_text += maker.add_library("shared_utils", self.simulink_deps_src)
         ## the custom code depends on the root model.
-        self.models.add_dependency(self.model_paths.root_model_name, ['shared_utils'])
+        self.models.add_dependency(self.model_paths.root_model_name, ["shared_utils"])
 
         cmake_text += maker.add_custom_libs(self.custom_sources)
         cmake_text += maker.add_private_link(self.model_paths.root_model_name)
@@ -120,5 +132,5 @@ class ModelRefCompiler(Compiler):
         cmake_text += maker.add_compile_defs(self.defines)
         cmake_text += maker.footer()
 
-        with open(os.path.join(self.model_paths.tmp_dir, 'CMakeLists.txt'), 'w') as f:
+        with open(os.path.join(self.model_paths.tmp_dir, "CMakeLists.txt"), "w") as f:
             f.write(cmake_text)

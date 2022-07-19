@@ -10,14 +10,16 @@ class Model:
     model_paths: ModelPaths
     compiler: compiler.Compiler
 
-    def __init__(self, 
-            model_name, 
-            path_to_model, 
-            compile_type='grt', 
-            suffix='rtw', 
-            tmp_dir=None,
-            force_rebuild=False):
-        
+    def __init__(
+        self,
+        model_name,
+        path_to_model,
+        compile_type="grt",
+        suffix="rtw",
+        tmp_dir=None,
+        force_rebuild=False,
+    ):
+
         self.model_paths = ModelPaths(path_to_model, model_name, compile_type, suffix, tmp_dir)
         self.compiler = self.model_paths.compiler_factory()
 
@@ -26,10 +28,10 @@ class Model:
             ## Need to compile
             self.compiler.compile()
 
-        sys.path.append(os.path.join(self.model_paths.tmp_dir, 'build'))
+        sys.path.append(os.path.join(self.model_paths.tmp_dir, "build"))
         import model_interface_c
-        self.model = model_interface_c.Model()
 
+        self.model = model_interface_c.Model()
 
     def get_params(self):
         return self.model.get_params()
