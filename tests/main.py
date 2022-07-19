@@ -1,12 +1,12 @@
-from pysimlink.model import Model
+from pysimlink.lib.model import Model
+from pysimlink.utils.model_utils import print_all_params
 import argparse
 
 def main(args):
     model = Model(args.model_name, args.model_path, force_rebuild=True)
 
     model.reset()
-    ret = model.get_params()
-    print(ret)
+    print_all_params(model)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

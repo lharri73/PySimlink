@@ -1,17 +1,14 @@
 import ctypes
-import glob
 import os
-import platform
 import sys
 
-from pysimlink.lib.compilers.model_ref_compiler import Compiler
-from pysimlink.utils.model_utils import ModelPaths
+from pysimlink.lib.model_paths import ModelPaths
+from pysimlink.lib.compilers import compiler
 
 
 class Model:
     model_paths: ModelPaths
-    compiler: Compiler
-    model: ctypes.CDLL
+    compiler: compiler.Compiler
 
     def __init__(self, 
             model_name, 

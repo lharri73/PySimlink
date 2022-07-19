@@ -69,3 +69,51 @@ void Model::discover_mmis(const rtwCAPI_ModelMappingInfo *mmi){
         discover_mmis(mmi->InstanceMap.childMMIArray[i]);
     }
 }
+
+void Model::step(int num_steps){
+    assert(((void)"num_steps must be a positive number", num_steps>0));
+    for(int cur_step=0; cur_step < num_steps; cur_step++){
+        int_T i;
+
+        if (OverrunFlags[0]++)
+            rtmSetErrorStatus(RT_MDL, "Overrun");
+
+        if (rtmGetErrorStatus(RT_MDL) != NULL) {
+            char buf[256];
+            sprintf(buf, "Model is in errored state: %s", rtmGetErrorStatus(RT_MDL));
+            throw std::runtime_error(buf);
+            return;
+        }
+
+        for (i = FIRST_TID+1; i < NUMST; i++) {
+            if (rtmStepTask(RT_MDL,i) && eventFlags[i]++) {
+                OverrunFlags[0]--;
+                OverrunFlags[i]++;
+                /* Sampling too fast */
+                rtmSetErrorStatus(RT_MDL, "Overrun");
+                throw std::runtime_error("Task overrun");
+                return;
+            }
+            if (++rtmTaskCounter(RT_MDL,i) == rtmCounterLimit(RT_MDL,i))
+                rtmTaskCounter(RT_MDL, i) = 0;
+        }
+
+        MODEL_STEP(0);
+
+        OverrunFlags[0]--;
+
+        for (i = FIRST_TID+1; i < NUMST; i++) {
+            if (OverrunFlags[i]) return;
+
+            if (eventFlags[i]) {
+                OverrunFlags[i]++;
+
+                MODEL_STEP(i);
+
+                OverrunFlags[i]--;
+                eventFlags[i]--;
+            }
+        }
+        rtExtModeCheckEndTrigger();
+    }
+}

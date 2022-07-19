@@ -1,5 +1,5 @@
 from pysimlink.lib.compilers.compiler import Compiler
-from pysimlink.utils.model_utils import ModelPaths
+from pysimlink.lib.model_paths import ModelPaths
 from pysimlink.lib import cmake_gen
 import glob
 import os

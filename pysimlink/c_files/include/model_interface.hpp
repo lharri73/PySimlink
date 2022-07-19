@@ -42,7 +42,7 @@ namespace PYSIMLINK{
 
         protected:
             bool initialized;
-            //void step();
+            void step(int num_steps);
             //double tFinal() const;
             void discover_mmis(const rtwCAPI_ModelMappingInfo *mmi);
 
@@ -51,8 +51,8 @@ namespace PYSIMLINK{
             boolean_T eventFlags[NUMST];      /* necessary for overlapping preemption */
             std::map<const char*,const rtwCAPI_ModelMappingInfo *> mmi_map;
 
-            std::unordered_map<PYSIMLINK::map_key_1s,size_t,PYSIMLINK::pair_hash,PYSIMLINK::Compare> model_param;
-            std::unordered_map<PYSIMLINK::map_key_2s,size_t,PYSIMLINK::pair_hash,PYSIMLINK::Compare> sig_map;
-            std::unordered_map<PYSIMLINK::map_key_2s,size_t,PYSIMLINK::pair_hash,PYSIMLINK::Compare> block_map;
+            std::unordered_map<PYSIMLINK::map_key_1s,size_t, PYSIMLINK::pair_hash,PYSIMLINK::Compare> model_param;
+            std::unordered_map<PYSIMLINK::map_key_2s,size_t, PYSIMLINK::pair_hash,PYSIMLINK::Compare> sig_map;
+            std::unordered_map<PYSIMLINK::map_key_2s,size_t, PYSIMLINK::pair_hash,PYSIMLINK::Compare> block_map;
     };
 };

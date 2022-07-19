@@ -2,9 +2,7 @@ import os
 import re
 import glob
 
-
-from pysimlink.utils.file_utils import get_other_in_dir
-from pysimlink.utils.model_utils import ModelPaths
+from pysimlink.lib.model_paths import ModelPaths
 from pysimlink.lib.dependency_graph import DepGraph
 from pysimlink.lib.cmake_gen import cmake_template
 from pysimlink.lib.compilers.compiler import Compiler

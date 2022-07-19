@@ -1,4 +1,5 @@
-from pysimlink.utils.model_utils import ModelPaths, infer_defines
+from pysimlink.utils.model_utils import infer_defines
+from pysimlink.lib.model_paths import ModelPaths
 import glob
 import os
 import shutil
