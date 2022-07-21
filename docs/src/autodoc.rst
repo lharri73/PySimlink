@@ -2,9 +2,9 @@
  
 .. contents::
  
-Compiler
-=============
+Model
+=====
  
-.. automodule:: pysimlink.lib.compilers.compiler
+.. automodule:: pysimlink.lib.model
   :members:
   :undoc-members:

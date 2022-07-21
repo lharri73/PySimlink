@@ -114,8 +114,8 @@ class ModelPaths:
             lines = f.readlines()
 
         regex = re.compile(
-            f"extern void {self.root_model_name}_step\(void\);"
-        )  # pylint: disable=W1401
+            f"extern void {self.root_model_name}_step\(void\);"  # pylint: disable=W1401
+        )
         for line in lines:
             if re.search(regex, line):
                 break
@@ -131,14 +131,14 @@ class ModelPaths:
         compilers could be added if we want to use something other than cmake.
         """
         if self.has_references:  # pylint: disable=R1705
-            from pysimlink.lib.compilers.model_ref_compiler import (
+            from pysimlink.lib.compilers.model_ref_compiler import (  # pylint: disable=C0415
                 ModelRefCompiler,
-            )  # pylint: disable=C0415
+            )
 
             return ModelRefCompiler(self)
         else:
-            from pysimlink.lib.compilers.one_shot_compiler import (
+            from pysimlink.lib.compilers.one_shot_compiler import (  # pylint: disable=C0415
                 NoRefCompiler,
-            )  # pylint: disable=C0415
+            )
 
             return NoRefCompiler(self)

@@ -1,13 +1,20 @@
-from pysimlink.utils.model_utils import infer_defines
-from pysimlink.utils import annotation_utils as anno
 import glob
 import os
 import shutil
-import cmake
+from datetime import datetime
 from subprocess import Popen, PIPE
+
+import cmake
+
+from pysimlink.utils import annotation_utils as anno
+from pysimlink.utils.model_utils import infer_defines
 
 
 class Compiler:
+    """
+    Base class to discover sources and compile a model
+    """
+
     simulink_deps: set[str]  ## All header files created in the simulink common directory
     simulink_deps_path: list[str]  ## Path to the header files created in the simulink common dir
     simulink_deps_src: list[str]  ## Path to all source files created in the simulink common dir
@@ -20,19 +27,34 @@ class Compiler:
         self.model_paths = model_paths
 
     def clean(self):
+        """
+        Remove all files from the temporary directory
+        """
         shutil.rmtree(self.model_paths.tmp_dir)
 
     def compile(self):
+        """
+        Builds the cmake file, calls cmake, and builds the extension.
+        """
         raise NotImplementedError
 
-    def needs_to_compile(self):
+    def needs_to_compile(self) -> bool:
+        """
+        check if the model extension exists.
+
+        Returns:
+            bool: True if the model needs to be compiled, False otherwise
+        """
         lib = glob.glob(os.path.join(self.model_paths.tmp_dir, "build", "libmodel_interface_c.*"))
         return len(lib) != 0
 
     def _get_simulink_deps(self):
+        """
+        Generates a list of all simulink dependencies and their paths
+        """
         files = glob.glob(self.model_paths.simulink_native + "/**/*.h", recursive=True)
 
-        self.simulink_deps = set([os.path.basename(f).split(".")[0] for f in files])
+        self.simulink_deps = {os.path.basename(f).split(".")[0] for f in files}
         self.simulink_deps_path = files
 
         simulink_deps = glob.glob(self.model_paths.simulink_native + "/**/*.c", recursive=True)
@@ -47,6 +69,10 @@ class Compiler:
         self.simulink_deps_src = simulink_deps
 
     def _gen_custom_srcs(self):
+        """
+        Moves all custom mixin source files to the temporary directory and makes appropriate replacements
+        in the source files
+        """
         shutil.rmtree(
             os.path.join(self.model_paths.tmp_dir, "c_files"),
             ignore_errors=True,
@@ -75,8 +101,13 @@ class Compiler:
             self.defines = infer_defines(self.model_paths)
 
     def _build(self):
+        """
+        Cals cmake to configure and build the extension. Writes errors to the current working directory
+        in a log file.
+        """
         build_dir = os.path.join(self.model_paths.tmp_dir, "build")
-        process = Popen(
+
+        with Popen(
             [
                 os.path.join(cmake.CMAKE_BIN_DIR, "cmake"),
                 "-S",
@@ -86,18 +117,17 @@ class Compiler:
             ],
             stdout=PIPE,
             stderr=PIPE,
-        )
-        (output1, err1) = process.communicate()
-        build = process.wait()
-        if build != 0:
-            from datetime import datetime
+        ) as p:
+            (output1, err1) = p.communicate()
+            build = p.wait()
 
+        if build != 0:
             now = datetime.now()
             err_file = os.path.join(
                 os.getcwd(),
                 now.strftime("%Y-%m-%d_%H-%M-%S_PySimlink_Generation_Error.log"),
             )
-            with open(err_file, "w") as f:
+            with open(err_file, "w", encoding="utf-8") as f:
                 f.write(output1.decode() if output1 else "")
                 f.write(err1.decode() if err1 else "")
             raise Exception(
@@ -105,22 +135,21 @@ class Compiler:
                 f"Output from CMake generation is in {err_file}"
             )
 
-        process = Popen(
+        with Popen(
             [os.path.join(cmake.CMAKE_BIN_DIR, "cmake"), "--build", build_dir],
             stdout=PIPE,
             stderr=PIPE,
-        )
-        (output2, err2) = process.communicate()
-        make = process.wait()
-        if make != 0:
-            from datetime import datetime
+        ) as p:
+            (output2, err2) = p.communicate()
+            make = p.wait()
 
+        if make != 0:
             now = datetime.now()
             err_file = os.path.join(
                 os.getcwd(),
                 now.strftime("%Y-%m-%d_%H-%M-%S_PySimlink_Build_Error.log"),
             )
-            with open(err_file, "w") as f:
+            with open(err_file, "w", encoding="utf-8") as f:
                 f.write(output2.decode() if output2 else "")
                 f.write(err2.decode() if err2 else "")
 
@@ -130,13 +159,21 @@ class Compiler:
             )
 
     @staticmethod
-    def _replace_macros(path, replacements):
-        with open(path, "r") as f:
+    def _replace_macros(path: str, replacements: dict[str, str]):
+        """
+        Replaces strings in a file
+
+        Args:
+            path: path to file to replace strings in
+            replacements: dictionary of replacements
+
+        """
+        with open(path, "r", encoding="utf-8") as f:
             lines = f.readlines()
 
-        for i in range(len(lines)):
+        for i in enumerate(lines):
             for key, val in replacements.items():
                 lines[i] = lines[i].replace(str(key), str(val))
 
-        with open(path, "w") as f:
+        with open(path, "w", encoding="utf-8") as f:
             f.writelines(lines)

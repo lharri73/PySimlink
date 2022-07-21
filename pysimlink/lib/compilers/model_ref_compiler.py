@@ -9,8 +9,12 @@ from pysimlink.utils import annotation_utils as anno
 
 
 class ModelRefCompiler(Compiler):
+    """
+    Compiler for a model that do use model references
+    """
     def __init__(self, model_paths: "anno.ModelPaths"):
         super().__init__(model_paths)
+        self.models = None
 
     def compile(self):
         self._get_simulink_deps()
@@ -43,7 +47,7 @@ class ModelRefCompiler(Compiler):
             None: always
         """
         if model_name in models:
-            return None
+            return
 
         model_path = (
             self.model_paths.root_model_path
@@ -67,7 +71,7 @@ class ModelRefCompiler(Compiler):
             deps: list of dependencies for this _model.
         """
         deps = set()
-        with open(os.path.join(path, model_name + ".h")) as f:
+        with open(os.path.join(path, model_name + ".h"), encoding="utf-8") as f:
             regex = re.compile('^#include "(.*?)"')
             end = re.compile("^typedef")
             for line in f.readlines():
@@ -78,7 +82,7 @@ class ModelRefCompiler(Compiler):
                     suffix_idx = dep.find(".h")
                     deps.add(dep[:suffix_idx])
                     continue
-                elif re.match(end, line):
+                if re.match(end, line):
                     break
         this_deps = deps.difference(self.simulink_deps)
         to_remove = [dep for dep in this_deps if dep.startswith(model_name)]
@@ -102,10 +106,10 @@ class ModelRefCompiler(Compiler):
 
     def _gen_cmake(self):
         includes = [self.custom_includes]
-        for dir in os.walk(self.model_paths.root_dir, followlinks=False):
-            for file in dir[2]:
+        for dir_name in os.walk(self.model_paths.root_dir, followlinks=False):
+            for file in dir_name[2]:
                 if ".h" in file:
-                    includes.append(dir[0])
+                    includes.append(dir_name[0])
                     break
 
         maker = CmakeTemplate(
@@ -114,7 +118,7 @@ class ModelRefCompiler(Compiler):
         cmake_text = maker.header()
         cmake_text += maker.set_includes(includes)
 
-        for lib in self.models.dep_map.keys():
+        for lib in self.models.dep_map:
             if lib == self.model_paths.root_model_name:
                 files = glob.glob(self.model_paths.root_model_path + "/*.c")
             else:
@@ -132,5 +136,5 @@ class ModelRefCompiler(Compiler):
         cmake_text += maker.add_compile_defs(self.defines)
         cmake_text += maker.footer()
 
-        with open(os.path.join(self.model_paths.tmp_dir, "CMakeLists.txt"), "w") as f:
+        with open(os.path.join(self.model_paths.tmp_dir, "CMakeLists.txt"), "w", encoding="utf-8") as f:
             f.write(cmake_text)

@@ -39,13 +39,14 @@ class Model:
 
         self._model = model_interface_c.Model()
 
-    def get_params(self) -> "anno.ModelInfo":
+    def get_params(self) -> "list[anno.ModelInfo]":
         """
         Return an instance of all parameters, blocks, and signals in the _model
 
         See `lib.model_utils.print_all_params` for iterating and printing the contents of this object
+
         Returns:
-            ModelInfo
+            list[ModelInfo]: List of model info, one for each model (if reference models present). One ModelInfo if no reference models
         """
         return self._model.get_params()
 
@@ -76,7 +77,7 @@ class Model:
         Get the final timestep of the model.
 
         Returns:
-            tFinal: Final timestep of the model (seconds from zero).
+            float: Final timestep of the model (seconds from zero).
         """
         return self._model.tFinal()
 
@@ -85,7 +86,7 @@ class Model:
         Get the step size of the model
 
         Returns:
-            step_size: step size of the fixed step solver.
+            float: step size of the fixed step solver.
         """
         return self._model.step_size()
 
