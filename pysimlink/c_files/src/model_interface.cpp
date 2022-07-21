@@ -7,8 +7,8 @@ namespace py = pybind11;
 
 Model::Model(){
     initialized = false;
-    memset(OverrunFlags, 0, sizeof(boolean_T)*NUMST);
-    memset(eventFlags, 0, sizeof(boolean_T)*NUMST);
+    memset(OverrunFlags, 0, sizeof(boolean_T));
+    memset(eventFlags, 0, sizeof(boolean_T));
 }
 
 Model::~Model(){
@@ -72,9 +72,8 @@ void Model::discover_mmis(const rtwCAPI_ModelMappingInfo *mmi){
 
 void Model::step(int num_steps){
     assert(((void)"num_steps must be a positive number", num_steps>0));
-    for(int cur_step=0; cur_step < num_steps; cur_step++){
-        int_T i;
 
+    for(int cur_step=0; cur_step < num_steps; cur_step++){
         if (OverrunFlags[0]++)
             rtmSetErrorStatus(RT_MDL, "Overrun");
 
@@ -85,35 +84,16 @@ void Model::step(int num_steps){
             return;
         }
 
-        for (i = FIRST_TID+1; i < NUMST; i++) {
-            if (rtmStepTask(RT_MDL,i) && eventFlags[i]++) {
-                OverrunFlags[0]--;
-                OverrunFlags[i]++;
-                /* Sampling too fast */
-                rtmSetErrorStatus(RT_MDL, "Overrun");
-                throw std::runtime_error("Task overrun");
-                return;
-            }
-            if (++rtmTaskCounter(RT_MDL,i) == rtmCounterLimit(RT_MDL,i))
-                rtmTaskCounter(RT_MDL, i) = 0;
-        }
-
-        MODEL_STEP(0);
+        MODEL_STEP();
 
         OverrunFlags[0]--;
-
-        for (i = FIRST_TID+1; i < NUMST; i++) {
-            if (OverrunFlags[i]) return;
-
-            if (eventFlags[i]) {
-                OverrunFlags[i]++;
-
-                MODEL_STEP(i);
-
-                OverrunFlags[i]--;
-                eventFlags[i]--;
-            }
-        }
-        rtExtModeCheckEndTrigger();
     }
+}
+
+double Model::tFinal() const{
+    return rtmGetFinalTime(RT_MDL);
+}
+
+void Model::set_tFinal(float tFinal){
+    rtmSetTFinal(RT_MDL, tFinal);
 }

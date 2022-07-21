@@ -2,6 +2,7 @@ import os
 import glob
 from typing import Union
 from pysimlink.utils.file_utils import get_other_in_dir
+import re
 
 
 class ModelPaths:
@@ -96,7 +97,22 @@ class ModelPaths:
         """
         files = glob.glob(self.root_model_path + "/*.c", recursive=False)
         files = map(os.path.basename, files)
-        assert self.root_model_name + "_capi.c" in files, "Model not generated with capi"
+        assert self.root_model_name + "_capi.c" in files, \
+            "Model not generated with capi. Enable the following options in the Code Generation model settings: \n" \
+            "\tGenerate C API for: signals, parameters, states, root-level I/O"
+
+        ## also check that this is not a multitasked model
+        with open(os.path.join(self.root_model_path, self.root_model_name + ".h")) as f:
+            lines = f.readlines()
+
+        regex = re.compile(f'extern void {self.root_model_name}_step\(void\);')
+        for line in lines:
+            if re.search(regex, line):
+                break
+        else:
+            raise RuntimeError("Model is setup with multitasking. Disable the following options in the Solver settings and recompile: \n"
+                               "\t- 'Treat each discrete rate as a separate task'\n\t- 'Allow tasks to execute concurrently on target'")
+
 
     def compiler_factory(self):
         """

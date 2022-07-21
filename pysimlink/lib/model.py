@@ -38,3 +38,17 @@ class Model:
 
     def reset(self):
         self.model.reset()
+
+    def step(self):
+        self.model.step()
+
+    def tFinal(self):
+        return self.model.tFinal()
+
+    def step_size(self):
+        return self.model.step_size()
+
+    def set_tFinal(self, tFinal):
+        if tFinal <= 0:
+            raise ValueError("new tFinal must be > 0")
+        self.model.set_tFinal(tFinal)

@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to PySimlink's documentation!
-=====================================
+Python + Simulink = PySimlink!
+==============================
 .. toctree::
    :maxdepth: 2
    :hidden:
@@ -26,6 +26,11 @@ run the model in "accelerator mode", and even run multiple instances of the same
 model at once all without requiring a MATLAB runtime! All you need is Simulink Coder, and the ability to export your model to
 a grt target.
 
+**What PySimlink can't do:**
+
+* Add or remove blocks to a model (the structure of the model is final once code is generated)
+* Some signals are reduced/optimized. These are not accessible.
+
 Getting Started
 ================
 There are three main steps to perform before you are able to run and interact
@@ -44,7 +49,7 @@ to allow PySimlink to interact with the model.
 Compile and Link
 ----------------
 This step is done for you, automatically. Although, you may be required to provide some
-additional information during the first run. 
+additional information during the first run.
 
 Indices and tables
 ==================

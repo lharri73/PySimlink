@@ -58,16 +58,13 @@ class Compiler:
         self.custom_includes = os.path.join(self.model_paths.tmp_dir, "c_files", "include")
         self.custom_sources = os.path.join(self.model_paths.tmp_dir, "c_files", "src")
 
-        with open(os.path.join(self.custom_includes, "model_utils.hpp"), "r") as f:
-            model_utils = f.readlines()
+        replacements = {
+                "<<ROOT_MODEL>>": self.model_paths.root_model_name+".h",
+                "<<ROOT_MODEL_PRIVATE>>": self.model_paths.root_model_name+"_private.h"
+        }
+        self._replace_macros(os.path.join(self.custom_includes, "model_utils.hpp"), replacements)
+        self._replace_macros(os.path.join(self.custom_includes, "model_interface.hpp"), replacements)
 
-        model_utils = [
-            line.replace("<<ROOT_MODEL>>", self.model_paths.root_model_name + ".h")
-            for line in model_utils
-        ]
-
-        with open(os.path.join(self.custom_includes, "model_utils.hpp"), "w") as f:
-            f.writelines(model_utils)
 
         defines = os.path.join(self.model_paths.root_model_path, "defines.txt")
         if os.path.exists(defines):
@@ -130,3 +127,15 @@ class Compiler:
                 "Building the model failed. This could be a c/c++/cmake setup issue, bad paths, or a bug!\n"
                 f"Output from the build process is in {err_file}"
             )
+
+    @staticmethod
+    def _replace_macros(path, replacements):
+        with open(path, 'r') as f:
+            lines = f.readlines()
+
+        for i in range(len(lines)):
+            for key, val in replacements.items():
+                lines[i] = lines[i].replace(str(key), str(val))
+
+        with open(path, 'w') as f:
+            f.writelines(lines)
