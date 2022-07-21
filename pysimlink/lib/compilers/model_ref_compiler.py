@@ -12,6 +12,7 @@ class ModelRefCompiler(Compiler):
     """
     Compiler for a model that do use model references
     """
+
     def __init__(self, model_paths: "anno.ModelPaths"):
         super().__init__(model_paths)
         self.models = None
@@ -136,5 +137,7 @@ class ModelRefCompiler(Compiler):
         cmake_text += maker.add_compile_defs(self.defines)
         cmake_text += maker.footer()
 
-        with open(os.path.join(self.model_paths.tmp_dir, "CMakeLists.txt"), "w", encoding="utf-8") as f:
+        with open(
+            os.path.join(self.model_paths.tmp_dir, "CMakeLists.txt"), "w", encoding="utf-8"
+        ) as f:
             f.write(cmake_text)

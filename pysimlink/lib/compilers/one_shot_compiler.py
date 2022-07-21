@@ -10,6 +10,7 @@ class NoRefCompiler(Compiler):
     """
     Compiler for a model that does not use model references
     """
+
     def __init__(self, model_paths: "anno.ModelPaths"):
         super().__init__(model_paths)
         self.model_srcs = []
@@ -48,14 +49,17 @@ class NoRefCompiler(Compiler):
         cmake_text += maker.add_library(self.model_paths.root_model_name, self.model_srcs)
         cmake_text += maker.add_library("shared_utils", self.simulink_deps_src)
         cmake_text += maker.add_custom_libs(self.custom_sources)
-
         cmake_text += maker.set_lib_props()
+
         dep_map = {self.model_paths.root_model_name: ["shared_utils"]}
         cmake_text += maker.add_link_libs(dep_map)
         cmake_text += maker.add_private_link(self.model_paths.root_model_name)
         cmake_text += maker.set_lib_props()
         cmake_text += maker.add_compile_defs(self.defines)
+
         cmake_text += maker.footer()
 
-        with open(os.path.join(self.model_paths.tmp_dir, "CMakeLists.txt"), "w", encoding="utf-8") as f:
+        with open(
+            os.path.join(self.model_paths.tmp_dir, "CMakeLists.txt"), "w", encoding="utf-8"
+        ) as f:
             f.write(cmake_text)
