@@ -2,14 +2,14 @@ import os
 import re
 import glob
 
-from pysimlink.lib.model_paths import ModelPaths
 from pysimlink.lib.dependency_graph import DepGraph
-from pysimlink.lib.cmake_gen import cmake_template
+from pysimlink.lib.cmake_gen import CmakeTemplate
 from pysimlink.lib.compilers.compiler import Compiler
+from pysimlink.utils import annotation_utils as anno
 
 
 class ModelRefCompiler(Compiler):
-    def __init__(self, model_paths: ModelPaths):
+    def __init__(self, model_paths: "anno.ModelPaths"):
         super().__init__(model_paths)
 
     def compile(self):
@@ -21,24 +21,24 @@ class ModelRefCompiler(Compiler):
 
     def _build_deps_tree(self):
         """
-        Get the dependencies for this model and all child models recursively,
-        starting at the root model.
+        Get the dependencies for this _model and all child models recursively,
+        starting at the root _model.
 
         """
         self.models = DepGraph()
         self.update_recurse(self.model_paths.root_model_name, self.models, is_root=True)
 
-    def update_recurse(self, model_name: str, models: DepGraph, is_root=False):
+    def update_recurse(self, model_name: str, models: "anno.DepGraph", is_root=False):
         """
-        Recursively gathers dependencies for a model and adds them to the
+        Recursively gathers dependencies for a _model and adds them to the
         dependency graph.
         Argument:
-            model_name: Name of the model. This is used to locate the model in
+            model_name: Name of the _model. This is used to locate the _model in
                 the slprj/{compile_type} folder
             models: An instance of the dependency graph
-            is_root: Since the root model is in a different place, we handle the
+            is_root: Since the root _model is in a different place, we handle the
                 path differently. This is set to true only when processing the
-                root model
+                root _model
         Returns:
             None: always
         """
@@ -56,15 +56,15 @@ class ModelRefCompiler(Compiler):
             self.update_recurse(dep, models)
 
     def _get_deps(self, path, model_name):
-        """Get all dependencies of a model
+        """Get all dependencies of a _model
 
         Args:
-            path: Path to the model (including it's name). Must contain
+            path: Path to the _model (including it's name). Must contain
                 {model_name}.h
-            model_name: Name of the model. path must contain {model_name}.h
+            model_name: Name of the _model. path must contain {model_name}.h
 
         Returns:
-            deps: list of dependencies for this model.
+            deps: list of dependencies for this _model.
         """
         deps = set()
         with open(os.path.join(path, model_name + ".h")) as f:
@@ -74,7 +74,7 @@ class ModelRefCompiler(Compiler):
                 inc_test = re.match(regex, line)
                 if inc_test:
                     dep = inc_test.groups()[0]
-                    ## Could probably replace this with .split('.')[0] but can model names have a '.'?
+                    ## Could probably replace this with .split('.')[0] but can _model names have a '.'?
                     suffix_idx = dep.find(".h")
                     deps.add(dep[:suffix_idx])
                     continue
@@ -108,7 +108,7 @@ class ModelRefCompiler(Compiler):
                     includes.append(dir[0])
                     break
 
-        maker = cmake_template(
+        maker = CmakeTemplate(
             self.model_paths.root_model_name.replace(" ", "_").replace("-", "_").lower()
         )
         cmake_text = maker.header()
@@ -122,7 +122,7 @@ class ModelRefCompiler(Compiler):
             cmake_text += maker.add_library(lib, files)
 
         cmake_text += maker.add_library("shared_utils", self.simulink_deps_src)
-        ## the custom code depends on the root model.
+        ## the custom code depends on the root _model.
         self.models.add_dependency(self.model_paths.root_model_name, ["shared_utils"])
 
         cmake_text += maker.add_custom_libs(self.custom_sources)

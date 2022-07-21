@@ -1,12 +1,12 @@
 from pysimlink.lib.compilers.compiler import Compiler
-from pysimlink.lib.model_paths import ModelPaths
+from pysimlink.utils import annotation_utils as anno
 from pysimlink.lib import cmake_gen
 import glob
 import os
 
 
 class NoRefCompiler(Compiler):
-    def __init__(self, model_paths: ModelPaths):
+    def __init__(self, model_paths: "anno.ModelPaths"):
         super().__init__(model_paths)
 
     def compile(self):
@@ -33,7 +33,7 @@ class NoRefCompiler(Compiler):
                 if ".h" in file:
                     includes.append(dir[0])
                     break
-        maker = cmake_gen.cmake_template(
+        maker = cmake_gen.CmakeTemplate(
             self.model_paths.root_model_name.replace(" ", "_").replace("-", "_").lower()
         )
         cmake_text = maker.header()

@@ -1,9 +1,9 @@
-import pybind11
 import os
 import glob
 
+import pybind11
 
-class cmake_template:
+class CmakeTemplate:
     def __init__(self, model_name):
         self.model_name = model_name
         self.space_trans = str.maketrans({" ": r"\ "})
@@ -16,10 +16,8 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(pybind11 PATHS {pybind11.get_cmake_dir()})"""
 
-    # find_package(Python3 REQUIRED)"""
-
     def set_includes(self, includes):
-        ## Add the include path for model runner code
+        ## Add the include path for _model runner code
 
         includes = [os.path.abspath(include).translate(self.space_trans) for include in includes]
         include_dirs = "\n    ".join(includes)

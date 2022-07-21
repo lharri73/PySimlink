@@ -1,5 +1,5 @@
 from pysimlink.utils.model_utils import infer_defines
-from pysimlink.lib.model_paths import ModelPaths
+from pysimlink.utils import annotation_utils as anno
 import glob
 import os
 import shutil
@@ -11,12 +11,12 @@ class Compiler:
     simulink_deps: set[str]  ## All header files created in the simulink common directory
     simulink_deps_path: list[str]  ## Path to the header files created in the simulink common dir
     simulink_deps_src: list[str]  ## Path to all source files created in the simulink common dir
-    model_paths: ModelPaths  ## Instance of the ModelPaths containing information about the directory structure
-    defines: list[str]  ## All defines that should be set during model compilation
+    model_paths: "anno.ModelPaths"  ## Instance of the ModelPaths containing information about the directory structure
+    defines: list[str]  ## All defines that should be set during _model compilation
     custom_includes: str  ## Include files directory defined by this python module
     custom_sources: str  ## Source files directory defined by this python module
 
-    def __init__(self, model_paths: ModelPaths):
+    def __init__(self, model_paths: "anno.ModelPaths"):
         self.model_paths = model_paths
 
     def clean(self):
@@ -59,16 +59,17 @@ class Compiler:
         self.custom_sources = os.path.join(self.model_paths.tmp_dir, "c_files", "src")
 
         replacements = {
-                "<<ROOT_MODEL>>": self.model_paths.root_model_name+".h",
-                "<<ROOT_MODEL_PRIVATE>>": self.model_paths.root_model_name+"_private.h"
+            "<<ROOT_MODEL>>": self.model_paths.root_model_name + ".h",
+            "<<ROOT_MODEL_PRIVATE>>": self.model_paths.root_model_name + "_private.h",
         }
         self._replace_macros(os.path.join(self.custom_includes, "model_utils.hpp"), replacements)
-        self._replace_macros(os.path.join(self.custom_includes, "model_interface.hpp"), replacements)
-
+        self._replace_macros(
+            os.path.join(self.custom_includes, "model_interface.hpp"), replacements
+        )
 
         defines = os.path.join(self.model_paths.root_model_path, "defines.txt")
         if os.path.exists(defines):
-            with open(defines, "r") as f:
+            with open(defines, "r", encoding='utf-8') as f:
                 self.defines = [line.strip() for line in f.readlines()]
         else:
             self.defines = infer_defines(self.model_paths)
@@ -100,7 +101,7 @@ class Compiler:
                 f.write(output1.decode() if output1 else "")
                 f.write(err1.decode() if err1 else "")
             raise Exception(
-                "Generating the CMakeLists for this model failed. This could be a c/c++/cmake setup issue, bad paths, or a bug!\n"
+                "Generating the CMakeLists for this _model failed. This could be a c/c++/cmake setup issue, bad paths, or a bug!\n"
                 f"Output from CMake generation is in {err_file}"
             )
 
@@ -124,18 +125,18 @@ class Compiler:
                 f.write(err2.decode() if err2 else "")
 
             raise Exception(
-                "Building the model failed. This could be a c/c++/cmake setup issue, bad paths, or a bug!\n"
+                "Building the _model failed. This could be a c/c++/cmake setup issue, bad paths, or a bug!\n"
                 f"Output from the build process is in {err_file}"
             )
 
     @staticmethod
     def _replace_macros(path, replacements):
-        with open(path, 'r') as f:
+        with open(path, "r") as f:
             lines = f.readlines()
 
         for i in range(len(lines)):
             for key, val in replacements.items():
                 lines[i] = lines[i].replace(str(key), str(val))
 
-        with open(path, 'w') as f:
+        with open(path, "w") as f:
             f.writelines(lines)
