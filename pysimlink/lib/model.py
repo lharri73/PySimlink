@@ -11,18 +11,18 @@ class Model:
     the model once built. You can have multiple instances of the same
     model in one python runtime (although multithreaded *compiling* is not tested).
     """
+
     model_paths: "anno.ModelPaths"
     compiler: "anno.Compiler"
 
-
-    def __init__(   # pylint: disable=R0913
+    def __init__(  # pylint: disable=R0913
         self,
         model_name: str,
         path_to_model: str,
-        compile_type:str="grt",
-        suffix:str="rtw",
-        tmp_dir:str=None,
-        force_rebuild:bool=False,
+        compile_type: str = "grt",
+        suffix: str = "rtw",
+        tmp_dir: str = None,
+        force_rebuild: bool = False,
     ):
 
         self.model_paths = ModelPaths(path_to_model, model_name, compile_type, suffix, tmp_dir)
@@ -35,7 +35,7 @@ class Model:
 
         sys.path.append(os.path.join(self.model_paths.tmp_dir, "build"))
 
-        import model_interface_c # pylint: disable=C0415,E0401
+        import model_interface_c  # pylint: disable=C0415,E0401
 
         self._model = model_interface_c.Model()
 
@@ -55,7 +55,7 @@ class Model:
         """
         self._model.reset()
 
-    def step(self, iterations: int=1):
+    def step(self, iterations: int = 1):
         """
         Step the simulink model
 

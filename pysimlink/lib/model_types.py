@@ -7,8 +7,10 @@ class ModelParam:
     """
     Represents a single _model parameter
     """
+
     model_param: str
     data_type: str
+
 
 @dataclass(frozen=True)
 class BlockParam:
@@ -17,9 +19,11 @@ class BlockParam:
     If a block has n parameters, there will be n BlockParam instances.
         Each with the same `block_name`.
     """
+
     block_name: str
     block_param: str
     data_type: str
+
 
 @dataclass(frozen=True)
 class Signal:
@@ -30,15 +34,18 @@ class Signal:
     signal_name: name of the signal (empty if not named)
     data_type: c_type data type
     """
+
     block_name: str
     signal_name: str
     data_type: str
+
 
 @dataclass(frozen=True)
 class ModelInfo:
     """
     Object returned from get_params method.
     """
+
     model_name: str
     model_params: list[ModelParam]
     block_params: list[BlockParam]

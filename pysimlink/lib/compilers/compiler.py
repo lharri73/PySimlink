@@ -69,7 +69,7 @@ class Compiler:
 
         defines = os.path.join(self.model_paths.root_model_path, "defines.txt")
         if os.path.exists(defines):
-            with open(defines, "r", encoding='utf-8') as f:
+            with open(defines, "r", encoding="utf-8") as f:
                 self.defines = [line.strip() for line in f.readlines()]
         else:
             self.defines = infer_defines(self.model_paths)

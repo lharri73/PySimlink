@@ -4,6 +4,7 @@ class DepGraph:
     contains a set with all of the dependent models (only needed when _model
     references are present)
     """
+
     def __init__(self):
         self.dep_map = {}
 
