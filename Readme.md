@@ -12,3 +12,7 @@ All without requiring a MATLAB runtime! All you need is Simulink Coder, and the 
 a grt target.
 
 Docs: https://lharri73.github.io/PySimlink/
+
+TODO:
+
+- rsim target

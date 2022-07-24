@@ -9,7 +9,9 @@ Python + Simulink = PySimlink!
    :maxdepth: 2
    :hidden:
 
+   src/quickstart
    src/autodoc
+   src/errors
    src/license
 
 .. note::
