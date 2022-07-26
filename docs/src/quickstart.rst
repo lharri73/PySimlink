@@ -11,7 +11,7 @@ you're feeling bold, you can copy-paste a script to do it for you!
 
 Here's said script::
 
-    model = 'HevP4ReferenceApplication';        % <---- The name of your model...change this
+    model = 'HevP4ReferenceApplication';        % <-- The name of your model...change this
     configs = getActiveConfigSet(model);
     mustProp=false;
     if isa(configs, 'Simulink.ConfigSetRef')
