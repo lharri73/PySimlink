@@ -22,22 +22,13 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.8
-      # https://docs.github.com/en/actions/guides/building-and-testing-python#caching-dependencies
-      # ^-- How to set up caching for pip on Ubuntu
-      - name: Cache pip
-        uses: actions/cache@v2
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-            ${{ runner.os }}-
       # https://docs.github.com/en/actions/guides/building-and-testing-python#installing-dependencies
       # ^-- This gives info on installing dependencies with pip
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install sphinx_rtd_theme numpy
+          pip install -e .
       - name: Debugging information
         run: |
           echo "github.ref:" ${{github.ref}}
