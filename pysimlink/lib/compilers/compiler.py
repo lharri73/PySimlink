@@ -100,6 +100,9 @@ class Compiler:
         else:
             self.defines = infer_defines(self.model_paths)
 
+        if self.model_paths.classic_main:
+            self.defines.append('CLASSIC_INTERFACE')
+
     def _build(self):
         """
         Cals cmake to configure and build the extension. Writes errors to the current working directory
@@ -171,7 +174,7 @@ class Compiler:
         with open(path, "r", encoding="utf-8") as f:
             lines = f.readlines()
 
-        for i in enumerate(lines):
+        for i, line in enumerate(lines):
             for key, val in replacements.items():
                 lines[i] = lines[i].replace(str(key), str(val))
 

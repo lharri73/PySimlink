@@ -50,6 +50,7 @@ namespace PYSIMLINK{
         protected:
             bool initialized;
             void discover_mmis(const rtwCAPI_ModelMappingInfo *mmi);
+            void terminate();
 
             rtwCAPI_ModelMappingInfo *root_mmi;
             boolean_T OverrunFlags[1];    /* ISR overrun flags */

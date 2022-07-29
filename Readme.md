@@ -8,8 +8,11 @@ With this package, you can:
 - Run the model in "accelerator mode"
 - Send and receive data in the form of numpy arrays
 
-All without requiring a MATLAB runtime! All you need is Simulink Coder, and the ability to export your model to
-a grt target.
+All without requiring a MATLAB runtime on the target machine! 
+
+To get started, you need is Simulink Coder, and the ability to export your model to a grt 
+target. There are some limitations, namely that your model *must* use a fixed step solver 
+(a requirement of the grt target). 
 
 Docs: https://lharri73.github.io/PySimlink/
 

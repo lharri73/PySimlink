@@ -4,6 +4,7 @@
 using namespace PYSIMLINK;
 
 namespace py = pybind11;
+#ifndef CLASSIC_INTERFACE
 
 Model::Model(){
     initialized = false;
@@ -11,11 +12,9 @@ Model::Model(){
     memset(eventFlags, 0, sizeof(boolean_T));
 }
 
-Model::~Model(){
-    if(initialized){
-        rt_StopDataLogging("/dev/null",rtmGetRTWLogInfo(RT_MDL));
-        MODEL_TERMINATE();
-    }
+void Model::terminate(){
+    rt_StopDataLogging("/dev/null",rtmGetRTWLogInfo(RT_MDL));
+    MODEL_TERMINATE();
 }
 
 void Model::reset(){
@@ -27,8 +26,7 @@ void Model::reset(){
 
     // clear loggind data
     if(initialized){
-        rt_StopDataLogging("/dev/null",rtmGetRTWLogInfo(RT_MDL));
-        MODEL_TERMINATE();
+        terminate();
     }
     MODEL_INITIALIZE();
 
@@ -97,3 +95,5 @@ double Model::tFinal() const{
 void Model::set_tFinal(float tFinal){
     rtmSetTFinal(RT_MDL, tFinal);
 }
+
+#endif

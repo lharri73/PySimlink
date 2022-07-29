@@ -19,19 +19,21 @@ Here's said script::
         mustProp=true;
     end
 
-    set_param(configs, 'SystemTargetFile', 'rsim.tlc');
+    set_param(configs, 'ConcurrentTasks', 'off');
+    set_param(configs, 'EnableMultiTasking', 'off');
+    set_param(configs, 'SystemTargetFile', 'grt.tlc');
     set_param(configs, 'GenerateMakefile', 'off');
     set_param(configs, 'GenCodeOnly', 'on');
+    set_param(configs, 'PackageGeneratedCodeAndArtifacts', 'on');
     set_param(configs, 'RTWCAPIParams', 'on');
     set_param(configs, 'RTWCAPISignals', 'on');
+    set_param(configs, 'RTWCAPIRootIO', 'on');
+    set_param(configs, 'RTWCAPIStates', 'on');
 
     if mustProp
         Simulink.BlockDiagram.propagateConfigSet(model);
     end
     slbuild(model);
-    buildFolder = RTW.getBuildDir(model).BuildDirectory;
-
-    packNGo(buildFolder, 'packType', 'hierarchical', 'nestedZipFiles', false);
 
 What's going on here? 
 
@@ -41,18 +43,17 @@ build (knock on wood)...
 
 Here is what it's changing, in case you want to do it for yourself or are using
 multiple config sets:
-
-* Change the "System target file" under "Code Generation" to `rsim.tlc`
+* On the solver page, uncheck the `Treat each discrete rate as a separate task` box
+* On the same page, uncheck the `Allow tasks to execute concurrently on the target` box
+* Change the "System target file" under "Code Generation" to `grt.tlc`
 * On the same page, enable the `Generate code only` checkbox
+* On the same page, enable the `Package code and artifacts` checkbox
 * On the same page, disable the `Generate makefile` checkbox
-* Under "Code Generation" -> "Interface", check the `signals` and `parameters`
+* Under "Code Generation" -> "Interface", check the `signals`, `parameters`, `states`, and `root-level I/O`
   boxes
 * If it's a configuration reference, propagate these changes
 * Build the model (this generates the code)
-* Pack all code required to compile the model into a handy little zip file
-    * This step is packing code in the `...rsim_rtw` folder AND from your MATLAB
-      install folder. It's just easier to run the `packNGo` command.
+
 
 Step 2: Let PySimlink Handle The Rest
 -------------------------------------
-You 
