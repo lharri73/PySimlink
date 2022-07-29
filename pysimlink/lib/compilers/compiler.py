@@ -101,7 +101,7 @@ class Compiler:
             self.defines = infer_defines(self.model_paths)
 
         if self.model_paths.classic_main:
-            self.defines.append('CLASSIC_INTERFACE')
+            self.defines.append("CLASSIC_INTERFACE")
 
     def _build(self):
         """

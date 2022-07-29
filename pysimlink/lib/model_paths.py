@@ -24,7 +24,7 @@ class ModelPaths:
     has_references: bool  ## If this model contains references
     models_dir: str  ## directory containing all simulink code related to the models
     slprj_dir: Union[str, None]  ## Directory will all child models (contains compile_type)
-    classic_main: bool ## True if using the classic call interface. False for rt_main
+    classic_main: bool  ## True if using the classic call interface. False for rt_main
 
     def __init__(
         self,
@@ -52,14 +52,14 @@ class ModelPaths:
             )
         self.suffix = suffix
         zip_test = os.path.splitext(root_dir)
-        if zip_test[-1] == '.zip':
-            with zipfile.ZipFile(root_dir, 'r') as f:
+        if zip_test[-1] == ".zip":
+            with zipfile.ZipFile(root_dir, "r") as f:
                 if tmp_dir is None:
                     ext_dir = os.path.join(
                         os.path.dirname(sys.argv[0]),
                         "__pycache__",
                         "extract",
-                        os.path.basename(zip_test[0])
+                        os.path.basename(zip_test[0]),
                     )
                 f.extractall(ext_dir)
             self.root_dir = ext_dir
