@@ -60,7 +60,7 @@ class Compiler:
         simulink_deps = glob.glob(self.model_paths.simulink_native + "/**/*.c", recursive=True)
         rt_main = None
         for file in simulink_deps:
-            if os.path.basename(file) == "rt_main.c":
+            if os.path.basename(file) in ["rt_main.c", "classic_main.c"]:
                 rt_main = file
                 break
         if rt_main is not None:
@@ -99,9 +99,6 @@ class Compiler:
                 self.defines = [line.strip() for line in f.readlines()]
         else:
             self.defines = infer_defines(self.model_paths)
-
-        if self.model_paths.classic_main:
-            self.defines.append("CLASSIC_INTERFACE")
 
     def _build(self):
         """

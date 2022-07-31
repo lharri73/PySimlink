@@ -1,10 +1,21 @@
 #include "model_interface.hpp"
 #include <cstdio>
 
+#ifdef _WIN32
+#define NULL_FILE "NUL"
+#else
+#define NULL_FILE "/dev/null"
+#endif
+
 using namespace PYSIMLINK;
 
 namespace py = pybind11;
-#ifndef CLASSIC_INTERFACE
+
+Model::~Model(){
+    if(initialized){
+        terminate();
+    }
+}
 
 Model::Model(){
     initialized = false;
@@ -13,7 +24,7 @@ Model::Model(){
 }
 
 void Model::terminate(){
-    rt_StopDataLogging("/dev/null",rtmGetRTWLogInfo(RT_MDL));
+    rt_StopDataLogging(NULL_FILE,rtmGetRTWLogInfo(RT_MDL));
     MODEL_TERMINATE();
 }
 
@@ -95,5 +106,3 @@ double Model::tFinal() const{
 void Model::set_tFinal(float tFinal){
     rtmSetTFinal(RT_MDL, tFinal);
 }
-
-#endif

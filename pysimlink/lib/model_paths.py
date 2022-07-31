@@ -24,7 +24,6 @@ class ModelPaths:
     has_references: bool  ## If this model contains references
     models_dir: str  ## directory containing all simulink code related to the models
     slprj_dir: Union[str, None]  ## Directory will all child models (contains compile_type)
-    classic_main: bool  ## True if using the classic call interface. False for rt_main
 
     def __init__(
         self,
@@ -131,14 +130,8 @@ class ModelPaths:
         regex = re.compile(
             f"extern void {self.root_model_name}_step\(void\);"  # pylint: disable=W1401
         )
-        classic_regex = re.compile(
-            f"extern void {self.root_model_name}_update\(void\);"  # pylint: disable=W1401
-        )
         for line in lines:
             if re.search(regex, line):
-                break
-            if re.search(classic_regex, line):
-                self.classic_main = True
                 break
         else:
             raise RuntimeError(

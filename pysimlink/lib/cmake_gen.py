@@ -101,6 +101,7 @@ set_target_properties(
             str: pybind11_add_module cmake directive
         """
         sources = glob.glob(sources + "/*.cpp")
+
         sources = [os.path.abspath(source).translate(self.space_trans) for source in sources]
         source_paths = "\n        ".join(sources)
         return f"""
@@ -158,8 +159,8 @@ target_link_libraries(
             str: set directives for all targets
         """
         return """
-set(CMAKE_CXX_FLAGS "${{CMAKE_CXX_FLAGS}} -fPIC")
-set(CMAKE_C_FLAGS "${{CMAKE_C_FLAGS}} -fPIC")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
 """
 
     def add_compile_defs(self, defines: list[str]):

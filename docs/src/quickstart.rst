@@ -29,6 +29,8 @@ Here's said script::
     set_param(configs, 'RTWCAPISignals', 'on');
     set_param(configs, 'RTWCAPIRootIO', 'on');
     set_param(configs, 'RTWCAPIStates', 'on');
+    set_param(configs, 'GRTInterface', 'off');
+    set_param(configs, 'CombineOutputUpdateFcns', 'on');
 
     if mustProp
         Simulink.BlockDiagram.propagateConfigSet(model);
@@ -51,6 +53,8 @@ multiple config sets:
 * On the same page, disable the `Generate makefile` checkbox
 * Under "Code Generation" -> "Interface", check the `signals`, `parameters`, `states`, and `root-level I/O`
   boxes
+* On the same page, under the "Advanced parameters" section, uncheck the `Classic call interface`
+* On the same page, under the "Advanced parameters" section, check the `Single output/update function`
 * If it's a configuration reference, propagate these changes
 * Build the model (this generates the code)
 
