@@ -15,13 +15,13 @@ class Compiler:
     Base class to discover sources and compile a model
     """
 
-    simulink_deps: set[str]  ## All header files created in the simulink common directory
-    simulink_deps_path: list[str]  ## Path to the header files created in the simulink common dir
-    simulink_deps_src: list[str]  ## Path to all source files created in the simulink common dir
-    model_paths: "anno.ModelPaths"  ## Instance of the ModelPaths containing information about the directory structure
-    defines: list[str]  ## All defines that should be set during _model compilation
-    custom_includes: str  ## Include files directory defined by this python module
-    custom_sources: str  ## Source files directory defined by this python module
+    simulink_deps: "set[str]"        ## All header files created in the simulink common directory
+    simulink_deps_path: "list[str]"  ## Path to the header files created in the simulink common dir
+    simulink_deps_src: "list[str]"   ## Path to all source files created in the simulink common dir
+    model_paths: "anno.ModelPaths"   ## Instance of the ModelPaths containing information about the directory structure
+    defines: "list[str]"             ## All defines that should be set during _model compilation
+    custom_includes: str             ## Include files directory defined by this python module
+    custom_sources: str              ## Source files directory defined by this python module
 
     def __init__(self, model_paths: "anno.ModelPaths"):
         self.model_paths = model_paths
@@ -159,7 +159,7 @@ class Compiler:
             )
 
     @staticmethod
-    def _replace_macros(path: str, replacements: dict[str, str]):
+    def _replace_macros(path: str, replacements: "dict[str, str]"):
         """
         Replaces strings in a file
 

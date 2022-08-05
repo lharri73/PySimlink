@@ -47,6 +47,6 @@ class ModelInfo:
     """
 
     model_name: str
-    model_params: list[ModelParam]
-    block_params: list[BlockParam]
-    signals: list[Signal]
+    model_params: "list[ModelParam]"
+    block_params: "list[BlockParam]"
+    signals: "list[Signal]"

@@ -31,7 +31,7 @@ class ModelPaths:
         model_name: str,
         compile_type: str = "grt",
         suffix: str = "rtw",
-        tmp_dir: Union[str, None] = None,
+        tmp_dir: "Union[str, None]" = None,
     ):
         """
         Args:

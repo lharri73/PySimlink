@@ -30,7 +30,7 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(pybind11 PATHS {pybind11.get_cmake_dir()})"""
 
-    def set_includes(self, includes: list[str]):
+    def set_includes(self, includes: "list[str]"):
         """
         Setup the includes directories for the model, custom mixins, and simulink files
 
@@ -52,7 +52,7 @@ include_directories(
 )
 """
 
-    def add_library(self, lib_name: str, sources: list[str]):
+    def add_library(self, lib_name: str, sources: "list[str]"):
         """
         Add a single library to be compiled
 
@@ -90,7 +90,7 @@ set_target_properties(
 )        
 """
 
-    def add_custom_libs(self, sources: list[str]):
+    def add_custom_libs(self, sources: "list[str]"):
         """
         Add the mixins library (created with pybind11)
 
@@ -111,7 +111,7 @@ pybind11_add_module(
 )        
 """
 
-    def add_link_libs(self, dep_map: dict[str, list[str]]):
+    def add_link_libs(self, dep_map: "dict[str, list[str]]"):
         """
         Link libraries according to the dependency map
 
@@ -134,7 +134,7 @@ target_link_libraries(
 """
         return ret
 
-    def add_private_link(self, root_model: str):
+    def add_private_link(self, root_model: "str"):
         """
         Link the custom mixins to the root model
 
@@ -163,7 +163,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
 """
 
-    def add_compile_defs(self, defines: list[str]):
+    def add_compile_defs(self, defines: "list[str]"):
         """
         Set compile definitions from defines.txt or inference
 

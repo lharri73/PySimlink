@@ -8,7 +8,7 @@ class DepGraph:
     def __init__(self):
         self.dep_map = {}
 
-    def add_dependency(self, lib: str, dependents: list[str]):
+    def add_dependency(self, lib: str, dependents: "list[str]"):
         """Add a dependency to the graph
 
         Args:
