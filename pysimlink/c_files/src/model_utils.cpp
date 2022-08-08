@@ -23,33 +23,6 @@ uint_T PYSIMLINK::get_num_signals(const rtwCAPI_ModelMappingInfo *mmi){
     return rtwCAPI_GetNumSignals(mmi);
 }
 
-void PYSIMLINK::print_model_params(const rtwCAPI_ModelMappingInfo *mmi){
-    uint_T numParams = get_num_model_params(mmi);
-    const rtwCAPI_ModelParameters* capiModelParams = rtwCAPI_GetModelParameters(mmi);
-    printf("model params for %s\n", mmi->InstanceMap.path);
-    for (size_t i=0; i < numParams; i++) {
-        printf("\tname: %s\n", capiModelParams[i].varName);
-    }
-}
-
-void PYSIMLINK::print_block_params(const rtwCAPI_ModelMappingInfo *mmi){
-    const rtwCAPI_BlockParameters *capiBlockParams = rtwCAPI_GetBlockParameters(mmi);
-    uint_T nParams = get_num_block_params(mmi);
-    printf("Block params for %s\n", mmi->InstanceMap.path);
-    for (size_t i=0; i < nParams; i++) {
-        printf("\tBlock path: %-128s\tparam name: %s\n", capiBlockParams[i].blockPath, capiBlockParams[i].paramName);
-    }
-}
-
-void PYSIMLINK::print_signals(const rtwCAPI_ModelMappingInfo *mmi){
-    uint_T numSigs = get_num_signals(mmi);
-    const rtwCAPI_Signals *capiSignals = rtwCAPI_GetSignals(mmi);
-    printf("Signals for %s\n", mmi->InstanceMap.path);
-    for(size_t i = 0; i < numSigs; i++){
-        printf("\tBlock path: %-128s\tsignal_name: %s\n", capiSignals[i].blockPath, capiSignals[i].signalName);
-    }
-}
-
 double PYSIMLINK::get_model_param(const rtwCAPI_ModelMappingInfo *mmi, const char* param, std::unordered_map<map_key_1s,size_t,pair_hash,Compare> &param_map){
     if(param == nullptr)
         throw std::runtime_error("passed nullptr to get_model_param as search param");
@@ -199,17 +172,17 @@ py::buffer_info PYSIMLINK::get_signal_val(const rtwCAPI_ModelMappingInfo *mmi, s
         std::stringstream err("");
         err << "get_signal_val: Parameter (" << block << ',' << (sigName == nullptr ? "" : sigName) << ") does not exist in provided model";
         throw std::runtime_error(err.str().c_str());
-
-        return {};   // makes compiler happy
     }
 
 
-//    validate_scalar(mmi, capiSignals[param_index], "get_signal_val", block);
-    rtwCAPI_DataTypeMap dt = mmi->staticMap->Maps.dataTypeMap[capiSignals[param_index].dataTypeIndex];
-    rtwCAPI_DimensionMap sigDim = mmi->staticMap->Maps.dimensionMap[capiSignals[param_index].dimIndex];
-    void* addr = mmi->InstanceMap.dataAddrMap[capiSignals[param_index].addrMapIndex];
+    rtwCAPI_DataTypeMap dt = rtwCAPI_GetDataTypeMap(mmi)[rtwCAPI_GetSignalDataTypeIdx(capiSignals, param_index)];
+    rtwCAPI_DimensionMap sigDim = rtwCAPI_GetDimensionMap(mmi)[rtwCAPI_GetSignalDimensionIdx(capiSignals, param_index)];
+    void* addr = rtwCAPI_GetDataAddressMap(mmi)[rtwCAPI_GetSignalAddrIdx(capiSignals, param_index)];
+    return PYSIMLINK::format_pybuffer(mmi, dt, sigDim, addr);
+}
 
-//    double ret;
+py::buffer_info
+PYSIMLINK::format_pybuffer(const rtwCAPI_ModelMappingInfo *mmi, rtwCAPI_DataTypeMap dt, rtwCAPI_DimensionMap sigDim, void *addr) {
     py::buffer_info ret;
     ret.ptr = addr;
     ret.itemsize = dt.dataSize;
@@ -234,13 +207,12 @@ py::buffer_info PYSIMLINK::get_signal_val(const rtwCAPI_ModelMappingInfo *mmi, s
         ret.format = py::format_descriptor<unsigned long>::format();
     }else{
         std::stringstream err("");
-        err << "get_signal_val: Parameter (" << block << ',' << sigName << ") has invalid cDataName(" << dt.cDataName;
-        err << ". Type unknown";
+        err << "Parameter ( has invalid cDataName(" << dt.cDataName << ") (internal error)";
         throw std::runtime_error(err.str().c_str());
     }
     ret.ndim = sigDim.numDims;
     for(size_t i = 0; i < ret.ndim; i++){
-        ssize_t dim_size = mmi->staticMap->Maps.dimensionArray[sigDim.dimArrayIndex+i];
+        ssize_t dim_size = rtwCAPI_GetDimensionArray(mmi)[sigDim.dimArrayIndex+i];
         ret.shape.push_back(dim_size);
         switch(sigDim.orientation){
             case rtwCAPI_Orientation::rtwCAPI_SCALAR:
@@ -264,10 +236,7 @@ py::buffer_info PYSIMLINK::get_signal_val(const rtwCAPI_ModelMappingInfo *mmi, s
                 }
                 break;
             default:
-                std::stringstream err("");
-                err << "get_signal_val: Parameter (" << block << ',' << sigName << ") has invalid orientation";
-                throw std::runtime_error(err.str().c_str());
-                break;
+                throw std::runtime_error("Invalid/Unknown orientation for parameter (internal error)");
         }
     }
     ret.readonly = true;
@@ -315,15 +284,6 @@ double PYSIMLINK::set_block_param(rtwCAPI_ModelMappingInfo *mmi, const char *blo
     throw std::runtime_error(err.str().c_str());
 
     return 0.0;   // makes compiler happy
-}
-
-void PYSIMLINK::print_params_recursive(const rtwCAPI_ModelMappingInfo *child_mmi){
-    print_model_params(child_mmi);
-    print_block_params(child_mmi);
-    print_signals(child_mmi);
-    for(size_t i = 0; i < child_mmi->InstanceMap.childMMIArrayLen; i++){
-        print_params_recursive(child_mmi->InstanceMap.childMMIArray[i]);
-    }
 }
 
 std::vector<struct PYSIMLINK::ModelParam> PYSIMLINK::debug_model_params(const rtwCAPI_ModelMappingInfo *mmi){
