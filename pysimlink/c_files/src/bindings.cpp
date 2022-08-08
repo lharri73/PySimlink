@@ -12,6 +12,7 @@ PYBIND11_MODULE(model_interface_c, m) {
             .def("tFinal", &PYSIMLINK::Model::tFinal)
             .def("set_tFinal", &PYSIMLINK::Model::set_tFinal)
             .def("step", &PYSIMLINK::Model::step)
+            .def("get_signal", &PYSIMLINK::Model::get_sig)
             .def("get_params", &PYSIMLINK::Model::get_params);
 
     py::class_<PYSIMLINK::BlockParam>(m, "BlockParam")

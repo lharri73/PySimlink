@@ -8,6 +8,8 @@ def main(args):
     model = Model(args.model_name, args.model_path, force_rebuild=True)
 
     model.reset()
+    print_all_params(model)
+    model.get_signal("something")
 
 
 if __name__ == "__main__":

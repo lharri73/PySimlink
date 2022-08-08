@@ -106,3 +106,11 @@ double Model::tFinal() const{
 void Model::set_tFinal(float tFinal){
     rtmSetTFinal(RT_MDL, tFinal);
 }
+
+py::buffer Model::get_sig(std::string path) const{
+
+    printf("%s\n", path.c_str());
+    for(auto i = mmi_map.cbegin(); i != mmi_map.cend(); i++){
+        printf("%s\n", i->first);
+    }
+}

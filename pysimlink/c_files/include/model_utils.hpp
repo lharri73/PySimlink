@@ -13,9 +13,14 @@ extern "C"{
 #include <stdexcept>
 #include <unordered_map>
 #include <vector>
+#include "pybind11/pybind11.h"
+#include "pybind11/numpy.h"
+#include "pybind11/stl.h"
 
 #include "param_structs.hpp"
 #include "safe_utils.hpp"
+
+namespace py = pybind11;
 
 namespace PYSIMLINK{
 
@@ -49,6 +54,7 @@ namespace PYSIMLINK{
         bool operator()(const map_key_1s &lhs, const map_key_1s &rhs) const;
     };
 
+
     uint_T get_num_model_params(const rtwCAPI_ModelMappingInfo *mmi);
     double get_model_param(const rtwCAPI_ModelMappingInfo *mmi, const char *param, std::unordered_map<map_key_1s,size_t,pair_hash,Compare> &model_params);
 
@@ -60,7 +66,7 @@ namespace PYSIMLINK{
                          double value);
 
     uint_T get_num_signals(const rtwCAPI_ModelMappingInfo *mmi);
-    double get_signal_val(const rtwCAPI_ModelMappingInfo *mmi, std::unordered_map<map_key_2s,size_t,pair_hash,Compare> &sig_map, const char* block=nullptr, const char* signNam=nullptr);
+    py::buffer_info get_signal_val(const rtwCAPI_ModelMappingInfo *mmi, std::unordered_map<map_key_2s,size_t,pair_hash,Compare> &sig_map, const char* block=nullptr, const char* signNam=nullptr);
 
     void print_model_params(const rtwCAPI_ModelMappingInfo *mmi);
     void print_block_params(const rtwCAPI_ModelMappingInfo *mmi);

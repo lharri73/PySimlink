@@ -103,3 +103,15 @@ class Model:
         if tFinal <= 0:
             raise ValueError("new tFinal must be > 0")
         self._model.set_tFinal(tFinal)
+
+    def get_signal(self, sig_path) -> "np.ndarray":
+        """
+        Get the value of a signal
+
+        Args:
+            sig_path: Path to the originating block
+
+        Returns:
+            Value of the signal at the current timestep
+        """
+        return self._model.get_signal(sig_path)

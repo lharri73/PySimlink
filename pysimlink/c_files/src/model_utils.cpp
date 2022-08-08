@@ -159,7 +159,7 @@ double PYSIMLINK::get_block_param(const rtwCAPI_ModelMappingInfo *mmi, const cha
     return ret;
 }
 
-double PYSIMLINK::get_signal_val(const rtwCAPI_ModelMappingInfo *mmi, std::unordered_map<map_key_2s,size_t,pair_hash,Compare> &sig_map, const char* block, const char* sigName){
+py::buffer_info PYSIMLINK::get_signal_val(const rtwCAPI_ModelMappingInfo *mmi, std::unordered_map<map_key_2s,size_t,pair_hash,Compare> &sig_map, const char* block, const char* sigName){
     assert(mmi != nullptr);
     std::unordered_map<map_key_2s,size_t,pair_hash,Compare>::const_iterator it;
 
@@ -200,29 +200,77 @@ double PYSIMLINK::get_signal_val(const rtwCAPI_ModelMappingInfo *mmi, std::unord
         err << "get_signal_val: Parameter (" << block << ',' << (sigName == nullptr ? "" : sigName) << ") does not exist in mmi";
         throw std::runtime_error(err.str().c_str());
 
-        return 0;   // makes compiler happy
+        return {};   // makes compiler happy
     }
 
 
-    validate_scalar(mmi, capiSignals[param_index], "get_signal_val", block);
+//    validate_scalar(mmi, capiSignals[param_index], "get_signal_val", block);
     rtwCAPI_DataTypeMap dt = mmi->staticMap->Maps.dataTypeMap[capiSignals[param_index].dataTypeIndex];
+    rtwCAPI_DimensionMap sigDim = mmi->staticMap->Maps.dimensionMap[capiSignals[param_index].dimIndex];
     void* addr = mmi->InstanceMap.dataAddrMap[capiSignals[param_index].addrMapIndex];
 
-    double ret;
+//    double ret;
+    py::buffer_info ret;
+    ret.ptr = addr;
+    ret.itemsize = dt.dataSize;
+
     if(strcmp(dt.cDataName, "int") == 0){
-        int tmp = *(int*)addr;
-        ret = tmp;
+        ret.format = py::format_descriptor<int>::format();
     }else if(strcmp(dt.cDataName, "float") == 0){
-        float tmp = *(float*)addr;
-        ret = tmp;
-    }else if(strcmp(dt.cDataName, "double") == 0){
-        ret = *(double*)addr;
+        ret.format = py::format_descriptor<float>::format();
+    }else if(strcmp(dt.cDataName, "double") == 0) {
+        ret.format = py::format_descriptor<double>::format();
+    }else if(strcmp(dt.cDataName, "char") == 0) {
+        ret.format = py::format_descriptor<char>::format();
+    }else if(strcmp(dt.cDataName, "short") == 0) {
+        ret.format = py::format_descriptor<short>::format();
+    }else if(strcmp(dt.cDataName, "unsigned short") == 0) {
+        ret.format = py::format_descriptor<unsigned short>::format();
+    }else if(strcmp(dt.cDataName, "long") == 0) {
+        ret.format = py::format_descriptor<long>::format();
+    }else if(strcmp(dt.cDataName, "unsigned int") == 0) {
+        ret.format = py::format_descriptor<unsigned int>::format();
+    }else if(strcmp(dt.cDataName, "unsigned long") == 0) {
+        ret.format = py::format_descriptor<unsigned long>::format();
     }else{
         std::stringstream err("");
         err << "get_signal_val: Parameter (" << block << ',' << sigName << ") has invalid cDataName(" << dt.cDataName;
-        err << "). Can only handle [int,float,double]";
+        err << ". Type unknown";
         throw std::runtime_error(err.str().c_str());
     }
+    ret.ndim = sigDim.numDims;
+    for(size_t i = 0; i < ret.ndim; i++){
+        ssize_t dim_size = mmi->staticMap->Maps.dimensionArray[sigDim.dimArrayIndex+i];
+        ret.shape.push_back(dim_size);
+        switch(sigDim.orientation){
+            case rtwCAPI_Orientation::rtwCAPI_SCALAR:
+            case rtwCAPI_Orientation::rtwCAPI_VECTOR:
+                ret.strides.push_back(dt.dataSize);
+                break;
+            case rtwCAPI_Orientation::rtwCAPI_MATRIX_COL_MAJOR:
+            case rtwCAPI_Orientation::rtwCAPI_MATRIX_COL_MAJOR_ND:
+                if(i == 1) {
+                    ret.strides.push_back(dt.dataSize * dim_size);
+                }else{
+                    ret.strides.push_back(dt.dataSize);
+                }
+                break;
+            case rtwCAPI_Orientation::rtwCAPI_MATRIX_ROW_MAJOR:
+            case rtwCAPI_Orientation::rtwCAPI_MATRIX_ROW_MAJOR_ND:
+                if(i == 0) {
+                    ret.strides.push_back(dt.dataSize * dim_size);
+                }else{
+                    ret.strides.push_back(dt.dataSize);
+                }
+                break;
+            default:
+                std::stringstream err("");
+                err << "get_signal_val: Parameter (" << block << ',' << sigName << ") has invalid orientation";
+                throw std::runtime_error(err.str().c_str());
+                break;
+        }
+    }
+    ret.readonly = true;
     return ret;
 }
 

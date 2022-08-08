@@ -42,6 +42,7 @@ namespace PYSIMLINK{
             void reset();
 
             std::vector<struct ModelInfo> get_params() const;
+            py::buffer get_sig(std::string path) const;
 
             double step_size() const;
             double tFinal() const;
