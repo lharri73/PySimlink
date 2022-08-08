@@ -197,7 +197,7 @@ py::buffer_info PYSIMLINK::get_signal_val(const rtwCAPI_ModelMappingInfo *mmi, s
 
     if(param_index == -1){
         std::stringstream err("");
-        err << "get_signal_val: Parameter (" << block << ',' << (sigName == nullptr ? "" : sigName) << ") does not exist in mmi";
+        err << "get_signal_val: Parameter (" << block << ',' << (sigName == nullptr ? "" : sigName) << ") does not exist in provided model";
         throw std::runtime_error(err.str().c_str());
 
         return {};   // makes compiler happy

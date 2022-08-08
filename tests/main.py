@@ -9,7 +9,10 @@ def main(args):
 
     model.reset()
     print_all_params(model)
-    model.get_signal("something")
+    for i in range(10):
+        a = model.get_signal("HevP4ReferenceApplication/Passenger Car/Electric Plant/Battery", model_name="HevP4ReferenceApplication")
+        model.step()
+        print("here", a)
 
 
 if __name__ == "__main__":

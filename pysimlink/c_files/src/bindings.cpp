@@ -6,12 +6,13 @@ namespace py = pybind11;
 
 PYBIND11_MODULE(model_interface_c, m) {
     py::class_<PYSIMLINK::Model>(m, "Model")
-            .def(py::init<>())
+            .def(py::init<std::string>())
             .def("reset", &PYSIMLINK::Model::reset)
             .def("step_size", &PYSIMLINK::Model::step_size)
             .def("tFinal", &PYSIMLINK::Model::tFinal)
             .def("set_tFinal", &PYSIMLINK::Model::set_tFinal)
             .def("step", &PYSIMLINK::Model::step)
+            .def("get_models", &PYSIMLINK::Model::get_models)
             .def("get_signal", &PYSIMLINK::Model::get_sig)
             .def("get_params", &PYSIMLINK::Model::get_params);
 

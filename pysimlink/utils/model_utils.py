@@ -26,8 +26,8 @@ def print_all_params(model: "anno.Model"):
     """
     params = model.get_params()
     for model_info in params:
-        print(f"Parameters for _model at '{model_info.model_name}'")
-        print("  _model parameters:")
+        print(f"Parameters for model at '{model_info.model_name}'")
+        print("  model parameters:")
         for param in model_info.model_params:
             print(f"    param: '{param.model_param}' | data_type: '{param.data_type}'")
         print("  block parameters:")

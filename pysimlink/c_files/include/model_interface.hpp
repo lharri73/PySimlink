@@ -35,28 +35,30 @@ namespace py = pybind11;
 namespace PYSIMLINK{
     class Model{
         public:
-            Model();
+            Model(std::string name);
             ~Model();
 
             void step(int num_steps);
             void reset();
 
             std::vector<struct ModelInfo> get_params() const;
-            py::buffer get_sig(std::string path) const;
+            py::array get_sig(const std::string& model, const std::string& path, const std::string& sig_name);
 
-            double step_size() const;
-            double tFinal() const;
-            void set_tFinal(float);
+            static double step_size();
+            static double tFinal();
+            static void set_tFinal(float);
+            std::vector<std::string> get_models() const;
 
         protected:
             bool initialized;
             void discover_mmis(const rtwCAPI_ModelMappingInfo *mmi);
-            void terminate();
+            static void terminate();
+            std::string mdl_name;
 
             rtwCAPI_ModelMappingInfo *root_mmi;
             boolean_T OverrunFlags[1];    /* ISR overrun flags */
             boolean_T eventFlags[1];      /* necessary for overlapping preemption */
-            std::map<const char*,const rtwCAPI_ModelMappingInfo *> mmi_map;
+            std::map<std::string,const rtwCAPI_ModelMappingInfo *> mmi_map;
 
             std::unordered_map<PYSIMLINK::map_key_1s,size_t, PYSIMLINK::pair_hash,PYSIMLINK::Compare> model_param;
             std::unordered_map<PYSIMLINK::map_key_2s,size_t, PYSIMLINK::pair_hash,PYSIMLINK::Compare> sig_map;

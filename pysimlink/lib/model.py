@@ -37,7 +37,7 @@ class Model:
 
         import model_interface_c  # pylint: disable=C0415,E0401
 
-        self._model = model_interface_c.Model()
+        self._model = model_interface_c.Model(self.model_paths.root_model_name)
 
     def get_params(self) -> "list[anno.ModelInfo]":
         """
@@ -104,14 +104,26 @@ class Model:
             raise ValueError("new tFinal must be > 0")
         self._model.set_tFinal(tFinal)
 
-    def get_signal(self, sig_path) -> "np.ndarray":
+    def get_signal(self, block_path, model_name=None, sig_name="") -> "np.ndarray":
         """
         Get the value of a signal
 
         Args:
-            sig_path: Path to the originating block
+            block_path: Path to the originating block
+            sig_name: Name of the signal
+            model_name: Name of the model provided by "print_all_params". None if there are no model references.
 
         Returns:
             Value of the signal at the current timestep
         """
-        return self._model.get_signal(sig_path)
+        model_name = self.model_paths.root_model_name if model_name is None else model_name
+        return self._model.get_signal(model_name, block_path, sig_name)
+
+    def get_models(self) -> "list[str]":
+        """
+        Gets a list of all reference models (and the root model) in this model.
+
+        Returns:
+            list of paths, one for each model
+        """
+        return self._model.get_models()

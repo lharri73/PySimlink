@@ -10,8 +10,10 @@ build/
 dist/
 *.log
 .idea
+cmake-build-debug
 
 tests/*
 !tests/*.py
 
 docs/_build
+dev_files/
