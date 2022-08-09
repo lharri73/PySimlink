@@ -79,7 +79,7 @@ double PYSIMLINK::get_model_param(const rtwCAPI_ModelMappingInfo *mmi, const cha
     return ret;
 }
 
-double PYSIMLINK::get_block_param(const rtwCAPI_ModelMappingInfo *mmi, const char* block, const char* param, std::unordered_map<map_key_2s,size_t,pair_hash,Compare> &param_map){
+py::buffer_info PYSIMLINK::get_block_param(const rtwCAPI_ModelMappingInfo *mmi, const char* block, const char* param, std::unordered_map<map_key_2s,size_t,pair_hash,Compare> &param_map){
     std::unordered_map<map_key_2s,size_t,pair_hash,Compare>::const_iterator it;
     int param_iter = -1;
 
@@ -107,29 +107,16 @@ double PYSIMLINK::get_block_param(const rtwCAPI_ModelMappingInfo *mmi, const cha
         std::stringstream err("");
         err << "get_block_param: Parameter (" << block << ',' << param << ") does not exist in mmi";
         throw std::runtime_error(err.str().c_str());
-
-        return 0;   // makes compiler happy
     }
 
-    validate_scalar(mmi, capiBlockParameters[param_iter], "get_block_param", block);
     rtwCAPI_DataTypeMap dt = mmi->staticMap->Maps.dataTypeMap[rtwCAPI_GetBlockParameterDataTypeIdx(capiBlockParameters, param_iter)];
+    rtwCAPI_DimensionMap sigDim = rtwCAPI_GetDimensionMap(mmi)[rtwCAPI_GetBlockParameterDimensionIdx(capiBlockParameters, param_iter)];
     void* addr = mmi->InstanceMap.dataAddrMap[rtwCAPI_GetBlockParameterAddrIdx(capiBlockParameters, param_iter)];
-    double ret;
-    if(strcmp(dt.cDataName, "int") == 0){
-        int tmp = *(int*)addr;
-        ret = tmp;
-    }else if(strcmp(dt.cDataName, "float") == 0){
-        float tmp = *(float*)addr;
-        ret = tmp;
-    }else if(strcmp(dt.cDataName, "double") == 0){
-        ret = *(double*)addr;
-    }else{
-        std::stringstream err("");
-        err << "get_block_param: Parameter (" << param << ") has invalid cDataName(" << dt.cDataName;
-        err << "). Can only handle [int,float,double]";
-        throw std::runtime_error(err.str().c_str());
+    double *addrTmp = (double*)addr;
+    for(size_t i=0; i < 8; i++){
+        printf("%zu: %f\n", i, addrTmp[i]);
     }
-    return ret;
+    return PYSIMLINK::format_pybuffer(mmi, dt, sigDim, addr);
 }
 
 py::buffer_info PYSIMLINK::get_signal_val(const rtwCAPI_ModelMappingInfo *mmi, std::unordered_map<map_key_2s,size_t,pair_hash,Compare> &sig_map, const char* block, const char* sigName){
@@ -211,6 +198,9 @@ PYSIMLINK::format_pybuffer(const rtwCAPI_ModelMappingInfo *mmi, rtwCAPI_DataType
         throw std::runtime_error(err.str().c_str());
     }
     ret.ndim = sigDim.numDims;
+    if(ret.ndim > 3){
+        throw std::runtime_error("Cannot return values with more than 3 dimensions...yet. Fix the issue and open a pull request!");
+    }
     for(size_t i = 0; i < ret.ndim; i++){
         ssize_t dim_size = rtwCAPI_GetDimensionArray(mmi)[sigDim.dimArrayIndex+i];
         ret.shape.push_back(dim_size);
@@ -220,24 +210,35 @@ PYSIMLINK::format_pybuffer(const rtwCAPI_ModelMappingInfo *mmi, rtwCAPI_DataType
                 ret.strides.push_back(dt.dataSize);
                 break;
             case rtwCAPI_Orientation::rtwCAPI_MATRIX_COL_MAJOR:
-            case rtwCAPI_Orientation::rtwCAPI_MATRIX_COL_MAJOR_ND:
-                if(i == 1) {
+                if(i == 1)
                     ret.strides.push_back(dt.dataSize * dim_size);
-                }else{
+                else
                     ret.strides.push_back(dt.dataSize);
-                }
+                break;
+            case rtwCAPI_Orientation::rtwCAPI_MATRIX_COL_MAJOR_ND:
+                // this does not generalize beyond 3 dimensions
+                if(i == 0)
+                    ret.strides.push_back(dt.dataSize * rtwCAPI_GetDimensionArray(mmi)[sigDim.dimArrayIndex+1] * rtwCAPI_GetDimensionArray(mmi)[sigDim.dimArrayIndex+2]);
+                else if (i == 1)
+                    ret.strides.push_back(dt.dataSize);
+                else
+                    ret.strides.push_back(dt.dataSize * dim_size);
                 break;
             case rtwCAPI_Orientation::rtwCAPI_MATRIX_ROW_MAJOR:
-            case rtwCAPI_Orientation::rtwCAPI_MATRIX_ROW_MAJOR_ND:
-                if(i == 0) {
+                if(i == 0)
                     ret.strides.push_back(dt.dataSize * dim_size);
-                }else{
+                else
                     ret.strides.push_back(dt.dataSize);
-                }
+                break;
+            case rtwCAPI_Orientation::rtwCAPI_MATRIX_ROW_MAJOR_ND:
+                throw std::runtime_error("ND matrices not supported in row major orientation. Use column major for 3-dim matrices");
                 break;
             default:
                 throw std::runtime_error("Invalid/Unknown orientation for parameter (internal error)");
         }
+    }
+    for(auto size : ret.strides){
+        printf("%ld\n", size);
     }
     ret.readonly = true;
     return ret;

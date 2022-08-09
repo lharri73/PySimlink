@@ -119,6 +119,22 @@ class Model:
         model_name = self.model_paths.root_model_name if model_name is None else model_name
         return self._model.get_signal(model_name, block_path, sig_name)
 
+    def get_block_param(self, block_path, param, model_name=None) -> "np.ndarray":
+        """
+        Get the value of a block parameter
+
+        Args:
+            block_path: Path the block within the model
+            param: Name of the parameter to retrieve
+            model_name: Name of the model provided by "print_all_params". None if there are no model references.
+
+        Returns:
+            np.ndarray with the value of the parameter
+        """
+
+        model_name = self.model_paths.root_model_name if model_name is None else model_name
+        return self._model.get_block_param(model_name, block_path, param)
+
     def get_models(self) -> "list[str]":
         """
         Gets a list of all reference models (and the root model) in this model.

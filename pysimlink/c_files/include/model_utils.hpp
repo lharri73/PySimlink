@@ -28,7 +28,7 @@ namespace PYSIMLINK{
     double get_model_param(const rtwCAPI_ModelMappingInfo *mmi, const char *param, std::unordered_map<map_key_1s,size_t,pair_hash,Compare> &model_params);
 
     uint_T get_num_block_params(const rtwCAPI_ModelMappingInfo *mmi);
-    double get_block_param(const rtwCAPI_ModelMappingInfo *mmi, const char *block, const char *param, std::unordered_map<map_key_2s,size_t,pair_hash,Compare> &block_map);
+    py::buffer_info get_block_param(const rtwCAPI_ModelMappingInfo *mmi, const char *block, const char *param, std::unordered_map<map_key_2s,size_t,pair_hash,Compare> &block_map);
     double set_block_param(rtwCAPI_ModelMappingInfo *mmi, // returns the original value
                          const char *block,
                          const char *param,

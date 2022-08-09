@@ -43,6 +43,7 @@ namespace PYSIMLINK{
 
             std::vector<struct ModelInfo> get_params() const;
             py::array get_sig(const std::string& model, const std::string& path, const std::string& sig_name);
+            py::array get_block_param(const std::string& model, const std::string& block_path, const std::string& param);
 
             static double step_size();
             static double tFinal();

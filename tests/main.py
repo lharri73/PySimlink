@@ -9,10 +9,8 @@ def main(args):
 
     model.reset()
     print_all_params(model)
-    for i in range(10):
-        a = model.get_signal("HevP4ReferenceApplication/Passenger Car/Electric Plant/Battery", model_name="HevP4ReferenceApplication")
-        model.step()
-        print("here", a)
+    b = model.get_block_param("sfcndemo_matadd/Constant1", param="Value")
+    print(b)
 
 
 if __name__ == "__main__":

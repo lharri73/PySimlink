@@ -33,7 +33,7 @@ def print_all_params(model: "anno.Model"):
         print("  block parameters:")
         for param in model_info.block_params:
             print(
-                f"    Block: '{param.block_name}' | Parameters: '{param.block_param}' | data_type: '{param.data_type}'"
+                f"    Block: '{param.block_name}' | Parameter: '{param.block_param}' | data_type: '{param.data_type}'"
             )
         print("  signals:")
         for sig in model_info.signals:

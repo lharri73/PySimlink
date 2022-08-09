@@ -14,6 +14,7 @@ PYBIND11_MODULE(model_interface_c, m) {
             .def("step", &PYSIMLINK::Model::step)
             .def("get_models", &PYSIMLINK::Model::get_models)
             .def("get_signal", &PYSIMLINK::Model::get_sig)
+            .def("get_block_param", &PYSIMLINK::Model::get_block_param)
             .def("get_params", &PYSIMLINK::Model::get_params);
 
     py::class_<PYSIMLINK::BlockParam>(m, "BlockParam")
