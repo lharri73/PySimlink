@@ -8,6 +8,7 @@ import cmake
 
 from pysimlink.utils import annotation_utils as anno
 from pysimlink.utils.model_utils import infer_defines
+from pysimlink.lib.exceptions import GenerationError, BuildError
 
 
 class Compiler:
@@ -46,7 +47,7 @@ class Compiler:
             bool: True if the model needs to be compiled, False otherwise
         """
         lib = glob.glob(os.path.join(self.model_paths.tmp_dir, "build", "libmodel_interface_c.*"))
-        return len(lib) != 0
+        return len(lib) == 0
 
     def _get_simulink_deps(self):
         """
@@ -130,10 +131,7 @@ class Compiler:
             with open(err_file, "w", encoding="utf-8") as f:
                 f.write(output1.decode() if output1 else "")
                 f.write(err1.decode() if err1 else "")
-            raise Exception(
-                "Generating the CMakeLists for this _model failed. This could be a c/c++/cmake setup issue, bad paths, or a bug!\n"
-                f"Output from CMake generation is in {err_file}"
-            )
+            raise GenerationError(err_file)
 
         with Popen(
             [os.path.join(cmake.CMAKE_BIN_DIR, "cmake"), "--build", build_dir],
@@ -153,10 +151,7 @@ class Compiler:
                 f.write(output2.decode() if output2 else "")
                 f.write(err2.decode() if err2 else "")
 
-            raise Exception(
-                "Building the _model failed. This could be a c/c++/cmake setup issue, bad paths, or a bug!\n"
-                f"Output from the build process is in {err_file}"
-            )
+            raise BuildError(err_file)
 
     @staticmethod
     def _replace_macros(path: str, replacements: "dict[str, str]"):
