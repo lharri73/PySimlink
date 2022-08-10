@@ -14,7 +14,7 @@ class CmakeTemplate:
 
     def __init__(self, model_name):
         self.model_name = model_name
-        self.space_trans = str.maketrans({" ": r"\ "})
+        self.space_trans = str.maketrans({" ": r"\ ", "\\": "\\\\"})
         self.libs = []
 
     def header(self):
