@@ -28,7 +28,7 @@ class CmakeTemplate:
 project({self.model_name})
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-find_package(pybind11 PATHS {pybind11.get_cmake_dir()})"""
+find_package(pybind11 PATHS {pybind11.get_cmake_dir().translate(self.space_trans)})"""
 
     def set_includes(self, includes: "list[str]"):
         """
