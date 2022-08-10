@@ -18,7 +18,7 @@ class CmakeTemplate:
         self.libs = []
         self.replacers = [
             (re.compile(r'(?<!\\) '), r"\ "),
-            (re.compile(r'\\(?! )'), r"\\")
+            (re.compile(r'\\(?! )'), r"/")
         ]
 
     def replacer(self, string):
