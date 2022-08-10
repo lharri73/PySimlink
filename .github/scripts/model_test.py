@@ -22,6 +22,11 @@ def main(args):
             with open(e.dump, 'r') as f:
                 lines = f.read()
                 print(lines)
+            print('--------------------')
+            print("Offending CMakeLists.txt: ")
+            with open(e.cmake, 'r') as f:
+                lines = f.read()
+                print(lines)
             exit(1)
         cur_model.reset()
         for i in range(2):

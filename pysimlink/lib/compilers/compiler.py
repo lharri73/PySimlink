@@ -131,7 +131,7 @@ class Compiler:
             with open(err_file, "w", encoding="utf-8") as f:
                 f.write(output1.decode() if output1 else "")
                 f.write(err1.decode() if err1 else "")
-            raise GenerationError(err_file)
+            raise GenerationError(err_file, os.path.join(self.model_paths.tmp_dir, "CMakeLists.txt"))
 
         with Popen(
             [os.path.join(cmake.CMAKE_BIN_DIR, "cmake"), "--build", build_dir],
@@ -151,7 +151,7 @@ class Compiler:
                 f.write(output2.decode() if output2 else "")
                 f.write(err2.decode() if err2 else "")
 
-            raise BuildError(err_file)
+            raise BuildError(err_file, os.path.join(self.model_paths.tmp_dir, "CMakeLists.txt"))
 
     @staticmethod
     def _replace_macros(path: str, replacements: "dict[str, str]"):
