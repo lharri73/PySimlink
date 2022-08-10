@@ -1,0 +1,25 @@
+name: Test Models
+
+on: [push, pull_request]
+
+jobs:
+  build_wheels:
+    name: Build wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+      - name: Download Models (mac)
+        if: startsWith(matrix.os, 'macOS') || startsWith(matrix.os, 'ubuntu')
+        run: |
+          mkdir ci
+          wget -O ci/manifest.sh https://github.com/lharri73/PySimlink-ci-models/raw/master/generated/manifest.txt
+      - name: Download Models (windows)
+        if: startsWith(matrix.os, 'windows')
+        run: |
+          mkdir ci
+          wget -O ci/manifest.sh https://github.com/lharri73/PySimlink-ci-models/raw/master/generated/manifest.txt

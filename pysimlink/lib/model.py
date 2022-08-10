@@ -9,7 +9,7 @@ class Model:
     """
     Instance of the simulink mode. This class compiles and imports
     the model once built. You can have multiple instances of the same
-    model in one python runtime (although multithreaded *compiling* is not tested).
+    model in one python runtime (although multithreading *compiling* is not tested).
     """
 
     model_paths: "anno.ModelPaths"
