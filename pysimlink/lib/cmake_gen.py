@@ -1,5 +1,6 @@
 import os
 import glob
+import re
 
 import pybind11
 
@@ -14,8 +15,18 @@ class CmakeTemplate:
 
     def __init__(self, model_name):
         self.model_name = model_name
-        self.space_trans = str.maketrans({" ": r"\ ", "\\": "\\\\"})
         self.libs = []
+        self.replacers = [
+            (re.compile(r'(?<!\\) '), r"\ "),
+            (re.compile(r'\\(?! )'), r"\\")
+        ]
+
+    def replacer(self, string):
+        for search, rep in self.replacers:
+            indices = list(re.finditer(search, string))
+            for idx in reversed(indices):
+                string = string[:idx.start(0)] + rep + string[idx.end(0):]
+        return string
 
     def header(self):
         """
@@ -28,7 +39,7 @@ class CmakeTemplate:
 project({self.model_name})
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-find_package(pybind11 PATHS {pybind11.get_cmake_dir().translate(self.space_trans)})"""
+find_package(pybind11 PATHS {self.replacer(pybind11.get_cmake_dir())})"""
 
     def set_includes(self, includes: "list[str]"):
         """
@@ -42,7 +53,7 @@ find_package(pybind11 PATHS {pybind11.get_cmake_dir().translate(self.space_trans
         """
         ## Add the include path for model runner code
 
-        includes = [os.path.abspath(include).translate(self.space_trans) for include in includes]
+        includes = [self.replacer(os.path.abspath(include)) for include in includes]
         include_dirs = "\n    ".join(includes)
         return f"""
 include_directories(
@@ -64,7 +75,7 @@ include_directories(
             str: add_library cmake directive
         """
         self.libs.append(lib_name)
-        sources = [os.path.abspath(source).translate(self.space_trans) for source in sources]
+        sources = [self.replacer(os.path.abspath(source)) for source in sources]
         source_paths = "\n        ".join(sources)
         return f"""
 add_library(
@@ -102,7 +113,7 @@ set_target_properties(
         """
         sources = glob.glob(sources + "/*.cpp")
 
-        sources = [os.path.abspath(source).translate(self.space_trans) for source in sources]
+        sources = [self.replacer(os.path.abspath(source)) for source in sources]
         source_paths = "\n        ".join(sources)
         return f"""
 pybind11_add_module(
