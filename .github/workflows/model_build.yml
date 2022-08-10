@@ -22,4 +22,4 @@ jobs:
         if: ${{ startsWith(matrix.os, 'windows') }}
         run: |
           mkdir ci
-          wget -O ci/manifest.sh https://github.com/lharri73/PySimlink-ci-models/raw/master/generated/manifest.txt
+          curl.exe -o ci/manifest.sh https://github.com/lharri73/PySimlink-ci-models/raw/master/generated/manifest.txt
