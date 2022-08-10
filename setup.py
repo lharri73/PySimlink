@@ -6,7 +6,7 @@ with open("requirements.txt", "r") as f:
 
 setup(
     name="pysimlink",
-    version="0.0.0",
+    version="0.0.1",
     author="Landon Harris",
     author_email="lharri73@vols.utk.edu",
     description="Interface with Simulink models using Python",
