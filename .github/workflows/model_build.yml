@@ -13,13 +13,18 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v3
-      - name: Download Models (mac)
-        if: ${{ startsWith(matrix.os, 'macOS') || startsWith(matrix.os, 'ubuntu') }}
+        with:
+          python-version: '3.9'
+
+      - name: Install PySimlink
+        run: |
+        pip install --upgrade pip
+        pip install -e .[dev]
+
+      - name: Setup Test Env
         run: |
           mkdir ci
-          wget -O ci/manifest.sh https://github.com/lharri73/PySimlink-ci-models/raw/master/generated/manifest.txt
-      - name: Download Models (windows)
-        if: ${{ startsWith(matrix.os, 'windows') }}
+
+      - name: Download Models
         run: |
-          mkdir ci
-          curl.exe -o ci/manifest.sh https://github.com/lharri73/PySimlink-ci-models/raw/master/generated/manifest.txt
+          python .github/scripts/fetch_models.py ci
