@@ -1,10 +1,29 @@
-name: Test Models
+name: Build & Test
 
 on: [push, pull_request]
 
 jobs:
+  build_wheels:
+    name: Build wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-20.04]
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+
+      - name: Build wheels
+        run: mkdir wheelhouse && pip wheel -w ./wheelhouse/ .
+
+      - uses: actions/upload-artifact@v3
+        with:
+          path: ./wheelhouse/pysimlink*.whl
+
   test_models:
     name: Test Models on ${{ matrix.os }}
+    needs: build_wheels
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -18,8 +37,8 @@ jobs:
 
       - name: Install PySimlink
         run: |
-        pip install --upgrade pip
-        pip install -e .[dev]
+          pip install --upgrade pip
+          pip install -e .[dev]
 
       - name: Setup Test Env
         run: |
