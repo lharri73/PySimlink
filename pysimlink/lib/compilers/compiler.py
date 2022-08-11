@@ -113,6 +113,7 @@ class Compiler:
                 os.path.join(cmake.CMAKE_BIN_DIR, "cmake"),
                 "-S",
                 self.model_paths.tmp_dir,
+                "-DCMAKE_BUILD_TYPE=Release",
                 "-B",
                 build_dir,
             ],

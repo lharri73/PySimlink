@@ -33,7 +33,8 @@ class Model:
             ## Need to compile
             self.compiler.compile()
 
-        sys.path.append(os.path.join(self.model_paths.tmp_dir, "build"))
+        for dir, _, _ in os.walk(os.path.join(self.model_paths.tmp_dir, "build", "out", "library")):
+            sys.path.append(dir)
 
         import model_interface_c  # pylint: disable=C0415,E0401
 

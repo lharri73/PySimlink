@@ -120,6 +120,11 @@ pybind11_add_module(
     model_interface_c
         {source_paths}
 )        
+
+set_target_properties(
+    model_interface_c PROPERTIES
+        LIBRARY_OUTPUT_DIRECTORY ${{PROJECT_BINARY_DIR}}/out/library
+)
 """
 
     def add_link_libs(self, dep_map: "dict[str, list[str]]"):
