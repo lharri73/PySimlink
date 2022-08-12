@@ -112,10 +112,6 @@ py::buffer_info PYSIMLINK::get_block_param(const rtwCAPI_ModelMappingInfo *mmi, 
     rtwCAPI_DataTypeMap dt = mmi->staticMap->Maps.dataTypeMap[rtwCAPI_GetBlockParameterDataTypeIdx(capiBlockParameters, param_iter)];
     rtwCAPI_DimensionMap sigDim = rtwCAPI_GetDimensionMap(mmi)[rtwCAPI_GetBlockParameterDimensionIdx(capiBlockParameters, param_iter)];
     void* addr = mmi->InstanceMap.dataAddrMap[rtwCAPI_GetBlockParameterAddrIdx(capiBlockParameters, param_iter)];
-    double *addrTmp = (double*)addr;
-    for(size_t i=0; i < 8; i++){
-        printf("%zu: %f\n", i, addrTmp[i]);
-    }
     return PYSIMLINK::format_pybuffer(mmi, dt, sigDim, addr);
 }
 
@@ -237,14 +233,11 @@ PYSIMLINK::format_pybuffer(const rtwCAPI_ModelMappingInfo *mmi, rtwCAPI_DataType
                 throw std::runtime_error("Invalid/Unknown orientation for parameter (internal error)");
         }
     }
-    for(auto size : ret.strides){
-        printf("%ld\n", size);
-    }
     ret.readonly = true;
     return ret;
 }
 
-double PYSIMLINK::set_block_param(rtwCAPI_ModelMappingInfo *mmi, const char *block, const char *param, double value){
+void PYSIMLINK::set_block_param(rtwCAPI_ModelMappingInfo *mmi, const char *block, const char *param, py::array value){
     const rtwCAPI_BlockParameters *capiBlockParameters = rtwCAPI_GetBlockParameters(mmi);
     uint_T nParams = get_num_block_params(mmi);
     for(size_t i=0; i<nParams; i++) {
@@ -252,39 +245,18 @@ double PYSIMLINK::set_block_param(rtwCAPI_ModelMappingInfo *mmi, const char *blo
             strcmp(param, capiBlockParameters[i].paramName) == 0) {
             validate_scalar(mmi, capiBlockParameters[i], "set_block_parameter", block);
 
-            rtwCAPI_DataTypeMap dt = mmi->staticMap->Maps.dataTypeMap[capiBlockParameters[i].dataTypeIndex];
-            void* addr = mmi->InstanceMap.dataAddrMap[capiBlockParameters[i].addrMapIndex];
+            rtwCAPI_DataTypeMap dt = rtwCAPI_GetDataTypeMap(mmi)[rtwCAPI_GetBlockParameterDataTypeIdx(capiBlockParameters, i)];
+            rtwCAPI_DimensionMap blockDim = rtwCAPI_GetDimensionMap(mmi)[rtwCAPI_GetBlockParameterDimensionIdx(capiBlockParameters, i)];
+            void* addr = rtwCAPI_GetDataAddressMap(mmi)[rtwCAPI_GetBlockParameterAddrIdx(capiBlockParameters, i)];
 
-            double ret;
-            if(strcmp(dt.cDataName, "int") == 0){
-                int tmp = *(int*)addr;
-                ret = tmp;
-                tmp = value;
-                memcpy(addr, &tmp, sizeof(int));
-                return ret;
-            }else if(strcmp(dt.cDataName, "float") == 0){
-                float tmp = *(float*)addr;
-                ret = tmp;
-                tmp = value;
-                memcpy(addr, &tmp, sizeof(float));
-                return ret;
-            }else if(strcmp(dt.cDataName, "double") == 0){
-                ret = *(double*)addr;
-                memcpy(addr, &value, sizeof(value));
-                return ret;
-            }else{
-                std::stringstream err("");
-                err << "get_signal_val: Parameter (" << block << ',' << param << ") has invalid cDataName(" << dt.cDataName;
-                err << "). Can only handle [int,float,double]";
-                throw std::runtime_error(err.str().c_str());
-            }
+            PYSIMLINK::fill_from_buffer(dt, blockDim, addr, value);
+            return;
         }
     }
     std::stringstream err("");
     err << "set_block_param: Parameter (" << block << ',' << param << ") does not exist in mmi";
     throw std::runtime_error(err.str().c_str());
 
-    return 0.0;   // makes compiler happy
 }
 
 std::vector<struct PYSIMLINK::ModelParam> PYSIMLINK::debug_model_params(const rtwCAPI_ModelMappingInfo *mmi){
@@ -341,4 +313,48 @@ PYSIMLINK::ModelInfo PYSIMLINK::debug_model_info(const rtwCAPI_ModelMappingInfo 
     ret.signals = debug_signals(mmi);
 
     return ret;
+}
+
+void PYSIMLINK::fill_from_buffer(const rtwCAPI_ModelMappingInfo *mmi, rtwCAPI_DataTypeMap dt, rtwCAPI_DimensionMap blockDim, void *addr, py::array value) {
+    // data type check
+    std::string dtype_raw = std::string(PYBIND11_STR_TYPE(value.dtype()));
+    auto cit = PYSIMLINK::c_python_dtypes.find(dt.cDataName);
+    if(cit == PYSIMLINK::c_python_dtypes.end()){
+        std::stringstream ss;
+        ss.str("Unknown C datatype. Not present in datatype map. ");
+        ss << "Got " << dt.cDataName;
+        throw std::runtime_error(ss.str());
+    }
+
+    if(strncmp(cit->second.c_str(), dtype_raw.c_str(), strlen(cit->second.c_str())) == 0 ||
+        dt.dataSize != value.itemsize()){
+        std::stringstream ss;
+        ss.str("Datatype of parameter does not match datatype of array. ");
+        ss << "Expected " << cit->second.c_str() << " got dtype " << dtype_raw.c_str();
+        throw std::runtime_error(ss.str());
+    }
+
+    // dimension check
+    if(blockDim.numDims != value.ndim()){
+        std::stringstream ss;
+        ss.str("Dimension mismatch. ");
+        ss << "Expected " << blockDim.numDims << " got " << value.ndim();
+        throw std::runtime_error(ss.str());
+    }
+
+    auto *strides = new size_t[blockDim.numDims];
+    for(size_t i=0; i < blockDim.numDims; i++)
+        strides[i] = dt.dataSize; //rtwCAPI_GetDimensionArray(mmi)[blockDim.dimArrayIndex+i];
+
+    if(blockDim.numDims > 2 && blockDim.orientation != rtwCAPI_MATRIX_COL_MAJOR_ND){
+        throw std::runtime_error("Row major orientation for 3d matrices not supported...yet.");
+    }else if(blockDim.numDims == 3 && blockDim.orientation == rtwCAPI_MATRIX_COL_MAJOR_ND){
+        strides[0] = dt.dataSize * rtwCAPI_GetDimensionArray(mmi)[blockDim.dimArrayIndex+1] * rtwCAPI_GetDimensionArray(mmi)[blockDim.dimArrayIndex+2];
+        strides[1] = dt.dataSize;
+        strides[2] = dt.dataSize * rtwCAPI_GetDimensionArray(mmi)[blockDim.dimArrayIndex+2];
+    }
+    if(blockDim.orientation == ){
+
+    }
+
 }

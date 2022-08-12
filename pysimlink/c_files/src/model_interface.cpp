@@ -164,5 +164,6 @@ py::array Model::get_block_param(const std::string& model, const std::string& bl
         throw std::runtime_error(buf);
     }
     py::buffer_info ret = PYSIMLINK::get_block_param(mmi_idx->second, block_path.c_str(), param.c_str(), block_map);
-    return py::array(ret);
+    py::array tmp = py::array(ret);
+    return tmp;
 }

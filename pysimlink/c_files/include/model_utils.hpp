@@ -24,21 +24,35 @@ namespace py = pybind11;
 
 namespace PYSIMLINK{
 
+    const std::map<std::string,std::string> c_python_dtypes = {
+            {"char", "int8"},
+            {"byte", "int8"},
+            {"unsigned char", "uint8"},
+            {"unsigned byte", "uint8"},
+            {"short", "int16"},
+            {"unsigned short", "uint16"},
+            {"int", "int32"},
+            {"unsigned int", "uint32"},
+            {"float", "float32"},
+            {"double", "float64"}
+    };
+
     uint_T get_num_model_params(const rtwCAPI_ModelMappingInfo *mmi);
     double get_model_param(const rtwCAPI_ModelMappingInfo *mmi, const char *param, std::unordered_map<map_key_1s,size_t,pair_hash,Compare> &model_params);
 
     uint_T get_num_block_params(const rtwCAPI_ModelMappingInfo *mmi);
     py::buffer_info get_block_param(const rtwCAPI_ModelMappingInfo *mmi, const char *block, const char *param, std::unordered_map<map_key_2s,size_t,pair_hash,Compare> &block_map);
-    double set_block_param(rtwCAPI_ModelMappingInfo *mmi, // returns the original value
+    void set_block_param(rtwCAPI_ModelMappingInfo *mmi, // returns the original value
                          const char *block,
                          const char *param,
-                         double value);
+                         py::array value);
 
     uint_T get_num_signals(const rtwCAPI_ModelMappingInfo *mmi);
     py::buffer_info get_signal_val(const rtwCAPI_ModelMappingInfo *mmi, std::unordered_map<map_key_2s,size_t,pair_hash,Compare> &sig_map, const char* block=nullptr, const char* signNam=nullptr);
 
     py::buffer_info
     format_pybuffer(const rtwCAPI_ModelMappingInfo *mmi, rtwCAPI_DataTypeMap dt, rtwCAPI_DimensionMap sigDim, void *addr);
+    void fill_from_buffer(const rtwCAPI_ModelMappingInfo *mmi, rtwCAPI_DataTypeMap dt, rtwCAPI_DimensionMap blockDim, void* addr, py::array value);
 
     std::vector<struct PYSIMLINK::ModelParam> debug_model_params(const rtwCAPI_ModelMappingInfo *mmi);
     std::vector<struct PYSIMLINK::BlockParam> debug_block_param(const rtwCAPI_ModelMappingInfo *mmi);
@@ -63,5 +77,4 @@ namespace PYSIMLINK{
             throw std::runtime_error(err.str().c_str());
         }
     }
-
 };
