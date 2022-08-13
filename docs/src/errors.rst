@@ -1,5 +1,5 @@
 Model Errors
-======
+============
 
 Sometimes the build process doesn't go as smoothly. These are some errors you might come across, and how you can fix them.
 
