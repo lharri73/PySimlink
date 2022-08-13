@@ -15,8 +15,8 @@ class Model:
     model in one python runtime (although multithreading *compiling* is not tested).
     """
 
-    model_paths: "anno.ModelPaths"
-    compiler: "anno.Compiler"
+    _model_paths: "anno.ModelPaths"
+    _compiler: "anno.Compiler"
 
     def __init__(  # pylint: disable=R0913
         self,
@@ -28,20 +28,20 @@ class Model:
         force_rebuild: bool = False,
     ):
 
-        self.model_paths = ModelPaths(path_to_model, model_name, compile_type, suffix, tmp_dir)
-        self.compiler = self.model_paths.compiler_factory()
+        self._model_paths = ModelPaths(path_to_model, model_name, compile_type, suffix, tmp_dir)
+        self._compiler = self._model_paths.compiler_factory()
 
         ## Check need to compile
-        if force_rebuild or self.compiler.needs_to_compile():
+        if force_rebuild or self._compiler.needs_to_compile():
             ## Need to compile
-            self.compiler.compile()
+            self._compiler.compile()
 
-        for dir, _, _ in os.walk(os.path.join(self.model_paths.tmp_dir, "build", "out", "library")):
+        for dir, _, _ in os.walk(os.path.join(self._model_paths.tmp_dir, "build", "out", "library")):
             sys.path.append(dir)
 
         import model_interface_c  # pylint: disable=C0415,E0401
 
-        self._model = model_interface_c.Model(self.model_paths.root_model_name)
+        self._model = model_interface_c.Model(self._model_paths.root_model_name)
         self._orientations = model_interface_c.rtwCAPI_Orientation
 
     def get_params(self) -> "list[anno.ModelInfo]":
@@ -121,7 +121,7 @@ class Model:
         Returns:
             Value of the signal at the current timestep
         """
-        model_name = self.model_paths.root_model_name if model_name is None else model_name
+        model_name = self._model_paths.root_model_name if model_name is None else model_name
         return self._model.get_signal(model_name, block_path, sig_name)
 
     def get_block_param(self, block_path, param, model_name=None) -> "np.ndarray":
@@ -137,7 +137,7 @@ class Model:
             np.ndarray with the value of the parameter
         """
 
-        model_name = self.model_paths.root_model_name if model_name is None else model_name
+        model_name = self._model_paths.root_model_name if model_name is None else model_name
         return self._model.get_block_param(model_name, block_path, param)
 
     def get_models(self) -> "list[str]":
@@ -161,7 +161,7 @@ class Model:
         Raises:
             RuntimeError: If the value array is not the correct shape or orientation as the parameter to change
         """
-        model_name = self.model_paths.root_model_name if model_name is None else model_name
+        model_name = self._model_paths.root_model_name if model_name is None else model_name
         info = self._model.block_param_info(model_name, block, param)
         dtype = DataType(info.cDataType, info.pythonType, info.dims, info.orientation)
         if dtype.orientation in [self._orientations.col_major_nd, self._orientations.col_major]:

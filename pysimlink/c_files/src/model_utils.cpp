@@ -198,6 +198,7 @@ PYSIMLINK::format_pybuffer(const rtwCAPI_ModelMappingInfo *mmi, rtwCAPI_DataType
     }
     for (size_t i = 0; i < ret.ndim; i++) {
         ssize_t dim_size = rtwCAPI_GetDimensionArray(mmi)[sigDim.dimArrayIndex + i];
+        ssize_t cur_stride;
         ret.shape.push_back(dim_size);
         switch (sigDim.orientation) {
             case rtwCAPI_Orientation::rtwCAPI_SCALAR:
@@ -205,20 +206,12 @@ PYSIMLINK::format_pybuffer(const rtwCAPI_ModelMappingInfo *mmi, rtwCAPI_DataType
                 ret.strides.push_back(dt.dataSize);
                 break;
             case rtwCAPI_Orientation::rtwCAPI_MATRIX_COL_MAJOR:
-                if (i == 1)
-                    ret.strides.push_back(dt.dataSize * dim_size);
-                else
-                    ret.strides.push_back(dt.dataSize);
-                break;
             case rtwCAPI_Orientation::rtwCAPI_MATRIX_COL_MAJOR_ND:
-                // this does not generalize beyond 3 dimensions
-                if (i == 0)
-                    ret.strides.push_back(dt.dataSize * rtwCAPI_GetDimensionArray(mmi)[sigDim.dimArrayIndex + 1] *
-                                          rtwCAPI_GetDimensionArray(mmi)[sigDim.dimArrayIndex + 2]);
-                else if (i == 1)
-                    ret.strides.push_back(dt.dataSize);
-                else
-                    ret.strides.push_back(dt.dataSize * dim_size);
+                cur_stride = dt.dataSize;
+                for(size_t j = 0; j < i; j++){
+                    cur_stride *= rtwCAPI_GetDimensionArray(mmi)[sigDim.dimArrayIndex + j];
+                }
+                ret.strides.push_back(cur_stride);
                 break;
             case rtwCAPI_Orientation::rtwCAPI_MATRIX_ROW_MAJOR:
                 if (i == 0)
@@ -234,6 +227,8 @@ PYSIMLINK::format_pybuffer(const rtwCAPI_ModelMappingInfo *mmi, rtwCAPI_DataType
                 throw std::runtime_error("Invalid/Unknown orientation for parameter (internal error)");
         }
     }
+
+//    std::reverse(ret.strides.begin(), ret.strides.end());
     ret.readonly = true;
     return ret;
 }

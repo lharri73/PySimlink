@@ -21,6 +21,7 @@ def print_all_params(model: "anno.Model"):
     Prints all parameters for the given model.
 
     Uses the ModelInfo object to print all model info about the root and each reference model
+
     Args:
         model: instance of the Model to print params of
     """
