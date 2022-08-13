@@ -1,10 +1,5 @@
-Errors
+Model Errors
 ======
-
-BuildError and GenerationError
-------------------------------
-These are the error's that are raised when the model fails to build. Unlike a regular
-exception, they have two additional properties
 
 Sometimes the build process doesn't go as smoothly. These are some errors you might come across, and how you can fix them.
 
