@@ -31,7 +31,7 @@ a grt target.
 **What PySimlink can't do:**
 
 * Add or remove blocks to a model (the structure of the model is final once code is generated)
-* Some signals are reduced/optimized. These are not accessible.
+* Some signals and blocks are reduced/optimized. These are not accessible.
 
 Getting Started
 ================
