@@ -1,6 +1,7 @@
 from pysimlink.lib.model import Model
 from pysimlink.utils.model_utils import print_all_params
 import argparse
+import numpy as np
 from tqdm import tqdm
 
 
@@ -12,6 +13,13 @@ def main(args):
     b = model.get_block_param("sfcndemo_matadd/Constant1", param="Value")
     print(b)
 
+    something = np.array([[[1,2],[3,4]],[[5,6],[7,8]]], dtype=np.float64)
+    print(something)
+    model.set_block_param("sfcndemo_matadd/Constant1", param="Value", value=something)
+
+    print("getting value")
+    b = model.get_block_param("sfcndemo_matadd/Constant1", param="Value")
+    print(b)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

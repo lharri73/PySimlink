@@ -3,13 +3,24 @@ from dataclasses import dataclass
 
 # These classes are provided for reference only.
 @dataclass(frozen=True)
+class DataType:
+    """
+    Contains data type information for a single parameter
+    """
+    cDataType: str
+    pythonType: str
+    dims: "list[str]"
+    orientation: int
+
+
+@dataclass(frozen=True)
 class ModelParam:
     """
-    Represents a single _model parameter
+    Represents a single model parameter
     """
 
     model_param: str
-    data_type: str
+    data_type: DataType
 
 
 @dataclass(frozen=True)
@@ -22,13 +33,13 @@ class BlockParam:
 
     block_name: str
     block_param: str
-    data_type: str
+    data_type: DataType
 
 
 @dataclass(frozen=True)
 class Signal:
     """
-    Represents a single signal in the _model.
+    Represents a single signal in the model.
 
     block_name: path to the block the signal originates from
     signal_name: name of the signal (empty if not named)
@@ -37,7 +48,7 @@ class Signal:
 
     block_name: str
     signal_name: str
-    data_type: str
+    data_type: DataType
 
 
 @dataclass(frozen=True)

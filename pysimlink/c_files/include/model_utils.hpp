@@ -26,9 +26,7 @@ namespace PYSIMLINK{
 
     const std::map<std::string,std::string> c_python_dtypes = {
             {"char", "int8"},
-            {"byte", "int8"},
             {"unsigned char", "uint8"},
-            {"unsigned byte", "uint8"},
             {"short", "int16"},
             {"unsigned short", "uint16"},
             {"int", "int32"},
@@ -37,22 +35,23 @@ namespace PYSIMLINK{
             {"double", "float64"}
     };
 
-    uint_T get_num_model_params(const rtwCAPI_ModelMappingInfo *mmi);
+    std::string translate_c_type_name(const std::string& c_name, bool should_throw=false);
+
     double get_model_param(const rtwCAPI_ModelMappingInfo *mmi, const char *param, std::unordered_map<map_key_1s,size_t,pair_hash,Compare> &model_params);
 
-    uint_T get_num_block_params(const rtwCAPI_ModelMappingInfo *mmi);
     py::buffer_info get_block_param(const rtwCAPI_ModelMappingInfo *mmi, const char *block, const char *param, std::unordered_map<map_key_2s,size_t,pair_hash,Compare> &block_map);
-    void set_block_param(rtwCAPI_ModelMappingInfo *mmi, // returns the original value
+    void set_block_param(const rtwCAPI_ModelMappingInfo *mmi, // returns the original value
                          const char *block,
                          const char *param,
                          py::array value);
 
-    uint_T get_num_signals(const rtwCAPI_ModelMappingInfo *mmi);
     py::buffer_info get_signal_val(const rtwCAPI_ModelMappingInfo *mmi, std::unordered_map<map_key_2s,size_t,pair_hash,Compare> &sig_map, const char* block=nullptr, const char* signNam=nullptr);
 
     py::buffer_info
     format_pybuffer(const rtwCAPI_ModelMappingInfo *mmi, rtwCAPI_DataTypeMap dt, rtwCAPI_DimensionMap sigDim, void *addr);
     void fill_from_buffer(const rtwCAPI_ModelMappingInfo *mmi, rtwCAPI_DataTypeMap dt, rtwCAPI_DimensionMap blockDim, void* addr, py::array value);
+
+    struct PYSIMLINK::DataType describe_block_param(const rtwCAPI_ModelMappingInfo *mmi, const char *block_path, const char *param);
 
     std::vector<struct PYSIMLINK::ModelParam> debug_model_params(const rtwCAPI_ModelMappingInfo *mmi);
     std::vector<struct PYSIMLINK::BlockParam> debug_block_param(const rtwCAPI_ModelMappingInfo *mmi);
@@ -76,5 +75,16 @@ namespace PYSIMLINK{
             err << funcName << ": Cannot read value from pointer (isPointer=True) for parameter (" << identifier << ")";
             throw std::runtime_error(err.str().c_str());
         }
+    }
+    template <typename T>
+    struct DataType populate_dtype(const rtwCAPI_ModelMappingInfo *mmi, T capi_struct){
+        struct DataType ret;
+        ret.cDataType = rtwCAPI_GetDataTypeMap(mmi)[capi_struct.dataTypeIndex].cDataName;
+        ret.pythonType = PYSIMLINK::translate_c_type_name(ret.cDataType);
+        ret.orientation = rtwCAPI_GetDimensionMap(mmi)[capi_struct.dimIndex].orientation;
+        for(size_t j = 0; j < rtwCAPI_GetDimensionMap(mmi)[capi_struct.dimIndex].numDims; j++){
+            ret.dims.push_back(rtwCAPI_GetDimensionArray(mmi)[rtwCAPI_GetDimensionMap(mmi)[capi_struct.dimIndex].dimArrayIndex + j]);
+        }
+        return ret;
     }
 };

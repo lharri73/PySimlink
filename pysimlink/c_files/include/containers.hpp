@@ -39,21 +39,28 @@ namespace PYSIMLINK{
         bool operator()(const map_key_1s &lhs, const map_key_1s &rhs) const;
     };
 
+    struct DataType{
+        std::string cDataType;
+        std::string pythonType;
+        std::vector<ssize_t> dims;
+        rtwCAPI_Orientation orientation;
+    };
+
     struct ModelParam{
         std::string model_param;
-        std::string data_type;
+        struct DataType data_type;
     };
 
     struct BlockParam{
         std::string block_name;
         std::string block_param;
-        std::string data_type;
+        struct DataType data_type;
     };
 
     struct Signal{
         std::string block_name;
         std::string signal_name;
-        std::string data_type;
+        struct DataType data_type;
     };
 
     struct ModelInfo{

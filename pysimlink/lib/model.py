@@ -1,8 +1,11 @@
 import os
 import sys
 
+import numpy as np
+
 from pysimlink.lib.model_paths import ModelPaths
 from pysimlink.utils import annotation_utils as anno
+from pysimlink.lib.model_types import DataType
 
 
 class Model:
@@ -39,6 +42,7 @@ class Model:
         import model_interface_c  # pylint: disable=C0415,E0401
 
         self._model = model_interface_c.Model(self.model_paths.root_model_name)
+        self._orientations = model_interface_c.rtwCAPI_Orientation
 
     def get_params(self) -> "list[anno.ModelInfo]":
         """
@@ -144,3 +148,24 @@ class Model:
             list of paths, one for each model
         """
         return self._model.get_models()
+
+    def set_block_param(self, block: str, param: str, value: "anno.ndarray", model_name: "anno.Union[str,None]" = None):
+        """
+        Set the parameter of a block within the model.
+
+        Args:
+            block: Path to the block within the model
+            param: Name of the parameter to change
+            value: new value of the parameter
+            model_name: Name of the model provided by "print_all_params". None if there are no model references.
+        Raises:
+            RuntimeError: If the value array is not the correct shape or orientation as the parameter to change
+        """
+        model_name = self.model_paths.root_model_name if model_name is None else model_name
+        info = self._model.block_param_info(model_name, block, param)
+        dtype = DataType(info.cDataType, info.pythonType, info.dims, info.orientation)
+        if dtype.orientation in [self._orientations.col_major_nd, self._orientations.col_major]:
+            value = np.asfortranarray(value)
+        elif dtype.orientation in [self._orientations.row_major_nd, self._orientations.row_major]:
+            value = np.ascontiguousarray(value)
+        self._model.set_block_param(model_name, block, param, value)

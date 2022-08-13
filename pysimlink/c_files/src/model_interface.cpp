@@ -167,3 +167,22 @@ py::array Model::get_block_param(const std::string& model, const std::string& bl
     py::array tmp = py::array(ret);
     return tmp;
 }
+
+struct PYSIMLINK::DataType Model::block_param_info(const std::string &model, const std::string& block_path, const std::string& param){
+    if(!initialized){
+        throw std::runtime_error("Model must be initialized before calling get_block_param. Call `reset()` first!");
+    }
+    if(block_path.empty())
+        throw std::runtime_error("No path provided to get_block_param!");
+    if(model.empty())
+        throw std::runtime_error("No model name provided to get_block_param!");
+    if(param.empty())
+        throw std::runtime_error("No parameter provided to get_block_param!");
+    auto mmi_idx = mmi_map.find(model);
+    if(mmi_idx == mmi_map.end()){
+        char buf[256];
+        sprintf(buf, "Cannot find model with name: %s", model.c_str());
+        throw std::runtime_error(buf);
+    }
+    return PYSIMLINK::describe_block_param(mmi_idx->second, block_path.c_str(), param.c_str());
+}
