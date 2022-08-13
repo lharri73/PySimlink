@@ -10,13 +10,11 @@ With this package, you can:
 
 All without requiring a MATLAB runtime on the target machine! 
 
-To get started, you need is Simulink Coder, and the ability to export your model to a grt 
+To get started, you need the Simulink Coder, and the ability to export your model to a grt 
 target. There are some limitations, namely that your model *must* use a fixed step solver 
 (a requirement of the grt target). 
 
 ## Docs: https://lharri73.github.io/PySimlink/
-
----
 
 ## What this is not:
 - A replacement to the [Simulink Coder](https://www.mathworks.com/products/simulink-coder.html). 

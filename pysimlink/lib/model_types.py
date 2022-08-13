@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 
 # These classes are provided for reference only.
-@dataclass(frozen=True)
+@dataclass
 class DataType:
     """
     Contains data type information for a single parameter
@@ -11,6 +11,15 @@ class DataType:
     pythonType: str
     dims: "list[str]"
     orientation: int
+
+    def __init__(self, obj: any): # initialize with model_interface_c datatype
+        self.cDataType = obj.cDataType
+        self.pythonType = obj.pythonType
+        self.dims = obj.dims
+        self.orientation = obj.orientation
+
+    def __repr__(self):
+        return f"{self.pythonType} ({self.cDataType}) dims: {self.dims} order: {self.orientation}"
 
 
 @dataclass(frozen=True)

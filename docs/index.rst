@@ -40,7 +40,7 @@ with your model.
 
 #. Code Generation
 #. Compile and Link
-#. Import and Inspect
+#. Inspect
 
 Code Generation
 ---------------
@@ -50,14 +50,5 @@ to allow PySimlink to interact with the model.
 
 Compile and Link
 ----------------
-This step is done for you, automatically. Although, you may be required to provide some
-additional information during the first run.
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-* :ref:`license <License>`
+This step is done for you, when you import the module. Isn't that great!?
 
