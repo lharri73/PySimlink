@@ -106,8 +106,8 @@ Now you can view run the model and start printing and changing parameters
     my_awesome_model = Model("my_awesome_model", "./my_awesome_model.zip")
     my_awesome_model.reset()
 
-    for i in range(len(my_awesome_model)):
+    for i in enumerate(my_awesome_model):
         Constant = my_awesome_model.get_block_param("my_awesome_model/Constant", param="Value")
         print(Constant) # np.ndarray
         new_val = np.full((3,3,2), i)
-        my_awesome_modelset_block_param("my_awesome_model/Constant", param="Value", value=new_val)
+        my_awesome_model.set_block_param("my_awesome_model/Constant", param="Value", value=new_val)

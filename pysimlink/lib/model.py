@@ -42,7 +42,13 @@ class Model:
         import model_interface_c  # pylint: disable=C0415,E0401
 
         self._model = model_interface_c.Model(self._model_paths.root_model_name)
-        self._orientations = model_interface_c.rtwCAPI_Orientation
+        self.orientations = model_interface_c.rtwCAPI_Orientation
+
+    def __len__(self):
+        """
+        Get the total number of steps this model can run
+        """
+        return self.step_size() * self.tFinal()
 
     def get_params(self) -> "list[anno.ModelInfo]":
         """
@@ -163,9 +169,9 @@ class Model:
         """
         model_name = self._model_paths.root_model_name if model_name is None else model_name
         info = self._model.block_param_info(model_name, block, param)
-        dtype = DataType(info.cDataType, info.pythonType, info.dims, info.orientation)
-        if dtype.orientation in [self._orientations.col_major_nd, self._orientations.col_major]:
+        dtype = DataType(info)
+        if dtype.orientation in [self.orientations.col_major_nd, self.orientations.col_major]:
             value = np.asfortranarray(value)
-        elif dtype.orientation in [self._orientations.row_major_nd, self._orientations.row_major]:
+        elif dtype.orientation in [self.orientations.row_major_nd, self.orientations.row_major]:
             value = np.ascontiguousarray(value)
         self._model.set_block_param(model_name, block, param, value)
