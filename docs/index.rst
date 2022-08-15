@@ -10,12 +10,9 @@ Python + Simulink = PySimlink!
    :hidden:
 
    src/quickstart
-   src/autodoc
    src/howto
+   src/autodoc
    src/license
-
-.. note::
-   This package is still under development, and its interface may not be complete.
 
 **PySimlink** is a python package that compiles Simulink codegen files (with additional
 mixins) into a simple interface that you can interact with in Python! The impetus to
@@ -23,32 +20,30 @@ create this project stems from the frustration with how difficult it is to model
 systems in pure Python. While there are tools that make this task possible, why reinvent the
 wheel when Simulink is so well suited for the task.
 
-With this package, you can change block and model parameters, read signal values,
-run the model in "accelerator mode", and even run multiple instances of the same
-model at once all without requiring a MATLAB runtime! All you need is Simulink Coder, and the ability to export your model to
-a grt target.
+**With this package, you can**:
+
+* Read and set block parameters
+* Read and set model parameters
+* Read signal values
+* Change the simulation stop time of your model
+* Run a model in "accelerator mode"
+* Run multiple instances of the same model
+
+All without the MATLAB runtime!
 
 **What PySimlink can't do:**
 
 * Add or remove blocks to a model (the structure of the model is final once code is generated)
-* Some signals and blocks are reduced/optimized. These are not accessible.
+* Interact with models using variable step solvers
+* Some signals and blocks are reduced/optimized during code generation. These are not accessible.
 
-Getting Started
-================
-There are three main steps to perform before you are able to run and interact
-with your model.
+  * `virtual blocks <https://www.mathworks.com/help/simulink/ug/nonvirtual-and-virtual-blocks.html>`_
+    are not compiled and cannot be accessed by PySimlink.
+* Change the value of signals during simulation
 
-#. Code Generation
-#. Compile and Link
-#. Inspect
+  * Changing the value of a signal could cause a singularity in derivatives/integrals depending on the solver.
+    This also would only affect the major time step and would be overwritten during the signal update of the next minor timestep.
 
-Code Generation
----------------
-You must use the `grt.tlc` target in simulink coder, and your model **must build and run**
-in simulink. This package is only tested with c targets. You must also enable the c_api
-to allow PySimlink to interact with the model.
+    * See the :ref:`How-To guide <change signals>` for a workaround.
 
-Compile and Link
-----------------
-This step is done for you, when you import the module. Isn't that great!?
 

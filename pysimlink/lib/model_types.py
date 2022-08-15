@@ -38,7 +38,7 @@ class ModelParam:
 
     Attributes:
         model_param (str): Name of the model parameter (these are usually stored withing the model workspace in simulink)
-        data_type (:class`DataType`): data type object describing this parameter
+        data_type (:class:`DataType`): data type object describing this parameter
     """
 
     model_param: str

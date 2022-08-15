@@ -13,10 +13,11 @@
 # import os
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
+import sys, os
 
 
 # -- Project information -----------------------------------------------------
-
+sys.path.insert(0, os.path.abspath("../pysimlink"))
 project = "PySimlink"
 copyright = "2022, Landon Harris"
 author = "Landon Harris"
@@ -35,7 +36,8 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.githubpages",
     "sphinx.ext.napoleon",
-    "sphinx_toolbox.collapse"
+    "sphinx_toolbox.collapse",
+    "sphinx_search.extension",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -58,6 +60,11 @@ html_theme = "sphinx_rtd_theme"
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
-import sys, os
 
-sys.path.insert(0, os.path.abspath("../pysimlink"))
+html_context = {
+    "display_github": True, # Integrate GitHub
+    "github_user": "lharri73", # Username
+    "github_repo": "PySimlink", # Repo name
+    "github_version": "master", # Version
+    "conf_py_path": "/docs/", # Path in the checkout to the docs root
+}

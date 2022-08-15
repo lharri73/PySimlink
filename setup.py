@@ -16,7 +16,7 @@ setup(
     long_description_content_type='text/markdown',
     packages=find_packages(),
     install_requires=reqs,
-    extras_require={"dev": ["pylint", "black", "sphinx_rtd_theme", "sphinx", "tqdm", "sphinx-toolbox"]},
+    extras_require={"dev": ["pylint", "black", "sphinx_rtd_theme", "sphinx", "tqdm", "sphinx-toolbox", "sphinx-hoverxref", "readthedocs-sphinx-search"]},
     include_package_data=True,
     python_requires=">=3.6",
     keywords=["Simulink"],

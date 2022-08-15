@@ -11,6 +11,8 @@ you're feeling bold, you can copy-paste a script to do it for you!
 
 Here's said script:
 
+.. _param set script:
+
 .. code-block:: matlab
 
     model = 'MyAwesomeModel';        % <-- The name of your model...change this!
@@ -45,30 +47,15 @@ It's just changing a few settings in your model's config. These are the minimum
 settings required for PySimlink, and should not affect your model's ability to
 build (knock on wood)...
 
-.. collapse:: Here is what it's changing, in case you want to do it for yourself or are using
-    multiple config sets
-
-    * On the :guilabel:`solver` page, uncheck the :guilabel:`Treat each discrete rate as a separate task` box
-    * On the same page, uncheck the :guilabel:`Allow tasks to execute concurrently on the target` box
-    * Change the :menuselection:`Code Generation --> System target file` to :guilabel:`grt.tlc`
-    * On the same page, enable the :guilabel:`Generate code only` checkbox
-    * On the same page, enable the :guilabel:`Package code and artifacts` checkbox
-    * On the same page, disable the :guilabel:`Generate makefile` checkbox
-    * Under :menuselection:`Code Generation --> Interface`, check the :guilabel:`signals`, :guilabel:`parameters`, :guilabel:`states`, and :guilabel:`root-level I/O`
-      boxes
-    * On the same page, under the :guilabel:`Advanced parameters` section, uncheck the :guilabel:`Classic call interface`
-    * On the same page, under the :guilabel:`Advanced parameters` section, check the :guilabel:`Single output/update function`
-    * If it's a configuration reference, propagate these changes
-    * Build the model (this generates the code)
-
+Want to do this manually? Check out the :ref:`How-To guide <gen model params>` for details.
 
 Step 2: Let PySimlink Handle The Rest
 -------------------------------------
 At this point, you should have a copy of the model in the form of generated code.
 Let's say it's called :file:`my_awesome_model.zip` and the name of your root model is "my_awesome_model".
 
-.. tip:: The zip file does not needed to be named after the model. You can also extract the zip file and provide the
-         path to the directory that contains the zip folder's contents to improve the build time.
+.. tip:: The zip file does not needed to be named after the model. To slightly improve build time, you can also extract
+         the zip file and provide the path to the directory that contains the zip folder's contents instead.
 
 Now, you can import and inspect the model.
 
@@ -94,13 +81,13 @@ Which will show you all of the parameters that you can view and change.
         signals:
             Block: 'my_awesome_model/Clock' | Signal Name: '' | data_type: 'float64 (double) dims: [1, 1] order: rtwCAPI_Orientation.scalar'
             Block: 'my_awesome_model/Clock1' | Signal Name: '' | data_type: 'float64 (double) dims: [1, 1] order: rtwCAPI_Orientation.scalar'
-    ...
+        ...
 
-Now you can view run the model and start printing and changing parameters
+Now you can run the model and start manipulating parameters.
 
 .. code-block:: python
 
-    from pysimlink import Model, print_all_params
+    from pysimlink import Model
     import numpy as np
 
     my_awesome_model = Model("my_awesome_model", "./my_awesome_model.zip")
