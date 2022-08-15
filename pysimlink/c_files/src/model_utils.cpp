@@ -11,7 +11,7 @@
 #include <tuple>
 #include <cassert>
 
-double PYSIMLINK::get_model_param(const rtwCAPI_ModelMappingInfo *mmi, const char *param,
+py::buffer_info PYSIMLINK::get_model_param(const rtwCAPI_ModelMappingInfo *mmi, const char *param,
                                   std::unordered_map<map_key_1s, size_t, pair_hash, Compare> &param_map) {
     if (param == nullptr)
         throw std::runtime_error("passed nullptr to get_model_param as search param");
@@ -41,32 +41,16 @@ double PYSIMLINK::get_model_param(const rtwCAPI_ModelMappingInfo *mmi, const cha
     if (param_index == -1) {
         // never found the parameter
         std::stringstream err("");
-        err << "get_model_param: Parameter (" << param << ") does not exist in mmi";
+        err << "get_model_param: Parameter (" << param << ") does not exist in model";
         throw std::runtime_error(err.str().c_str());
-
-        return 0;
     }
 
-    validate_scalar(mmi, capiModelParams[param_index], "get_model_param", param);
     rtwCAPI_DataTypeMap dt = mmi->staticMap->Maps.dataTypeMap[rtwCAPI_GetModelParameterDataTypeIdx(capiModelParams,
                                                                                                    param_index)];
     void *addr = mmi->InstanceMap.dataAddrMap[rtwCAPI_GetModelParameterAddrIdx(capiModelParams, param_index)];
-    double ret;
-    if (strcmp(dt.cDataName, "int") == 0) {
-        int tmp = *(int *) addr;
-        ret = tmp;
-    } else if (strcmp(dt.cDataName, "float") == 0) {
-        float tmp = *(float *) addr;
-        ret = tmp;
-    } else if (strcmp(dt.cDataName, "double") == 0) {
-        ret = *(double *) addr;
-    } else {
-        std::stringstream err("");
-        err << "get_model_param: Parameter (" << param << ") has invalid cDataName(" << dt.cDataName;
-        err << "). Can only handle [int,float,double]";
-        throw std::runtime_error(err.str().c_str());
-    }
-    return ret;
+    rtwCAPI_DimensionMap paramDim = rtwCAPI_GetDimensionMap(mmi)[rtwCAPI_GetBlockParameterDimensionIdx(
+            capiModelParams, param_index)];
+    return PYSIMLINK::format_pybuffer(mmi, dt, paramDim, addr);
 }
 
 py::buffer_info PYSIMLINK::get_block_param(const rtwCAPI_ModelMappingInfo *mmi, const char *block, const char *param,
@@ -96,7 +80,7 @@ py::buffer_info PYSIMLINK::get_block_param(const rtwCAPI_ModelMappingInfo *mmi, 
 
     if (param_iter == -1) {
         std::stringstream err("");
-        err << "get_block_param: Parameter (" << block << ',' << param << ") does not exist in mmi";
+        err << "get_block_param: Parameter (" << block << ',' << param << ") does not exist in model";
         throw std::runtime_error(err.str().c_str());
     }
 
@@ -253,7 +237,7 @@ void PYSIMLINK::set_block_param(const rtwCAPI_ModelMappingInfo *mmi, const char 
         }
     }
     std::stringstream err("");
-    err << "set_block_param: Parameter (" << block << ',' << param << ") does not exist in mmi";
+    err << "set_block_param: Parameter (" << block << ',' << param << ") does not exist in model";
     throw std::runtime_error(err.str().c_str());
 
 }
@@ -383,6 +367,39 @@ struct PYSIMLINK::DataType PYSIMLINK::describe_block_param(const rtwCAPI_ModelMa
         if (strcmp(block_path, capiBlockParameters[i].blockPath) == 0 &&
             strcmp(param, capiBlockParameters[i].paramName) == 0) {
             return PYSIMLINK::populate_dtype(mmi, capiBlockParameters[i]);
+        }
+    }
+}
+
+void PYSIMLINK::set_model_param(const rtwCAPI_ModelMappingInfo *mmi, const char *param, py::array value) {
+    // TODO: cache the param index here
+    const rtwCAPI_ModelParameters *capiModelParameters = rtwCAPI_GetModelParameters(mmi);
+    uint_T nParams = rtwCAPI_GetNumModelParameters(mmi);
+    for (size_t i = 0; i < nParams; i++) {
+        if (strcmp(param, capiModelParameters[i].varName) == 0) {
+//            validate_scalar(mmi, capiModelParameters[i], "set_block_parameter", block);
+
+            rtwCAPI_DataTypeMap dt = rtwCAPI_GetDataTypeMap(mmi)[rtwCAPI_GetModelParameterDataTypeIdx(
+                    capiModelParameters, i)];
+            rtwCAPI_DimensionMap blockDim = rtwCAPI_GetDimensionMap(mmi)[rtwCAPI_GetModelParameterDimensionIdx(
+                    capiModelParameters, i)];
+            void *addr = rtwCAPI_GetDataAddressMap(mmi)[rtwCAPI_GetModelParameterAddrIdx(capiModelParameters, i)];
+
+            PYSIMLINK::fill_from_buffer(mmi, dt, blockDim, addr, value);
+            return;
+        }
+    }
+    std::stringstream err("");
+    err << "set_model_param: Parameter (" << param << ") does not exist in model";
+    throw std::runtime_error(err.str().c_str());
+}
+
+struct PYSIMLINK::DataType PYSIMLINK::describe_model_param(const rtwCAPI_ModelMappingInfo *mmi, const char *param) {
+    const rtwCAPI_ModelParameters *capiModelParameters = rtwCAPI_GetModelParameters(mmi);
+    uint_T nParams = rtwCAPI_GetNumModelParameters(mmi);
+    for (size_t i = 0; i < nParams; i++) {
+        if (strcmp(param, capiModelParameters[i].varName) == 0) {
+            return PYSIMLINK::populate_dtype(mmi, capiModelParameters[i]);
         }
     }
 }

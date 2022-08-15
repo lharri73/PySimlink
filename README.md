@@ -9,7 +9,7 @@ With this package, you can:
 - Send and receive data in the form of numpy arrays
 - Run multiple instances of the same model
 
-All without requiring a MATLAB runtime on the target machine! 
+All without requiring a MATLAB runtime on the target machine! No C/C++ programming required!
 
 To get started, you need the Simulink Coder, and the ability to export your model to a grt 
 target. There are some limitations, namely that your model *must* use a fixed step solver 

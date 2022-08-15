@@ -164,8 +164,7 @@ py::array Model::get_block_param(const std::string& model, const std::string& bl
         throw std::runtime_error(buf);
     }
     py::buffer_info ret = PYSIMLINK::get_block_param(mmi_idx->second, block_path.c_str(), param.c_str(), block_map);
-    py::array tmp = py::array(ret);
-    return tmp;
+    return py::array(ret);
 }
 
 struct PYSIMLINK::DataType Model::block_param_info(const std::string &model, const std::string& block_path, const std::string& param){
@@ -185,4 +184,42 @@ struct PYSIMLINK::DataType Model::block_param_info(const std::string &model, con
         throw std::runtime_error(buf);
     }
     return PYSIMLINK::describe_block_param(mmi_idx->second, block_path.c_str(), param.c_str());
+}
+
+py::array Model::get_model_param(const std::string &model, const std::string &param) {
+    if(!initialized){
+        throw std::runtime_error("Model must be initialized before calling get_block_param. Call `reset()` first!");
+    }
+
+    if(model.empty())
+        throw std::runtime_error("No model name provided to get_model_param!");
+    if(param.empty())
+        throw std::runtime_error("No parameter provided to get_model_param!");
+
+    auto mmi_idx = mmi_map.find(model);
+    if(mmi_idx == mmi_map.end()){
+        char buf[256];
+        sprintf(buf, "Cannot find model with name: %s", model.c_str());
+        throw std::runtime_error(buf);
+    }
+    py::buffer_info ret = PYSIMLINK::get_model_param(mmi_idx->second, param.c_str(), model_param);
+    return py::array(ret);
+}
+
+struct PYSIMLINK::DataType Model::model_param_info(const std::string &model, const std::string &param) {
+    if(!initialized){
+        throw std::runtime_error("Model must be initialized before calling get_block_param. Call `reset()` first!");
+    }
+
+    if(model.empty())
+        throw std::runtime_error("No model name provided to get_model_param!");
+    if(param.empty())
+        throw std::runtime_error("No parameter provided to get_model_param!");
+    auto mmi_idx = mmi_map.find(model);
+    if(mmi_idx == mmi_map.end()){
+        char buf[256];
+        sprintf(buf, "Cannot find model with name: %s", model.c_str());
+        throw std::runtime_error(buf);
+    }
+    return PYSIMLINK::describe_model_param(mmi_idx->second, param.c_str());
 }

@@ -27,8 +27,11 @@ PYBIND11_MODULE(model_interface_c, m) {
             .def("get_signal", &PYSIMLINK::Model::get_sig)
             .def("get_block_param", &PYSIMLINK::Model::get_block_param)
             NEW_TEMPLATE_FUNC("set_block_param", &PYSIMLINK::Model::set_block_param)
+            .def("get_model_param", &PYSIMLINK::Model::get_model_param)
+            NEW_TEMPLATE_FUNC("set_model_param", &PYSIMLINK::Model::set_model_param)
             .def("get_params", &PYSIMLINK::Model::get_params)
-            .def("block_param_info", &PYSIMLINK::Model::block_param_info);
+            .def("block_param_info", &PYSIMLINK::Model::block_param_info)
+            .def("model_param_info", &PYSIMLINK::Model::model_param_info);
 
     py::enum_<rtwCAPI_Orientation>(m, "rtwCAPI_Orientation")
             .value("vector", rtwCAPI_VECTOR)

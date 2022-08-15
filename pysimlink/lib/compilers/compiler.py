@@ -50,7 +50,6 @@ class Compiler:
             lib = glob.glob(os.path.join(self.model_paths.tmp_dir, "build", "out", "library", "Debug", "model_interface_c.*"))
         else:
             lib = glob.glob(os.path.join(self.model_paths.tmp_dir, "build", "out", "library", "model_interface_c.*"))
-        print(os.name, lib)
         return len(lib) == 0
 
     def _get_simulink_deps(self):

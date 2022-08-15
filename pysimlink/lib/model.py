@@ -1,5 +1,6 @@
 import os
 import sys
+import warnings
 
 import numpy as np
 
@@ -160,6 +161,21 @@ class Model:
         model_name = self._model_paths.root_model_name if model_name is None else model_name
         return self._model.get_block_param(model_name, block_path, param)
 
+    def get_model_param(self, param, model_name=None) -> "np.ndarray":
+        """
+        Get the value of a model parameter
+
+        Args:
+            param: Name of the parameter to retrieve
+            model_name: Name of the model provided by :func:`pysimlink.print_all_params`. None if there are no model references.
+
+        Returns:
+            np.ndarray with the value of the parameter
+        """
+
+        model_name = self._model_paths.root_model_name if model_name is None else model_name
+        return self._model.get_model_param(model_name, param)
+
     def get_models(self) -> "list[str]":
         """
         Gets a list of all reference models (and the root model) in this model.
@@ -184,8 +200,36 @@ class Model:
         model_name = self._model_paths.root_model_name if model_name is None else model_name
         info = self._model.block_param_info(model_name, block, param)
         dtype = DataType(info)
+        if str(value.dtype) != dtype.pythonType:
+            warnings.warn(f"Datatype of value does not match parameter. Expected {dtype.pythonType} got {value.dtype}", RuntimeWarning, stacklevel=2)
         if dtype.orientation in [self.orientations.col_major_nd, self.orientations.col_major]:
-            value = np.asfortranarray(value)
+            value = np.asfortranarray(value, dtype=dtype.pythonType)
         elif dtype.orientation in [self.orientations.row_major_nd, self.orientations.row_major]:
-            value = np.ascontiguousarray(value)
+            value = np.ascontiguousarray(value, dtype=dtype.pythonType)
+        elif str(value.dtype) != dtype.pythonType:
+            value = value.astype(dtype.pythonType)
         self._model.set_block_param(model_name, block, param, value)
+
+    def set_model_param(self, param: str, value: "anno.ndarray", model_name: "anno.Union[str,None]" = None):
+        """
+        Set a model parameter.
+
+        Args:
+            param: Name of the parameter to change
+            value: new value of the parameter
+            model_name: Name of the model provided by :func:`pysimlink.print_all_params`. None if there are no model references.
+        Raises:
+            RuntimeError: If the value array is not the correct shape or orientation as the parameter to change
+        """
+        model_name = self._model_paths.root_model_name if model_name is None else model_name
+        info = self._model.model_param_info(model_name, param)
+        dtype = DataType(info)
+        if str(value.dtype) != dtype.pythonType:
+            warnings.warn(f"Datatype of value does not match parameter. Expected {dtype.pythonType} got {value.dtype}", RuntimeWarning, stacklevel=2)
+        if dtype.orientation in [self.orientations.col_major_nd, self.orientations.col_major]:
+            value = np.asfortranarray(value, dtype=dtype.pythonType)
+        elif dtype.orientation in [self.orientations.row_major_nd, self.orientations.row_major]:
+            value = np.ascontiguousarray(value, dtype=dtype.pythonType)
+        elif str(value.dtype) != dtype.pythonType:
+            value = value.astype(dtype.pythonType)
+        self._model.set_model_param(model_name, param, value)
