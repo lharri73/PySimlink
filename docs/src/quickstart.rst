@@ -57,6 +57,12 @@ Let's say it's called :file:`my_awesome_model.zip` and the name of your root mod
 .. tip:: The zip file does not needed to be named after the model. To slightly improve build time, you can also extract
          the zip file and provide the path to the directory that contains the zip folder's contents instead.
 
+First, install PySimlink
+
+.. code-block:: bash
+
+    pip install pysimlink
+
 Now, you can import and inspect the model.
 
 .. code-block:: python
@@ -98,3 +104,5 @@ Now you can run the model and start manipulating parameters.
         print(Constant) # np.ndarray
         new_val = np.full((3,3,2), i)
         my_awesome_model.set_block_param("my_awesome_model/Constant", param="Value", value=new_val)
+
+Have a Generation error? Couldn't find a compiler or :code:`nmake -? not found`? See the :ref:`compiler setup <compiler setup>` page.

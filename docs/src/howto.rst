@@ -8,6 +8,8 @@ cmake binary that's installed with pip.
 
 While mingw is a valid compiler on Windows, it's much simpler to use the Visual Studio tools.
 
+.. _compiler setup:
+
 Setup
 ^^^^^
 
