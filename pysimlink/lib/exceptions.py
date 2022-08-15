@@ -1,4 +1,12 @@
 class GenerationError(Exception):
+    """
+    Exception raised when generating build files fails.
+
+    Attributes:
+        dump (str): stdout and stderr output of the **generation** process
+        cmake (str): contents of the :file:`CMakeLists.txt` file
+    """
+
     def __init__(self, *args):
         self.dump = args[0]
         self.cmake = args[1]
@@ -9,6 +17,14 @@ class GenerationError(Exception):
 
 
 class BuildError(Exception):
+    """
+    Exception raised when generating build files succeeded but compiling the model fails.
+
+    Attributes:
+        dump (str): stdout and stderr output of the **build** process
+        cmake (str): contents of the :file:`CMakeLists.txt` file
+    """
+
     def __init__(self, *args):
         self.dump = args[0]
         self.cmake = args[1]

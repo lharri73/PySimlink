@@ -8,3 +8,10 @@ if typing.TYPE_CHECKING:
     from pysimlink.lib.model import Model
     from typing import Union
     from numpy import ndarray
+    from typing import Optional
+
+    c_model_info = typing.Any
+    c_model_param = typing.Any
+    c_model_datatype = typing.Any
+    c_model_signal = typing.Any
+    c_model_block_param = typing.Any

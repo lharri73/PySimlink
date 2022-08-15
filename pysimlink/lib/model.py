@@ -5,7 +5,7 @@ import numpy as np
 
 from pysimlink.lib.model_paths import ModelPaths
 from pysimlink.utils import annotation_utils as anno
-from pysimlink.lib.model_types import DataType
+from pysimlink.lib.model_types import DataType, ModelInfo
 
 
 class Model:
@@ -24,9 +24,22 @@ class Model:
         path_to_model: str,
         compile_type: str = "grt",
         suffix: str = "rtw",
-        tmp_dir: str = None,
+        tmp_dir: "anno.Optional[str]" = None,
         force_rebuild: bool = False,
     ):
+        """
+        Args:
+            model_name (str): name of the root simulink model
+            path_to_model (str): path to the directory containing code generated from the Simulink Coder *or* the packaged zip file
+            compile_type (str): Makefile template used to generate code from Simulink Coder. Only GRT is supported.
+            suffix (str): Simulink Coder folders are almost always suffixed with rtw (real time workshop).
+            tmp_dir (Optional[str]): Path to the directory that will be used to build the model. Defaults to :file:`__pycache__/{model_name}`
+            force_rebuild (bool): force pysimlink to recompile the model from the source located at :code:`path_to_model`. Removes all build artifacts.
+
+        Attributes:
+            orientations: enumeration describing matrix orientations (row major, column major, etc.). This enumeration is
+                likely the same among all models, but could change across MATLAB versions.
+        """
 
         self._model_paths = ModelPaths(path_to_model, model_name, compile_type, suffix, tmp_dir)
         self._compiler = self._model_paths.compiler_factory()
@@ -54,12 +67,12 @@ class Model:
         """
         Return an instance of all parameters, blocks, and signals in the _model
 
-        See `lib.model_utils.print_all_params` for iterating and printing the contents of this object
+        See :func:`pysimlink.print_all_params` for iterating and printing the contents of this object
 
         Returns:
-            list[ModelInfo]: List of model info, one for each model (if reference models present). One ModelInfo if no reference models
+            list[:class:`pysimlink.types.ModelInfo`]: List of model info, one for each model (if reference models present). One ModelInfo if no reference models
         """
-        return self._model.get_params()
+        return list(map(ModelInfo, self._model.get_params()))
 
     def reset(self):
         """
@@ -74,7 +87,7 @@ class Model:
 
         Args:
             iterations: Number of timesteps to step internally.
-                `model.step(10)` is equivalent to calling `for _ range(10): model.step(1)` functionally, but compiled.
+                :code:`model.step(10)` is equivalent to calling :code:`for _ range(10): model.step(1)` functionally, but compiled.
 
         Raises:
             RuntimeError: If the model encounters an error (these will be raised from simulink). Most commonly, this
@@ -121,8 +134,9 @@ class Model:
 
         Args:
             block_path: Path to the originating block
+            model_name: Name of the model provided by :func:`pysimlink.print_all_params`. None if there are no model
+                references (using :code:`None` will retrieve from the root model).
             sig_name: Name of the signal
-            model_name: Name of the model provided by "print_all_params". None if there are no model references.
 
         Returns:
             Value of the signal at the current timestep
@@ -137,7 +151,7 @@ class Model:
         Args:
             block_path: Path the block within the model
             param: Name of the parameter to retrieve
-            model_name: Name of the model provided by "print_all_params". None if there are no model references.
+            model_name: Name of the model provided by :func:`pysimlink.print_all_params`. None if there are no model references.
 
         Returns:
             np.ndarray with the value of the parameter
@@ -163,7 +177,7 @@ class Model:
             block: Path to the block within the model
             param: Name of the parameter to change
             value: new value of the parameter
-            model_name: Name of the model provided by "print_all_params". None if there are no model references.
+            model_name: Name of the model provided by :func:`pysimlink.print_all_params`. None if there are no model references.
         Raises:
             RuntimeError: If the value array is not the correct shape or orientation as the parameter to change
         """

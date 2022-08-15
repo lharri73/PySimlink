@@ -1,5 +1,6 @@
-[project]
-requires-python = ">=3.6"
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
 
 [tool.black]
 line-length = 100
@@ -16,7 +17,5 @@ exclude = '''
   |\.hpp
   |\.h
   |\.txt
-  |Dockerfile
-  |Jenkinfile
 )/
 '''

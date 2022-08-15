@@ -11,7 +11,7 @@ Python + Simulink = PySimlink!
 
    src/quickstart
    src/autodoc
-   src/errors
+   src/howto
    src/license
 
 .. note::
