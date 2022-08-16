@@ -27,9 +27,17 @@ jobs:
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
 
+      - name: Get Changelog
+        id: vars
+        run: | lineNo=`grep -n "## v1.0.1" CHANGELOG.md | awk '{split($0,a,":"); print a[1]}'`
+               lineNo=$((lineNo+1))
+               contents=`tail -n +$lineNo CHANGELOG.md`
+               echo ::set-output name=change::${ $contents }
+
       - name: Github Release
         uses: ncipollo/release-action@v1
         with:
           artifacts: "dist/*"
           draft: false
           prerelease: false
+          body: ${{ steps.vars.outputs.change }}
