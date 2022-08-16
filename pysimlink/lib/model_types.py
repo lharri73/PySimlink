@@ -16,6 +16,7 @@ class DataType:
             Since this enum is evaluated at compile time, it is imported from the compiled model. To check this value
             dynamically, use :attr:`pysimlink.Model.orientations`.
     """
+
     cDataType: str
     pythonType: str
     dims: "list[int]"

@@ -16,16 +16,13 @@ class CmakeTemplate:
     def __init__(self, model_name):
         self.model_name = model_name
         self.libs = []
-        self.replacers = [
-            (re.compile(r'(?<!\\) '), r"\ "),
-            (re.compile(r'\\(?! )'), r"/")
-        ]
+        self.replacers = [(re.compile(r"(?<!\\) "), r"\ "), (re.compile(r"\\(?! )"), r"/")]
 
     def replacer(self, string):
         for search, rep in self.replacers:
             indices = list(re.finditer(search, string))
             for idx in reversed(indices):
-                string = string[:idx.start(0)] + rep + string[idx.end(0):]
+                string = string[: idx.start(0)] + rep + string[idx.end(0) :]
         return string
 
     def header(self):

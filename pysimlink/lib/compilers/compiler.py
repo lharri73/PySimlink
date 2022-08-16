@@ -46,10 +46,23 @@ class Compiler:
         Returns:
             bool: True if the model needs to be compiled, False otherwise
         """
-        if os.name == 'nt':
-            lib = glob.glob(os.path.join(self.model_paths.tmp_dir, "build", "out", "library", "Debug", "model_interface_c.*"))
+        if os.name == "nt":
+            lib = glob.glob(
+                os.path.join(
+                    self.model_paths.tmp_dir,
+                    "build",
+                    "out",
+                    "library",
+                    "Debug",
+                    "model_interface_c.*",
+                )
+            )
         else:
-            lib = glob.glob(os.path.join(self.model_paths.tmp_dir, "build", "out", "library", "model_interface_c.*"))
+            lib = glob.glob(
+                os.path.join(
+                    self.model_paths.tmp_dir, "build", "out", "library", "model_interface_c.*"
+                )
+            )
         return len(lib) == 0
 
     def _get_simulink_deps(self):
@@ -135,7 +148,9 @@ class Compiler:
             with open(err_file, "w", encoding="utf-8") as f:
                 f.write(output1.decode() if output1 else "")
                 f.write(err1.decode() if err1 else "")
-            raise GenerationError(err_file, os.path.join(self.model_paths.tmp_dir, "CMakeLists.txt"))
+            raise GenerationError(
+                err_file, os.path.join(self.model_paths.tmp_dir, "CMakeLists.txt")
+            )
 
         with Popen(
             [os.path.join(cmake.CMAKE_BIN_DIR, "cmake"), "--build", build_dir],

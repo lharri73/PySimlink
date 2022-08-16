@@ -13,10 +13,21 @@ setup(
     author_email="lharri73@vols.utk.edu",
     description="Compile, run, and interact with Simulink models natively in Python!",
     long_description=readme,
-    long_description_content_type='text/markdown',
+    long_description_content_type="text/markdown",
     packages=find_packages(),
     install_requires=reqs,
-    extras_require={"dev": ["pylint", "black", "sphinx_rtd_theme", "sphinx", "tqdm", "sphinx-toolbox", "sphinx-hoverxref", "readthedocs-sphinx-search"]},
+    extras_require={
+        "dev": [
+            "pylint",
+            "black",
+            "sphinx_rtd_theme",
+            "sphinx",
+            "tqdm",
+            "sphinx-toolbox",
+            "sphinx-hoverxref",
+            "readthedocs-sphinx-search",
+        ]
+    },
     include_package_data=True,
     python_requires=">=3.6",
     keywords=["Simulink"],
@@ -26,11 +37,11 @@ setup(
         "Topic :: Software Development :: Code Generators",
         "Programming Language :: Python :: 3",
         "Development Status :: 3 - Alpha",
-        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)"
+        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     ],
     url="https://github.com/lharri73/PySimlink",
     project_urls={
-        'Documentation': "https://lharri73.github.io/PySimlink/",
-        'Source': "https://github.com/lharri73/PySimlink"
-    }
+        "Documentation": "https://lharri73.github.io/PySimlink/",
+        "Source": "https://github.com/lharri73/PySimlink",
+    },
 )

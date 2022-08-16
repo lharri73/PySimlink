@@ -6,25 +6,25 @@ from pysimlink.lib.exceptions import GenerationError, BuildError
 
 
 def main(args):
-    with open(os.path.join(args.dir, 'manifest.pkl'), 'rb') as f:
+    with open(os.path.join(args.dir, "manifest.pkl"), "rb") as f:
         models = pickle.load(f)
 
     for file, model in models:
         print(f"Checking {file}, {model}")
         if args.zip:
-            path = os.path.join(args.dir, 'zips', file)
+            path = os.path.join(args.dir, "zips", file)
         else:
-            path = os.path.join(args.dir, 'extract', file+'_e')
+            path = os.path.join(args.dir, "extract", file + "_e")
         try:
             cur_model = Model(model, path)
         except (GenerationError, BuildError) as e:
             print(e)
-            with open(e.dump, 'r') as f:
+            with open(e.dump, "r") as f:
                 lines = f.read()
                 print(lines)
-            print('--------------------')
+            print("--------------------")
             print("Offending CMakeLists.txt: ")
-            with open(e.cmake, 'r') as f:
+            with open(e.cmake, "r") as f:
                 lines = f.read()
                 print(lines)
             exit(1)
@@ -36,6 +36,6 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("dir")
-    parser.add_argument('--zip', default=False, action='store_true')
+    parser.add_argument("--zip", default=False, action="store_true")
     args = parser.parse_args()
     main(args)

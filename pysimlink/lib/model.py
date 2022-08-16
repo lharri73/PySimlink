@@ -50,10 +50,12 @@ class Model:
             ## Need to compile
             self._compiler.compile()
 
-        for dir, _, _ in os.walk(os.path.join(self._model_paths.tmp_dir, "build", "out", "library")):
+        for dir, _, _ in os.walk(
+            os.path.join(self._model_paths.tmp_dir, "build", "out", "library")
+        ):
             sys.path.append(dir)
 
-        import model_interface_c  # pylint: disable=C0415,E0401
+        import model_interface_c
 
         self._model = model_interface_c.Model(self._model_paths.root_model_name)
         self.orientations = model_interface_c.rtwCAPI_Orientation
@@ -84,7 +86,6 @@ class Model:
     def step(self, iterations: int = 1):
         """
         Step the simulink model
-
 
         Args:
             iterations: Number of timesteps to step internally.
@@ -157,7 +158,6 @@ class Model:
         Returns:
             np.ndarray with the value of the parameter
         """
-
         model_name = self._model_paths.root_model_name if model_name is None else model_name
         return self._model.get_block_param(model_name, block_path, param)
 
@@ -172,7 +172,6 @@ class Model:
         Returns:
             np.ndarray with the value of the parameter
         """
-
         model_name = self._model_paths.root_model_name if model_name is None else model_name
         return self._model.get_model_param(model_name, param)
 
@@ -185,7 +184,13 @@ class Model:
         """
         return self._model.get_models()
 
-    def set_block_param(self, block: str, param: str, value: "anno.ndarray", model_name: "anno.Union[str,None]" = None):
+    def set_block_param(
+        self,
+        block: str,
+        param: str,
+        value: "anno.ndarray",
+        model_name: "anno.Union[str,None]" = None,
+    ):
         """
         Set the parameter of a block within the model.
 
@@ -201,16 +206,23 @@ class Model:
         info = self._model.block_param_info(model_name, block, param)
         dtype = DataType(info)
         if str(value.dtype) != dtype.pythonType:
-            warnings.warn(f"Datatype of value does not match parameter. Expected {dtype.pythonType} got {value.dtype}", RuntimeWarning, stacklevel=2)
+            warnings.warn(
+                f"Datatype of value does not match parameter. Expected {dtype.pythonType} got {value.dtype}",
+                RuntimeWarning,
+                stacklevel=2,
+            )
         if dtype.orientation in [self.orientations.col_major_nd, self.orientations.col_major]:
             value = np.asfortranarray(value, dtype=dtype.pythonType)
         elif dtype.orientation in [self.orientations.row_major_nd, self.orientations.row_major]:
             value = np.ascontiguousarray(value, dtype=dtype.pythonType)
         elif str(value.dtype) != dtype.pythonType:
             value = value.astype(dtype.pythonType)
+            
         self._model.set_block_param(model_name, block, param, value)
 
-    def set_model_param(self, param: str, value: "anno.ndarray", model_name: "anno.Union[str,None]" = None):
+    def set_model_param(
+        self, param: str, value: "anno.ndarray", model_name: "anno.Union[str,None]" = None
+    ):
         """
         Set a model parameter.
 
@@ -225,11 +237,16 @@ class Model:
         info = self._model.model_param_info(model_name, param)
         dtype = DataType(info)
         if str(value.dtype) != dtype.pythonType:
-            warnings.warn(f"Datatype of value does not match parameter. Expected {dtype.pythonType} got {value.dtype}", RuntimeWarning, stacklevel=2)
+            warnings.warn(
+                f"Datatype of value does not match parameter. Expected {dtype.pythonType} got {value.dtype}",
+                RuntimeWarning,
+                stacklevel=2,
+            )
         if dtype.orientation in [self.orientations.col_major_nd, self.orientations.col_major]:
             value = np.asfortranarray(value, dtype=dtype.pythonType)
         elif dtype.orientation in [self.orientations.row_major_nd, self.orientations.row_major]:
             value = np.ascontiguousarray(value, dtype=dtype.pythonType)
         elif str(value.dtype) != dtype.pythonType:
             value = value.astype(dtype.pythonType)
+
         self._model.set_model_param(model_name, param, value)

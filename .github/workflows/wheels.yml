@@ -1,11 +1,6 @@
 name: Build Wheels
 
 on:
-  push:
-    branches:    
-      - main
-    tags:
-      - v*.*.*
   workflow_run:
     workflows:
       - "Build & Test"
