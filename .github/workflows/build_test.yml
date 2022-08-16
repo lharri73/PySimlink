@@ -11,7 +11,6 @@ on:
 jobs:
   test_models:
     name: Test Models on ${{ matrix.os }}
-    needs: build_wheels
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
