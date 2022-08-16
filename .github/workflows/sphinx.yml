@@ -1,11 +1,5 @@
 name: sphinx
-on:
-  push:
-    paths:
-      - 'docs/**'
-  pull_request:
-    paths:
-      - 'docs/**'
+on: ['push', 'pull_request']
 
 env:
   DEFAULT_BRANCH: "master"
@@ -117,8 +111,8 @@ jobs:
       # https://github.com/peaceiris/actions-gh-pages
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
-        if: ${{ github.event_name == 'push' }}
-        #if: ${{ success() && github.event_name == 'push' && github.ref == 'refs/heads/$defaultBranch' }}
+        # if: ${{ github.event_name == 'push' }}
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/$defaultBranch' }}
         with:
           publish_branch: gh-pages
           github_token: ${{ secrets.GITHUB_TOKEN }}
