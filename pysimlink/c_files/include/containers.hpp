@@ -8,6 +8,10 @@ extern "C"{
 #include <string>
 #include <vector>
 
+#ifndef ssize_t
+#define ssize_t long int
+#endif
+
 namespace PYSIMLINK{
     class map_key_2s{
     public:
