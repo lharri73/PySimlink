@@ -6,11 +6,17 @@ on:
       - main
     tags:
       - v*.*.*
+  workflow_run:
+    workflows:
+      - "Build & Test"
+    branches: [main]
+    types: [completed]
 
 jobs:
   build_wheels:
     name: Build wheels
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' && startsWith(github.ref, 'refs/tags/v') }}
 
     steps:
       - uses: actions/checkout@v3
@@ -33,7 +39,7 @@ jobs:
               lineNo=`grep -n "## v1.0.1" CHANGELOG.md | awk '{split($0,a,":"); print a[1]}'`
               lineNo=$((lineNo+1))
               contents=`tail -n +$lineNo CHANGELOG.md`
-              echo ::set-output name=change::${ $contents }
+              echo ::set-output name=change::${ contents }
 
       - name: Github Release
         uses: ncipollo/release-action@v1

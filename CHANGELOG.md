@@ -8,3 +8,8 @@ Bug Fixes
 
 - change ssize_t to long int
 - update readme
+
+## v1.0.2
+Update manifest
+
+- Change wheel build method
