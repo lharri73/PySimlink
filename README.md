@@ -1,4 +1,6 @@
-# PySimlink
+<h1 align="center">
+<img src="https://github.com/lharri73/PySimlink/blob/master/refs/banner.svg?raw=true">
+</h1><br>
 
 ![PyPI](https://img.shields.io/pypi/v/pysimlink)
 
@@ -18,4 +20,3 @@ the code yourself, you need the Simulink Coder. There are some limitations, name
 (a requirement of the grt target). 
 
 Check out the [docs](https://lharri73.github.io/PySimlink/) to get started! 
-
