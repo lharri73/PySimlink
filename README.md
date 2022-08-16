@@ -1,6 +1,6 @@
 <h1 align="center">
 <img src="https://github.com/lharri73/PySimlink/blob/master/refs/banner.svg?raw=true">
-</h1><br>
+</h1>
 
 ![PyPI](https://img.shields.io/pypi/v/pysimlink)
 

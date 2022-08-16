@@ -9,37 +9,20 @@ on:
       - 'docs/**'
 
 jobs:
-  build_wheels:
-    name: Build wheels on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-20.04]
-
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v3
-
-      - name: Build wheels
-        run: mkdir wheelhouse && pip wheel -w ./wheelhouse/ .
-
-      - uses: actions/upload-artifact@v3
-        with:
-          path: ./wheelhouse/pysimlink*.whl
-
   test_models:
     name: Test Models on ${{ matrix.os }}
     needs: build_wheels
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ['3.6', '3.8', '3.9', '3.10']
 
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v3
         with:
-          python-version: '3.9'
+          python-version:  ${{ matrix.python-version }}
 
       - name: Install PySimlink
         run: |
