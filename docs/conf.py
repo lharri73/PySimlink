@@ -37,7 +37,7 @@ extensions = [
     "sphinx.ext.githubpages",
     "sphinx.ext.napoleon",
     "sphinx_toolbox.collapse",
-    "sphinx_search.extension",
+    "sphinx_search.extension"
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -73,4 +73,7 @@ html_logo = "_static/imgs/banner_white.svg"
 html_theme_options = {
     "logo_only": True,
     "display_version": False,
+    "analytics_id": "G-K9ME9NLFYB",
+    "canonical_url": "https://lharri73.github.io/PySimlink/",
+    
 }
