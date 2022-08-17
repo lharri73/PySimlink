@@ -1,5 +1,8 @@
 name: sphinx
-on: ['push', 'pull_request']
+on: 
+  push:
+    branches: [main]
+  pull_request:
 
 env:
   DEFAULT_BRANCH: "master"
@@ -69,9 +72,7 @@ jobs:
       # If a push and default branch, copy build to _gh-pages/ as the "main"
       # deployment.
       - name: Copy new build (default branch)
-        if: |
-          contains(github.event_name, 'push') &&
-          contains(github.ref, env.DEFAULT_BRANCH)
+        if: contains(github.event_name, 'push')
         run: |
           set -x
           # Delete everything under _gh-pages/ that is from the
@@ -83,9 +84,7 @@ jobs:
       # If a push and not on default branch, then copy the build to
       # _gh-pages/branch/$brname (transforming '/' into '--')
       - name: Copy new build (branch)
-        if: |
-          contains(github.event_name, 'push') &&
-          !contains(github.ref, env.DEFAULT_BRANCH)
+        if: contains(github.event_name, 'push')
         run: |
           set -x
           #brname=$(git rev-parse --abbrev-ref HEAD)
@@ -111,8 +110,7 @@ jobs:
       # https://github.com/peaceiris/actions-gh-pages
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
-        # if: ${{ github.event_name == 'push' }}
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/$defaultBranch' }}
+        if: ${{ github.event_name == 'push' }} 
         with:
           publish_branch: gh-pages
           github_token: ${{ secrets.GITHUB_TOKEN }}
