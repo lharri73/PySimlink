@@ -41,4 +41,3 @@ All without the MATLAB runtime!
 
     * See the :ref:`How-To guide <change signals>` for a workaround.
 
-
