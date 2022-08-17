@@ -1,9 +1,9 @@
 name: sphinx
 on: 
   push:
-    branches: [main]
+    branches: [master]
   pull_request:
-    branches: [main]
+    branches: [master]
 
 env:
   DEFAULT_BRANCH: "master"
