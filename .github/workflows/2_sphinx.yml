@@ -5,9 +5,6 @@ on:
   pull_request:
     branches: [master]
 
-env:
-  DEFAULT_BRANCH: "master"
-
 jobs:
   build-and-deploy:
     name: Build and gh-pages
