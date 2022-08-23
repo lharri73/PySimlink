@@ -55,9 +55,9 @@ namespace PYSIMLINK{
             struct PYSIMLINK::DataType block_param_info(const std::string &model, const std::string& block_path, const std::string& param);
             struct PYSIMLINK::DataType model_param_info(const std::string &model, const std::string& param);
 
-            static double step_size();
-            static double tFinal();
-            static void set_tFinal(float);
+            double step_size();
+            double tFinal();
+            void set_tFinal(float);
             std::vector<std::string> get_models() const;
 
         protected:

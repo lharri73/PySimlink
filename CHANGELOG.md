@@ -17,4 +17,5 @@ Update manifest
 ## v1.1.0
 Multithreading
 
-- add support for mutlithreading the `Model` class
+- Add support for mutlithreading the `Model` class
+- Fix __len__ property 

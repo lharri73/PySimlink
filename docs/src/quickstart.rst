@@ -99,7 +99,7 @@ Now you can run the model and start manipulating parameters.
     my_awesome_model = Model("my_awesome_model", "./my_awesome_model.zip")
     my_awesome_model.reset()
 
-    for i in enumerate(my_awesome_model):
+    for i in range(len(my_awesome_model)):
         Constant = my_awesome_model.get_block_param("my_awesome_model/Constant", param="Value")
         print(Constant) # np.ndarray
         new_val = np.full((3,3,2), i)

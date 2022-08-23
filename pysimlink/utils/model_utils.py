@@ -1,4 +1,6 @@
 import os
+import pickle
+import time
 from pysimlink.utils import annotation_utils as anno
 from pysimlink.lib.model_types import DataType
 
@@ -98,3 +100,35 @@ def with_read_lock(func: callable) -> callable:
             raise e
 
     return wrapper
+
+
+def mt_rebuild_check(model_paths: "anno.ModelPaths", force_rebuild: bool) -> bool:
+    """
+    Prevent the model from being rebuilt in every multithreading instance
+
+    Args:
+        model_paths (anno.ModelPaths): instance of the model paths object. Used to get the tmp_dir
+        force_rebuild (bool): flag set by the user that forces the model to rebuild
+
+    Returns:
+         True if the model should rebuild because of the force_rebuild flag and has not already
+    """
+    if not force_rebuild:
+        return False
+
+    compile_info = os.path.join(model_paths.tmp_dir, "compile_info.pkl")
+    if not os.path.exists(compile_info):
+        return False
+
+    with open(compile_info, "rb") as f:
+        info = pickle.load(f)
+
+    if info["parent"] == os.getppid():
+        tdiff = time.time() - info["time"]
+
+        # assume that it takes at least 1 second to start a separate instance of a program
+        # If it takes less than 1 second, then we assume it is run within the same python
+        # instance
+        return tdiff > 1.0
+    else:
+        return True

@@ -1,28 +1,29 @@
 from pysimlink import Model, print_all_params
 import argparse
 import numpy as np
+from multiprocessing import Process
+import os
+import time
 
 
-def main(args):
+def runner(args):
     model = Model(args.model_name, args.model_path)  # , force_rebuild=True)
     model.reset()
 
-    param = model.get_model_param(
-        model_name="HevP4ReferenceApplication/Passenger Car/Drivetrain/Drivetrain", param="G"
-    )
-    print(param)
-    G = np.full((1, 7), 5)
-    model.set_model_param(
-        model_name="HevP4ReferenceApplication/Passenger Car/Drivetrain/Drivetrain",
-        param="G",
-        value=G,
-    )
-    param = model.get_model_param(
-        model_name="HevP4ReferenceApplication/Passenger Car/Drivetrain/Drivetrain", param="G"
-    )
-    print(param)
+    for i in range(len(model)):
+        model.step()
+        print(f"here i: {i:5d} pid: {os.getpid():5d}")
+        time.sleep(2)
 
-    # print_all_params(model)
+
+def main(args):
+    procs = []
+    for i in range(10):
+        this_proc = Process(target=runner, args=(args,))
+        procs.append(this_proc)
+
+    list(map(lambda f: f.start(), procs))
+    list(map(lambda f: f.join(), procs))
 
 
 if __name__ == "__main__":
@@ -31,3 +32,4 @@ if __name__ == "__main__":
     parser.add_argument("model_path")
     args = parser.parse_args()
     main(args)
+    # tmp(args)

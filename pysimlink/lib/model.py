@@ -8,15 +8,17 @@ import tempfile
 
 from pysimlink.lib.model_paths import ModelPaths
 from pysimlink.utils import annotation_utils as anno
-from pysimlink.utils.model_utils import with_read_lock
+from pysimlink.utils.model_utils import mt_rebuild_check
 from pysimlink.lib.model_types import DataType, ModelInfo
+import pickle
+import time
 
 
 class Model:
     """
     Instance of the simulink mode. This class compiles and imports
     the model once built. You can have multiple instances of the same
-    model in one python runtime (although multithreading *compiling* is not tested).
+    model in one python runtime.
     """
 
     _model_paths: "anno.ModelPaths"
@@ -48,14 +50,20 @@ class Model:
         self._model_paths = ModelPaths(path_to_model, model_name, compile_type, suffix, tmp_dir)
         self._compiler = self._model_paths.compiler_factory()
 
-        self._lock = InterProcessReaderWriterLock(os.path.join(tempfile.gettempdir(), model_name+".lock"))
-
+        self._lock = InterProcessReaderWriterLock(
+            os.path.join(tempfile.gettempdir(), model_name + ".lock")
+        )
         with self._lock.write_lock():
-            ## Check need to compile
-            if force_rebuild or self._compiler.needs_to_compile():
-                ## Need to compile
+            # Check need to compile
+            if (
+                mt_rebuild_check(self._model_paths, force_rebuild)
+                or self._compiler.needs_to_compile()
+            ):
+                # Need to compile
                 self._compiler.compile()
-                force_rebuild = False   ## prevent another thread/process from building again
+                with open(os.path.join(self._model_paths.tmp_dir, "compile_info.pkl"), "wb") as f:
+                    obj = {"pid": os.getpid(), "parent": os.getppid(), "time": time.time()}
+                    pickle.dump(obj, f)
 
         for dir, _, _ in os.walk(
             os.path.join(self._model_paths.tmp_dir, "build", "out", "library")
@@ -71,7 +79,7 @@ class Model:
         """
         Get the total number of steps this model can run
         """
-        return self.step_size() * self.tFinal()
+        return int(self.tFinal() / self.step_size())
 
     def get_params(self) -> "list[anno.ModelInfo]":
         """
@@ -224,7 +232,7 @@ class Model:
             value = np.ascontiguousarray(value, dtype=dtype.pythonType)
         elif str(value.dtype) != dtype.pythonType:
             value = value.astype(dtype.pythonType)
-            
+
         self._model.set_block_param(model_name, block, param, value)
 
     def set_model_param(
