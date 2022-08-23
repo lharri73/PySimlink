@@ -13,3 +13,8 @@ Bug Fixes
 Update manifest
 
 - Change wheel build method
+
+## v1.1.0
+Multithreading
+
+- add support for mutlithreading the `Model` class
