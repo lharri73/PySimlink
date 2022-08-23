@@ -3,9 +3,11 @@ import sys
 import warnings
 
 import numpy as np
+from fasteners import InterProcessReaderWriterLock
 
 from pysimlink.lib.model_paths import ModelPaths
 from pysimlink.utils import annotation_utils as anno
+from pysimlink.utils.model_utils import with_read_lock
 from pysimlink.lib.model_types import DataType, ModelInfo
 
 
@@ -45,10 +47,14 @@ class Model:
         self._model_paths = ModelPaths(path_to_model, model_name, compile_type, suffix, tmp_dir)
         self._compiler = self._model_paths.compiler_factory()
 
-        ## Check need to compile
-        if force_rebuild or self._compiler.needs_to_compile():
-            ## Need to compile
-            self._compiler.compile()
+        self._lock = InterProcessReaderWriterLock(os.path.join(self._model_paths.tmp_dir, model_name+".lock"))
+
+        with self._lock.write_lock():
+            ## Check need to compile
+            if force_rebuild or self._compiler.needs_to_compile():
+                ## Need to compile
+                self._compiler.compile()
+                force_rebuild = False   ## prevent another thread/process from building again
 
         for dir, _, _ in os.walk(
             os.path.join(self._model_paths.tmp_dir, "build", "out", "library")

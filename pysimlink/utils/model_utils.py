@@ -67,3 +67,34 @@ def get_other_in_dir(directory: str, known: str):
     model_folders.remove(known)
 
     return model_folders.pop()
+
+
+def with_read_lock(func: callable) -> callable:
+    """Use as decorator (@with_lock) around object methods that need locking.
+
+    Note: The object must have a self._lock property.
+    Locking thus works on the object level (no two locked methods of the same
+    object can be called asynchronously).
+
+    Inspired by `Rllib <https://github.com/ray-project/ray/blob/4963dfaae0fbdbae4a5ad6188bc86986f1a9568a/rllib/utils/threading.py#L7>`_
+
+    Args:
+        func: The function to decorate/wrap.
+    Returns:
+        The wrapped (object-level locked) function.
+    """
+
+    def wrapper(self, *a, **k):
+        try:
+            with self._lock.read_lock():
+                return func(self, *a, **k)
+        except AttributeError as e:
+            if "has no attribute '_lock'" in e.args[0]:
+                raise AttributeError(
+                    "Object {} must have a `self._lock` property (assigned "
+                    "to a fasteners.InterProcessReaderWriterLock object in its "
+                    "constructor)!".format(self)
+                )
+            raise e
+
+    return wrapper
