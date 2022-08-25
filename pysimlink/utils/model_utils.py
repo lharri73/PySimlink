@@ -118,7 +118,7 @@ def mt_rebuild_check(model_paths: "anno.ModelPaths", force_rebuild: bool) -> boo
 
     compile_info = os.path.join(model_paths.tmp_dir, "compile_info.pkl")
     if not os.path.exists(compile_info):
-        return False
+        return True
 
     with open(compile_info, "rb") as f:
         info = pickle.load(f)

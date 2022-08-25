@@ -49,7 +49,6 @@ class Model:
 
         self._model_paths = ModelPaths(path_to_model, model_name, compile_type, suffix, tmp_dir)
         self._compiler = self._model_paths.compiler_factory()
-
         self._lock = InterProcessReaderWriterLock(
             os.path.join(tempfile.gettempdir(), model_name + ".lock")
         )
@@ -79,7 +78,7 @@ class Model:
         """
         Get the total number of steps this model can run
         """
-        return int(self.tFinal() / self.step_size())
+        return int(self.tFinal / self.step_size)
 
     def get_params(self) -> "list[anno.ModelInfo]":
         """
@@ -113,6 +112,7 @@ class Model:
         """
         self._model.step(iterations)
 
+    @property
     def tFinal(self) -> float:
         """
         Get the final timestep of the model.
@@ -122,6 +122,7 @@ class Model:
         """
         return self._model.tFinal()
 
+    @property
     def step_size(self) -> float:
         """
         Get the step size of the model
