@@ -1,6 +1,7 @@
 import os
 import sys
 import warnings
+from xml.dom.minidom import ReadOnlySequentialNamedNodeMap
 
 import numpy as np
 from fasteners import InterProcessReaderWriterLock
@@ -64,15 +65,22 @@ class Model:
                     obj = {"pid": os.getpid(), "parent": os.getppid(), "time": time.time()}
                     pickle.dump(obj, f)
 
+        self.path_dirs = []
         for dir, _, _ in os.walk(
             os.path.join(self._model_paths.tmp_dir, "build", "out", "library")
         ):
             sys.path.append(dir)
+            self.path_dirs.append(dir)
 
         import model_interface_c
 
         self._model = model_interface_c.Model(self._model_paths.root_model_name)
         self.orientations = model_interface_c.rtwCAPI_Orientation
+
+    def __del__(self):
+        if sys.path is not None:
+            for dir in self.path_dirs:
+                sys.path.remove(dir)
 
     def __len__(self):
         """
