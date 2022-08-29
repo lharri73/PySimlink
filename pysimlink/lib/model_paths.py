@@ -24,6 +24,7 @@ class ModelPaths:
     has_references: bool  ## If this model contains references
     models_dir: str  ## directory containing all simulink code related to the models
     slprj_dir: Union[str, None]  ## Directory will all child models (contains compile_type)
+    tmp_dir: str ## Directory where all compiled models will be built
 
     def __init__(
         self,
