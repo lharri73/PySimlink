@@ -136,7 +136,7 @@ def main(pth):
 
     runner=unittest.TextTestRunner(failfast=True)
     ret = runner.run(test_suite)
-    if ret.failures != 0:
+    if ret.failures != ret.expectedFailures:
         exit(1)
     
 
