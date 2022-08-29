@@ -43,9 +43,9 @@ class ModelTester(unittest.TestCase):
         """
         with open("data.pkl", "rb") as f:
             cur_data = pickle.load(f)
+        tic = time.time()
         model = Model(self.model_name, self.model_path, force_rebuild=True)
-        ctime = os.stat(model._model_paths.tmp_dir).st_ctime
-        self.assertGreater(time.time() - ctime, cur_data["nominal"]-1)
+        self.assertGreater(time.time() - tic, cur_data["nominal"]-1)
 
     
     def test_03_no_compile(self):
