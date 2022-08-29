@@ -38,22 +38,20 @@ class ModelTester(unittest.TestCase):
 
 
     def test_02_force_compile(self):
-        """
-        Assert that it took longer than 1 second to compile
-        """
         with open("data.pkl", "rb") as f:
             cur_data = pickle.load(f)
         tic = time.time()
         model = Model(self.model_name, self.model_path, force_rebuild=True)
-        self.assertGreater(time.time() - tic, cur_data["nominal"]-1)
+        self.assertGreater(time.time() - tic, cur_data["nominal"]-5)
 
     
     def test_03_no_compile(self):
+        time.sleep(1)
         with open("data.pkl", "rb") as f:
             cur_data = pickle.load(f)
         tic = time.time()
         model = Model(self.model_name, self.model_path)
-        self.assertLess(time.time() - tic, cur_data["nominal"]-1)
+        self.assertLess(time.time() - tic, cur_data["nominal"]-5)
 
 
     def test_04_len(self):
