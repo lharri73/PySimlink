@@ -30,17 +30,18 @@ class ModelTester(unittest.TestCase):
 
 
     def test_02_force_compile(self):
-        time.sleep(1)  # sleep the assumed time it takes to re-instanciate the model. There's probably a better way of doing this
-        tic = time.time()
+        """
+        Assert that it took longer than 1 second to compile
+        """
         model = Model(self.model_name, self.model_path, force_rebuild=True)
-        toc = time.time()
-        self.assertGreater(toc-tic, 1.0)
+        ctime = os.stat(model._model_paths.tmp_dir).st_ctime
+        self.assertGreater(time.time() - ctime, 1.0)
 
     
     def test_03_no_compile(self):
-        tic = time.time()
         model = Model(self.model_name, self.model_path)
-        self.assertLess(time.time() - tic, 1.0)
+        ctime = os.stat(model._model_paths.tmp_dir).st_ctime
+        self.assertLess(time.time() - ctime, 1.0)
 
 
     def test_04_len(self):

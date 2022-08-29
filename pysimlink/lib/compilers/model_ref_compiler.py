@@ -18,6 +18,7 @@ class ModelRefCompiler(Compiler):
         self.models = None
 
     def compile(self):
+        self.clean()
         self._get_simulink_deps()
         self._build_deps_tree()
         self._gen_custom_srcs()
