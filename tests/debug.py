@@ -17,13 +17,18 @@ def runner(args):
 
 
 def main(args):
-    procs = []
-    for i in range(10):
-        this_proc = Process(target=runner, args=(args,))
-        procs.append(this_proc)
+    # procs = []
+    # for i in range(10):
+    #     this_proc = Process(target=runner, args=(args,))
+    #     procs.append(this_proc)
 
-    list(map(lambda f: f.start(), procs))
-    list(map(lambda f: f.join(), procs))
+    # list(map(lambda f: f.start(), procs))
+    # list(map(lambda f: f.join(), procs))
+    tic = time.time()
+    model = Model(args.model_name, args.model_path, force_rebuild=True)
+    toc = time.time()
+    print("compiling took", toc-tic)
+    model.reset()
 
 
 if __name__ == "__main__":
@@ -31,6 +36,6 @@ if __name__ == "__main__":
     parser.add_argument("model_name")
     parser.add_argument("model_path")
     args = parser.parse_args()
-    # main(args)
+    main(args)
     # tmp(args)
-    runner(args)
+    # runner(args)
