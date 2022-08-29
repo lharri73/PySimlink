@@ -141,3 +141,8 @@ class ModelRefCompiler(Compiler):
             os.path.join(self.model_paths.tmp_dir, "CMakeLists.txt"), "w", encoding="utf-8"
         ) as f:
             f.write(cmake_text)
+
+    @property
+    def _module_name(self):
+        return 
+        return super()._module_name

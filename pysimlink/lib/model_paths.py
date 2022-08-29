@@ -6,7 +6,7 @@ from typing import Union
 import zipfile
 
 from pysimlink.utils import annotation_utils as anno
-from pysimlink.utils.model_utils import get_other_in_dir
+from pysimlink.utils.model_utils import get_other_in_dir, sanitize_model_name
 
 
 class ModelPaths:
@@ -157,3 +157,7 @@ class ModelPaths:
             )
 
             return NoRefCompiler(self)
+
+    @property
+    def module_name(self):
+        return sanitize_model_name(self.root_model_name) + "_interface_c"

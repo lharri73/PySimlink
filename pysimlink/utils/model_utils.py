@@ -132,3 +132,6 @@ def mt_rebuild_check(model_paths: "anno.ModelPaths", force_rebuild: bool) -> boo
         return tdiff > 1.0
     else:
         return True
+
+def sanitize_model_name(model_name):
+    return model_name.replace(" ", "").replace("-", "_").lower()

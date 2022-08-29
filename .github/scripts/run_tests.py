@@ -46,7 +46,6 @@ class ModelTester(unittest.TestCase):
     def test_04_len(self):
         model = Model(self.model_name, self.model_path)
         model.reset()
-        print(sys.path)
         self.assertEqual(len(model), self.data['model_length'])
 
 

@@ -9,7 +9,7 @@ import tempfile
 
 from pysimlink.lib.model_paths import ModelPaths
 from pysimlink.utils import annotation_utils as anno
-from pysimlink.utils.model_utils import mt_rebuild_check
+from pysimlink.utils.model_utils import mt_rebuild_check, sanitize_model_name
 from pysimlink.lib.model_types import DataType, ModelInfo
 import pickle
 import time
@@ -74,17 +74,20 @@ class Model:
             sys.path.append(dir)
             self.path_dirs.append(dir)
 
-        import model_interface_c
-        ## TODO: change the name of each module so it's unique
-        importlib.reload(model_interface_c)
+        self.module = importlib.import_module(self._model_paths.module_name)
+        model_class = getattr(self.module, sanitize_model_name(self._model_paths.root_model_name) + "_Model")
 
-        self._model = model_interface_c.Model(self._model_paths.root_model_name)
-        self.orientations = model_interface_c.rtwCAPI_Orientation
+        self._model = model_class(self._model_paths.root_model_name)
+
+        self.orientations = getattr(self.module, sanitize_model_name(self._model_paths.root_model_name)+"_rtwCAPI_Orientation")
 
     def __del__(self):
         if sys.path is not None and hasattr(self, 'path_dirs'):
             for dir in self.path_dirs:
                 sys.path.remove(dir)
+        # if hasattr(self, "module"):
+            # del sys.modules[self.module]
+            # sys.modules.remove(self.module)
         
 
     def __len__(self):

@@ -23,17 +23,12 @@ def get_model_name(file_path):
 
 
 def main(args):
-    url = "https://github.com/lharri73/PySimlink-ci-models/raw/ci_update/generated/"
+    url = "https://github.com/lharri73/PySimlink-ci-models/raw/master/generated/"
     with request.urlopen(url + "manifest.txt") as f:
         files = f.readlines()
     with open(os.path.join(args.dir, "manifest.txt"), "wb") as f:
         f.writelines(files)
     files = list(map(lambda a: a.decode("utf-8").strip(), files))
-    files = [
-        "21a_HevP4ReferenceApplication.zip",
-        "21a_sfcndemo_matadd_colmajor.zip",
-        "22a_feedbacksystem.zip"
-    ]
 
     os.makedirs(os.path.join(args.dir, "zips"))
     for file in files:
