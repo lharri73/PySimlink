@@ -13,6 +13,7 @@ from pysimlink.utils.model_utils import mt_rebuild_check
 from pysimlink.lib.model_types import DataType, ModelInfo
 import pickle
 import time
+import importlib
 
 
 class Model:
@@ -24,6 +25,7 @@ class Model:
 
     _model_paths: "anno.ModelPaths"
     _compiler: "anno.Compiler"
+
 
     def __init__(  # pylint: disable=R0913
         self,
@@ -56,7 +58,7 @@ class Model:
         with self._lock.write_lock():
             # Check need to compile
             if (
-                mt_rebuild_check(self._model_paths, force_rebuild)
+                mt_rebuild_check(self._model_paths, force_rebuild) 
                 or self._compiler.needs_to_compile()
             ):
                 # Need to compile
@@ -73,14 +75,17 @@ class Model:
             self.path_dirs.append(dir)
 
         import model_interface_c
+        ## TODO: change the name of each module so it's unique
+        importlib.reload(model_interface_c)
 
         self._model = model_interface_c.Model(self._model_paths.root_model_name)
         self.orientations = model_interface_c.rtwCAPI_Orientation
 
     def __del__(self):
-        if sys.path is not None:
+        if sys.path is not None and hasattr(self, 'path_dirs'):
             for dir in self.path_dirs:
                 sys.path.remove(dir)
+        
 
     def __len__(self):
         """

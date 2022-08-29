@@ -66,10 +66,6 @@ jobs:
         run: |
           python .github/scripts/fetch_models.py ci
 
-      - name: Zip Test
+      - name: Test Models
         run: |
-          python .github/scripts/model_test.py --zip ci
-
-      - name: Directory Test
-        run: |
-          python .github/scripts/model_test.py ci
+          python .github/scripts/run_tests.py ci 
