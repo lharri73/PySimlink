@@ -51,9 +51,9 @@ class ModelTester(unittest.TestCase):
     def test_03_no_compile(self):
         with open("data.pkl", "rb") as f:
             cur_data = pickle.load(f)
+        tic = time.time()
         model = Model(self.model_name, self.model_path)
-        ctime = os.stat(model._model_paths.tmp_dir).st_ctime
-        self.assertLess(time.time() - ctime, cur_data["nominal"]-1)
+        self.assertLess(time.time() - tic, cur_data["nominal"]-1)
 
 
     def test_04_len(self):
