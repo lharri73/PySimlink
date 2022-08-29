@@ -16,7 +16,15 @@ class ModelTester(unittest.TestCase):
 
     def test_01_compile(self):
         try:
+            tic = time.time()
             model = Model(self.model_name, self.model_path)
+            toc = time.time()
+            cur_data = {
+                "nominal": toc-tic
+            }
+            with open("data.pkl", "wb") as f:
+                pickle.dump(cur_data, f)
+
         except (GenerationError, BuildError) as e:
             with open(e.dump, "r") as f:
                 lines = f.read()
@@ -33,15 +41,19 @@ class ModelTester(unittest.TestCase):
         """
         Assert that it took longer than 1 second to compile
         """
+        with open("data.pkl", "rb") as f:
+            cur_data = pickle.load(f)
         model = Model(self.model_name, self.model_path, force_rebuild=True)
         ctime = os.stat(model._model_paths.tmp_dir).st_ctime
-        self.assertGreater(time.time() - ctime, 1.0)
+        self.assertGreater(time.time() - ctime, cur_data["nominal"]-1)
 
     
     def test_03_no_compile(self):
+        with open("data.pkl", "rb") as f:
+            cur_data = pickle.load(f)
         model = Model(self.model_name, self.model_path)
         ctime = os.stat(model._model_paths.tmp_dir).st_ctime
-        self.assertLess(time.time() - ctime, 1.0)
+        self.assertLess(time.time() - ctime, cur_data["nominal"]-1)
 
 
     def test_04_len(self):
