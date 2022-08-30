@@ -16,7 +16,9 @@ jobs:
         name: master branch check
         run: |
           a=$(git log -1 --format='%H')
-          if [[ "$a" = "$(cat $GITUB_WORKSPACE/.git/refs/heads/master)" ]]; then
+          git checkout master
+          b=$(git log -1 --format='%H')
+          if [[ "$a" = "$b" ]]; then
             echo "::set-output name=result::true"
           else
             echo "::set-output name=result::false"
