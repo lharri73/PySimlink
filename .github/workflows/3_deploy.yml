@@ -21,7 +21,7 @@ jobs:
     needs: branch_check
     name: Deploy wheels
     runs-on: ubuntu-latest
-    if: needs.branch_check.outputs.status == 'ci_update'
+    if: needs.branch_check.outputs.status == 'master'
 
     steps:
       - uses: actions/checkout@v3
