@@ -52,6 +52,9 @@ void Model::reset(){
 }
 
 double Model::step_size() {
+    if(!initialized){
+        throw std::runtime_error("Model must be initialized before calling step_size. Call `reset()` first!");
+    }
     return RT_MDL->Timing.stepSize0;
 }
 
@@ -83,6 +86,9 @@ void Model::discover_mmis(const rtwCAPI_ModelMappingInfo *mmi){
 
 void Model::step(int num_steps){
     assert(((void)"num_steps must be a positive number", num_steps>0));
+    if(!initialized){
+        throw std::runtime_error("Model must be initialized before calling step. Call `reset()` first!");
+    }
 
     for(int cur_step=0; cur_step < num_steps; cur_step++){
         if (OverrunFlags[0]++)
@@ -101,10 +107,16 @@ void Model::step(int num_steps){
 }
 
 double Model::tFinal() {
+    if(!initialized){
+        throw std::runtime_error("Model must be initialized before calling tFinal. Call `reset()` first!");
+    }
     return rtmGetFinalTime(RT_MDL);
 }
 
 void Model::set_tFinal(float tFinal){
+    if(!initialized){
+        throw std::runtime_error("Model must be initialized before calling set_tFinal. Call `reset()` first!");
+    }
     rtmSetTFinal(RT_MDL, tFinal);
 }
 

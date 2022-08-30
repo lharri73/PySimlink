@@ -8,10 +8,11 @@ import tempfile
 
 from pysimlink.lib.model_paths import ModelPaths
 from pysimlink.utils import annotation_utils as anno
-from pysimlink.utils.model_utils import mt_rebuild_check
+from pysimlink.utils.model_utils import mt_rebuild_check, sanitize_model_name
 from pysimlink.lib.model_types import DataType, ModelInfo
 import pickle
 import time
+import importlib
 
 
 class Model:
@@ -23,6 +24,7 @@ class Model:
 
     _model_paths: "anno.ModelPaths"
     _compiler: "anno.Compiler"
+
 
     def __init__(  # pylint: disable=R0913
         self,
@@ -49,14 +51,13 @@ class Model:
 
         self._model_paths = ModelPaths(path_to_model, model_name, compile_type, suffix, tmp_dir)
         self._compiler = self._model_paths.compiler_factory()
-
         self._lock = InterProcessReaderWriterLock(
             os.path.join(tempfile.gettempdir(), model_name + ".lock")
         )
         with self._lock.write_lock():
             # Check need to compile
             if (
-                mt_rebuild_check(self._model_paths, force_rebuild)
+                mt_rebuild_check(self._model_paths, force_rebuild) 
                 or self._compiler.needs_to_compile()
             ):
                 # Need to compile
@@ -65,21 +66,34 @@ class Model:
                     obj = {"pid": os.getpid(), "parent": os.getppid(), "time": time.time()}
                     pickle.dump(obj, f)
 
+        self.path_dirs = []
         for dir, _, _ in os.walk(
             os.path.join(self._model_paths.tmp_dir, "build", "out", "library")
         ):
             sys.path.append(dir)
+            self.path_dirs.append(dir)
 
-        import model_interface_c
+        self.module = importlib.import_module(self._model_paths.module_name)
+        model_class = getattr(self.module, sanitize_model_name(self._model_paths.root_model_name) + "_Model")
 
-        self._model = model_interface_c.Model(self._model_paths.root_model_name)
-        self.orientations = model_interface_c.rtwCAPI_Orientation
+        self._model = model_class(self._model_paths.root_model_name)
+
+        self.orientations = getattr(self.module, sanitize_model_name(self._model_paths.root_model_name)+"_rtwCAPI_Orientation")
+
+    def __del__(self):
+        if sys.path is not None and hasattr(self, 'path_dirs'):
+            for dir in self.path_dirs:
+                sys.path.remove(dir)
+        # if hasattr(self, "module"):
+            # del sys.modules[self.module]
+            # sys.modules.remove(self.module)
+        
 
     def __len__(self):
         """
         Get the total number of steps this model can run
         """
-        return int(self.tFinal() / self.step_size())
+        return int(self.tFinal / self.step_size)
 
     def get_params(self) -> "list[anno.ModelInfo]":
         """
@@ -113,6 +127,7 @@ class Model:
         """
         self._model.step(iterations)
 
+    @property
     def tFinal(self) -> float:
         """
         Get the final timestep of the model.
@@ -122,6 +137,7 @@ class Model:
         """
         return self._model.tFinal()
 
+    @property
     def step_size(self) -> float:
         """
         Get the step size of the model

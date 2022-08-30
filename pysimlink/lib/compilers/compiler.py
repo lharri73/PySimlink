@@ -1,3 +1,4 @@
+from abc import abstractmethod
 import glob
 import os
 import shutil
@@ -7,7 +8,7 @@ from subprocess import Popen, PIPE
 import cmake
 
 from pysimlink.utils import annotation_utils as anno
-from pysimlink.utils.model_utils import infer_defines
+from pysimlink.utils.model_utils import infer_defines, sanitize_model_name
 from pysimlink.lib.exceptions import GenerationError, BuildError
 
 
@@ -31,7 +32,7 @@ class Compiler:
         """
         Remove all files from the temporary directory
         """
-        shutil.rmtree(self.model_paths.tmp_dir)
+        shutil.rmtree(self.model_paths.tmp_dir, ignore_errors=True)
 
     def compile(self):
         """
@@ -54,13 +55,13 @@ class Compiler:
                     "out",
                     "library",
                     "Debug",
-                    "model_interface_c.*",
+                    self.model_paths.module_name + ".*"
                 )
             )
         else:
             lib = glob.glob(
                 os.path.join(
-                    self.model_paths.tmp_dir, "build", "out", "library", "model_interface_c.*"
+                    self.model_paths.tmp_dir, "build", "out", "library", self.model_paths.module_name + ".*"
                 )
             )
         return len(lib) == 0
@@ -104,11 +105,14 @@ class Compiler:
         replacements = {
             "<<ROOT_MODEL>>": self.model_paths.root_model_name + ".h",
             "<<ROOT_MODEL_PRIVATE>>": self.model_paths.root_model_name + "_private.h",
+            "<<MODEL_INTERFACE_C>>": self.model_paths.module_name,
+            "<<ROOT_MODEL_NAME>>": sanitize_model_name(self.model_paths.root_model_name)
         }
         self._replace_macros(os.path.join(self.custom_includes, "model_utils.hpp"), replacements)
         self._replace_macros(
             os.path.join(self.custom_includes, "model_interface.hpp"), replacements
         )
+        self._replace_macros(os.path.join(self.custom_sources, "bindings.cpp"), replacements)
 
         defines = os.path.join(self.model_paths.root_model_path, "defines.txt")
         if os.path.exists(defines):

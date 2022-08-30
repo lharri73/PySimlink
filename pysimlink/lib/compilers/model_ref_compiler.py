@@ -18,6 +18,7 @@ class ModelRefCompiler(Compiler):
         self.models = None
 
     def compile(self):
+        self.clean()
         self._get_simulink_deps()
         self._build_deps_tree()
         self._gen_custom_srcs()
@@ -141,3 +142,8 @@ class ModelRefCompiler(Compiler):
             os.path.join(self.model_paths.tmp_dir, "CMakeLists.txt"), "w", encoding="utf-8"
         ) as f:
             f.write(cmake_text)
+
+    @property
+    def _module_name(self):
+        return 
+        return super()._module_name

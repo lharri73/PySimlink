@@ -19,3 +19,10 @@ Multithreading
 
 - Add support for mutlithreading the `Model` class
 - Fix __len__ property 
+
+## v1.1.1
+Importlib Changes
+
+- Change c module generation and use importlib to 
+  dynamically import multiple simulink models
+- Update test cases

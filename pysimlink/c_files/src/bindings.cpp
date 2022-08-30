@@ -15,8 +15,8 @@
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(model_interface_c, m) {
-    py::class_<PYSIMLINK::Model>(m, "Model")
+PYBIND11_MODULE(<<MODEL_INTERFACE_C>>, m) {
+    py::class_<PYSIMLINK::Model>(m, "<<ROOT_MODEL_NAME>>_Model", py::module_local())
             .def(py::init<std::string>())
             .def("reset", &PYSIMLINK::Model::reset)
             .def("step_size", &PYSIMLINK::Model::step_size)
@@ -33,7 +33,7 @@ PYBIND11_MODULE(model_interface_c, m) {
             .def("block_param_info", &PYSIMLINK::Model::block_param_info)
             .def("model_param_info", &PYSIMLINK::Model::model_param_info);
 
-    py::enum_<rtwCAPI_Orientation>(m, "rtwCAPI_Orientation")
+    py::enum_<rtwCAPI_Orientation>(m, "<<ROOT_MODEL_NAME>>_rtwCAPI_Orientation", py::module_local())
             .value("vector", rtwCAPI_VECTOR)
             .value("scalar", rtwCAPI_SCALAR)
             .value("col_major_nd", rtwCAPI_MATRIX_COL_MAJOR_ND)
@@ -41,27 +41,27 @@ PYBIND11_MODULE(model_interface_c, m) {
             .value("row_major_nd", rtwCAPI_MATRIX_ROW_MAJOR_ND)
             .value("row_major", rtwCAPI_MATRIX_ROW_MAJOR);
 
-    py::class_<PYSIMLINK::BlockParam>(m, "BlockParam")
+    py::class_<PYSIMLINK::BlockParam>(m, "<<ROOT_MODEL_NAME>>_BlockParam", py::module_local())
             .def_readonly("block_name", &PYSIMLINK::BlockParam::block_name)
             .def_readonly("block_param", &PYSIMLINK::BlockParam::block_param)
             .def_readonly("data_type", &PYSIMLINK::BlockParam::data_type);
 
-    py::class_<PYSIMLINK::Signal>(m, "Signal")
+    py::class_<PYSIMLINK::Signal>(m, "<<ROOT_MODEL_NAME>>_Signal", py::module_local())
             .def_readonly("block_name", &PYSIMLINK::Signal::block_name)
             .def_readonly("signal_name", &PYSIMLINK::Signal::signal_name)
             .def_readonly("data_type", &PYSIMLINK::Signal::data_type);
 
-    py::class_<PYSIMLINK::ModelParam>(m, "ModelParam")
+    py::class_<PYSIMLINK::ModelParam>(m, "<<ROOT_MODEL_NAME>>_ModelParam", py::module_local())
             .def_readonly("model_param", &PYSIMLINK::ModelParam::model_param)
             .def_readonly("data_type", &PYSIMLINK::ModelParam::data_type);
     
-    py::class_<PYSIMLINK::ModelInfo>(m, "ModelInfo")
+    py::class_<PYSIMLINK::ModelInfo>(m, "<<ROOT_MODEL_NAME>>_ModelInfo", py::module_local())
             .def_readonly("model_name", &PYSIMLINK::ModelInfo::model_name)
             .def_readonly("model_params", &PYSIMLINK::ModelInfo::model_params)
             .def_readonly("block_params", &PYSIMLINK::ModelInfo::block_params)
             .def_readonly("signals", &PYSIMLINK::ModelInfo::signals);
 
-    py::class_<PYSIMLINK::DataType>(m, "DataType")
+    py::class_<PYSIMLINK::DataType>(m, "<<ROOT_MODEL_NAME>>_DataType", py::module_local())
             .def_readonly("cDataType", &PYSIMLINK::DataType::cDataType)
             .def_readonly("pythonType", &PYSIMLINK::DataType::pythonType)
             .def_readonly("dims", &PYSIMLINK::DataType::dims)

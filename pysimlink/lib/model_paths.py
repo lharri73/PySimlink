@@ -6,7 +6,7 @@ from typing import Union
 import zipfile
 
 from pysimlink.utils import annotation_utils as anno
-from pysimlink.utils.model_utils import get_other_in_dir
+from pysimlink.utils.model_utils import get_other_in_dir, sanitize_model_name
 
 
 class ModelPaths:
@@ -24,6 +24,7 @@ class ModelPaths:
     has_references: bool  ## If this model contains references
     models_dir: str  ## directory containing all simulink code related to the models
     slprj_dir: Union[str, None]  ## Directory will all child models (contains compile_type)
+    tmp_dir: str ## Directory where all compiled models will be built
 
     def __init__(
         self,
@@ -156,3 +157,7 @@ class ModelPaths:
             )
 
             return NoRefCompiler(self)
+
+    @property
+    def module_name(self):
+        return sanitize_model_name(self.root_model_name) + "_interface_c"

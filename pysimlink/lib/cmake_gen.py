@@ -5,6 +5,8 @@ import re
 import pybind11
 
 
+from pysimlink.utils.model_utils import sanitize_model_name
+
 class CmakeTemplate:
     """
     Generates the CMakeLists.txt file that can be used to compile the model.
@@ -17,6 +19,9 @@ class CmakeTemplate:
         self.model_name = model_name
         self.libs = []
         self.replacers = [(re.compile(r"(?<!\\) "), r"\ "), (re.compile(r"\\(?! )"), r"/")]
+
+        self.sanitized_name = sanitize_model_name(model_name)
+
 
     def replacer(self, string):
         for search, rep in self.replacers:
@@ -114,12 +119,12 @@ set_target_properties(
         source_paths = "\n        ".join(sources)
         return f"""
 pybind11_add_module(
-    model_interface_c
+    {self.sanitized_name}_interface_c
         {source_paths}
 )        
 
 set_target_properties(
-    model_interface_c PROPERTIES
+    {self.sanitized_name}_interface_c PROPERTIES
         LIBRARY_OUTPUT_DIRECTORY ${{PROJECT_BINARY_DIR}}/out/library
 )
 """
@@ -159,7 +164,7 @@ target_link_libraries(
         """
         return f"""
 target_link_libraries(
-    model_interface_c
+    {self.sanitized_name}_interface_c
         PRIVATE {root_model}
 )        
 """
