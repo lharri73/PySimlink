@@ -9,27 +9,27 @@ jobs:
   branch_check:
     runs-on: ubuntu-latest
     outputs:
-      status: ${{ steps.early.outputs.result }}
+      tag: ${{ steps.ref.outputs.result }}
+      master: ${{ steps.master.outputs.result }}
     steps:
       - uses: actions/checkout@v3
-      - id: early
+      - id: ref
+        name: ref branch check
+        run: echo "::set-output name=result::$(git log -1 --format='%H')"
+      - uses: actions/checkout@v3
+        with:
+          ref: master
+
+      - id: master
         name: master branch check
-        run: |
-          a=$(git log -1 --format='%H')
-          git checkout master
-          b=$(git log -1 --format='%H')
-          if [[ "$a" = "$b" ]]; then
-            echo "::set-output name=result::true"
-          else
-            echo "::set-output name=result::false"
-          fi
+        run: echo "::set-output name=result::$(git log -1 --format='%H')"
           
 
   deploy_wheels:
     needs: branch_check
     name: Deploy wheels
     runs-on: ubuntu-latest
-    if: needs.branch_check.outputs.status == 'true'
+    if: needs.branch_check.outputs.tag == needs.branch_check.outputs.master
 
     steps:
       - uses: actions/checkout@v3
