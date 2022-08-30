@@ -32,7 +32,7 @@ class Compiler:
         """
         Remove all files from the temporary directory
         """
-        shutil.rmtree(self.model_paths.tmp_dir)
+        shutil.rmtree(self.model_paths.tmp_dir, ignore_errors=True)
 
     def compile(self):
         """
