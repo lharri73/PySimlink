@@ -21,7 +21,7 @@ the code yourself, you need the Simulink Coder. There are some limitations, name
 
 ## Demo
 
-### View Signal Values
+### Read Signal Values
 
 ```python
 from pysimlink import Model
@@ -47,6 +47,18 @@ model.reset()
 
 new_param = np.eye(3)
 model.set_block_param(block="Constant1", param="Value", value=new_param)
+```
+
+### Change a Model's Final Time Step
+
+```python
+from pysimlink import Model
+
+model = Model("my_awesome_model", "model.zip")
+model.reset()
+model.set_tFinal(500)
+
+print(model.tFinal)
 ```
 
 And more...

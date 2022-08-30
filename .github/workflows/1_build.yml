@@ -4,6 +4,8 @@ on:
   push:
     paths:
       - 'pysimlink/**'
+    branches:
+      - "master"
   pull_request:
     paths:
       - 'pysimlink/**'
