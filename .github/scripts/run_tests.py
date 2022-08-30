@@ -17,9 +17,9 @@ class ModelTester(unittest.TestCase):
 
     def test_01_compile(self):
         try:
-            tic = time.time()
+            tic = time.perf_counter()
             model = Model(self.model_name, self.model_path)
-            toc = time.time()
+            toc = time.perf_counter()
             cur_data = {
                 "nominal": toc-tic
             }
@@ -42,17 +42,17 @@ class ModelTester(unittest.TestCase):
         with open("data.pkl", "rb") as f:
             cur_data = pickle.load(f)
         time.sleep(1)
-        tic = time.time()
+        tic = time.perf_counter()
         model = Model(self.model_name, self.model_path, force_rebuild=True)
-        self.assertGreater(time.time() - tic, floor(cur_data["nominal"]-5))
+        self.assertGreater(time.perf_counter() - tic, floor(cur_data["nominal"]-5))
 
     
     def test_03_no_compile(self):
         with open("data.pkl", "rb") as f:
             cur_data = pickle.load(f)
-        tic = time.time()
+        tic = time.perf_counter()
         model = Model(self.model_name, self.model_path)
-        self.assertLess(time.time() - tic, floor(cur_data["nominal"]-5))
+        self.assertLess(time.perf_counter() - tic, floor(cur_data["nominal"]-5))
 
 
     def test_04_len(self):

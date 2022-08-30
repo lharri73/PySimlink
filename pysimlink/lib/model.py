@@ -1,7 +1,6 @@
 import os
 import sys
 import warnings
-from xml.dom.minidom import ReadOnlySequentialNamedNodeMap
 
 import numpy as np
 from fasteners import InterProcessReaderWriterLock
