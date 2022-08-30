@@ -5,6 +5,7 @@ import os
 import time
 import numpy as np
 import shutil
+from math import floor
 
 from pysimlink import Model, GenerationError, BuildError
 
@@ -40,18 +41,18 @@ class ModelTester(unittest.TestCase):
     def test_02_force_compile(self):
         with open("data.pkl", "rb") as f:
             cur_data = pickle.load(f)
+        time.sleep(1)
         tic = time.time()
         model = Model(self.model_name, self.model_path, force_rebuild=True)
-        self.assertGreater(time.time() - tic, cur_data["nominal"]-5)
+        self.assertGreater(time.time() - tic, floor(cur_data["nominal"]-5))
 
     
     def test_03_no_compile(self):
-        time.sleep(1)
         with open("data.pkl", "rb") as f:
             cur_data = pickle.load(f)
         tic = time.time()
         model = Model(self.model_name, self.model_path)
-        self.assertLess(time.time() - tic, cur_data["nominal"]-5)
+        self.assertLess(time.time() - tic, floor(cur_data["nominal"]-5))
 
 
     def test_04_len(self):
