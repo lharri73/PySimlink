@@ -7,7 +7,7 @@ import time
 
 
 def runner(args):
-    model = Model(args.model_name, args.model_path)  # , force_rebuild=True)
+    model = Model(args.model_name, args.model_path,force_rebuild=True)
     model.reset()
 
     for i in range(len(model)):

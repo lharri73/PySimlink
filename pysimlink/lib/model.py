@@ -10,6 +10,7 @@ from pysimlink.lib.model_paths import ModelPaths
 from pysimlink.utils import annotation_utils as anno
 from pysimlink.utils.model_utils import mt_rebuild_check, sanitize_model_name
 from pysimlink.lib.model_types import DataType, ModelInfo
+from pysimlink.lib.spinner import open_spinner
 import pickle
 import time
 import importlib
@@ -61,7 +62,8 @@ class Model:
                 or self._compiler.needs_to_compile()
             ):
                 # Need to compile
-                self._compiler.compile()
+                with open_spinner("Compiling"):
+                    self._compiler.compile()
                 with open(os.path.join(self._model_paths.tmp_dir, "compile_info.pkl"), "wb") as f:
                     obj = {"pid": os.getpid(), "parent": os.getppid(), "time": time.time()}
                     pickle.dump(obj, f)

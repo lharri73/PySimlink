@@ -26,7 +26,9 @@ Model::Model(std::string name){
 }
 
 void Model::terminate(){
+#ifdef rtmGetRTWLogInfo
     rt_StopDataLogging(NULL_FILE,rtmGetRTWLogInfo(RT_MDL));
+#endif
     MODEL_TERMINATE();
 }
 
@@ -110,14 +112,23 @@ double Model::tFinal() {
     if(!initialized){
         throw std::runtime_error("Model must be initialized before calling tFinal. Call `reset()` first!");
     }
+#ifndef rtmGetFinalTime
+    throw std::runtime_error("Getting/Setting tFinal is not supported for this model.");
+#else
     return rtmGetFinalTime(RT_MDL);
+#endif
 }
 
 void Model::set_tFinal(float tFinal){
     if(!initialized){
         throw std::runtime_error("Model must be initialized before calling set_tFinal. Call `reset()` first!");
     }
+
+#ifndef rtmSetTFinal
+    throw std::runtime_error("Getting/Setting tFinal is not supported for this model.");
+#else
     rtmSetTFinal(RT_MDL, tFinal);
+#endif
 }
 
 std::vector<std::string> Model::get_models() const{

@@ -26,3 +26,10 @@ Importlib Changes
 - Change c module generation and use importlib to 
   dynamically import multiple simulink models
 - Update test cases
+
+## v1.1.2
+Compatibility Updates
+
+- Some models don't implement tFinal
+- Support for not enabling mat file logging
+- Added spinner during compile time
