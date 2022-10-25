@@ -7,6 +7,7 @@ import pybind11
 
 from pysimlink.utils.model_utils import sanitize_model_name
 
+
 class CmakeTemplate:
     """
     Generates the CMakeLists.txt file that can be used to compile the model.
@@ -21,7 +22,6 @@ class CmakeTemplate:
         self.replacers = [(re.compile(r"(?<!\\) "), r"\ "), (re.compile(r"\\(?! )"), r"/")]
 
         self.sanitized_name = sanitize_model_name(model_name)
-
 
     def replacer(self, string):
         for search, rep in self.replacers:

@@ -7,7 +7,7 @@ import time
 
 
 def runner(args):
-    model = Model(args.model_name, args.model_path,force_rebuild=True)
+    model = Model(args.model_name, args.model_path, force_rebuild=True)
     model.reset()
 
     for i in range(len(model)):
@@ -27,7 +27,7 @@ def main(args):
     tic = time.time()
     model = Model(args.model_name, args.model_path, force_rebuild=True)
     toc = time.time()
-    print("compiling took", toc-tic)
+    print("compiling took", toc - tic)
     model.reset()
 
 

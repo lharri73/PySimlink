@@ -26,7 +26,6 @@ class Model:
     _model_paths: "anno.ModelPaths"
     _compiler: "anno.Compiler"
 
-
     def __init__(  # pylint: disable=R0913
         self,
         model_name: str,
@@ -58,7 +57,7 @@ class Model:
         with self._lock.write_lock():
             # Check need to compile
             if (
-                mt_rebuild_check(self._model_paths, force_rebuild) 
+                mt_rebuild_check(self._model_paths, force_rebuild)
                 or self._compiler.needs_to_compile()
             ):
                 # Need to compile
@@ -76,20 +75,24 @@ class Model:
             self.path_dirs.append(dir)
 
         self.module = importlib.import_module(self._model_paths.module_name)
-        model_class = getattr(self.module, sanitize_model_name(self._model_paths.root_model_name) + "_Model")
+        model_class = getattr(
+            self.module, sanitize_model_name(self._model_paths.root_model_name) + "_Model"
+        )
 
         self._model = model_class(self._model_paths.root_model_name)
 
-        self.orientations = getattr(self.module, sanitize_model_name(self._model_paths.root_model_name)+"_rtwCAPI_Orientation")
+        self.orientations = getattr(
+            self.module,
+            sanitize_model_name(self._model_paths.root_model_name) + "_rtwCAPI_Orientation",
+        )
 
     def __del__(self):
-        if sys.path is not None and hasattr(self, 'path_dirs'):
+        if sys.path is not None and hasattr(self, "path_dirs"):
             for dir in self.path_dirs:
                 sys.path.remove(dir)
         # if hasattr(self, "module"):
-            # del sys.modules[self.module]
-            # sys.modules.remove(self.module)
-        
+        # del sys.modules[self.module]
+        # sys.modules.remove(self.module)
 
     def __len__(self):
         """

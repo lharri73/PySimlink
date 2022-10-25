@@ -145,5 +145,5 @@ class ModelRefCompiler(Compiler):
 
     @property
     def _module_name(self):
-        return 
+        return
         return super()._module_name

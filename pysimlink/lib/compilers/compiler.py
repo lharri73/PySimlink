@@ -55,13 +55,17 @@ class Compiler:
                     "out",
                     "library",
                     "Debug",
-                    self.model_paths.module_name + ".*"
+                    self.model_paths.module_name + ".*",
                 )
             )
         else:
             lib = glob.glob(
                 os.path.join(
-                    self.model_paths.tmp_dir, "build", "out", "library", self.model_paths.module_name + ".*"
+                    self.model_paths.tmp_dir,
+                    "build",
+                    "out",
+                    "library",
+                    self.model_paths.module_name + ".*",
                 )
             )
         return len(lib) == 0
@@ -106,7 +110,7 @@ class Compiler:
             "<<ROOT_MODEL>>": self.model_paths.root_model_name + ".h",
             "<<ROOT_MODEL_PRIVATE>>": self.model_paths.root_model_name + "_private.h",
             "<<MODEL_INTERFACE_C>>": self.model_paths.module_name,
-            "<<ROOT_MODEL_NAME>>": sanitize_model_name(self.model_paths.root_model_name)
+            "<<ROOT_MODEL_NAME>>": sanitize_model_name(self.model_paths.root_model_name),
         }
         self._replace_macros(os.path.join(self.custom_includes, "model_utils.hpp"), replacements)
         self._replace_macros(

@@ -136,6 +136,7 @@ def spin(spinner, event):
         spinner.spin()
         time.sleep(0.126)
 
+
 @contextlib.contextmanager
 def open_spinner(message: str) -> Generator[SpinnerInterface, None, None]:
     # Interactive spinner goes directly to sys.stdout rather than being routed
@@ -150,7 +151,7 @@ def open_spinner(message: str) -> Generator[SpinnerInterface, None, None]:
     event = threading.Event()
     try:
         event.set()
-        t = threading.Thread(target=spin, args=(spinner,event))
+        t = threading.Thread(target=spin, args=(spinner, event))
         t.start()
         with hidden_cursor(sys.stdout):
             yield
@@ -178,7 +179,7 @@ SHOW_CURSOR = "\x1b[?25h"
 def hidden_cursor(file: IO[str]) -> Generator[None, None, None]:
     # The Windows terminal does not support the hide/show cursor ANSI codes,
     # even via colorama. So don't even try.
-    if os.name == 'nt':
+    if os.name == "nt":
         yield
     # We don't want to clutter the output with control characters if we're
     # writing to a file, or if the user is running with --quiet.
