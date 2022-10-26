@@ -145,7 +145,7 @@ std::vector<std::string> Model::get_models() const{
     return ret;
 }
 
-py::array Model::get_sig(const std::string& model, const std::string& block_path, const std::string& sig_name_raw){
+py::object Model::get_sig(const std::string& model, const std::string& block_path, const std::string& sig_name_raw){
     if(!initialized){
         throw std::runtime_error("Model must be initialized before calling get_sig. Call `reset()` first!");
     }
@@ -164,8 +164,9 @@ py::array Model::get_sig(const std::string& model, const std::string& block_path
 
 
     const char* sig_name = sig_name_raw.empty() ? nullptr : sig_name_raw.c_str();
-    py::buffer_info ret = PYSIMLINK::get_signal_val(mmi_idx->second, sig_map, block_path.c_str(), sig_name);
-    return py::array(ret);
+    struct PYSIMLINK::signal_info ret = PYSIMLINK::get_signal_val(mmi_idx->second, sig_map, block_path.c_str(), sig_name);
+    py::handle<PYSIMLINK::signal_info> tmp(ret);
+    return py::object(ret);
 }
 
 py::array Model::get_block_param(const std::string& model, const std::string& block_path, const std::string& param){

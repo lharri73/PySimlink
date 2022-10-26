@@ -27,7 +27,7 @@ def main(args):
     tic = time.time()
     model = Model(args.model_name, args.model_path, force_rebuild=True)
     toc = time.time()
-    print("compiling took", toc - tic)
+    print(f"compiling took {toc-tic:.2f}s")
     model.reset()
 
 

@@ -13,6 +13,7 @@ extern "C"{
 #include <stdexcept>
 #include <unordered_map>
 #include <vector>
+#include <variant>
 #include "pybind11/pybind11.h"
 #include "pybind11/numpy.h"
 #include "pybind11/stl.h"
@@ -48,7 +49,7 @@ namespace PYSIMLINK{
                          const char *param,
                          py::array value);
 
-    py::buffer_info get_signal_val(const rtwCAPI_ModelMappingInfo *mmi, std::unordered_map<map_key_2s,size_t,pair_hash,Compare> &sig_map, const char* block=nullptr, const char* signNam=nullptr);
+    struct signal_info get_signal_val(const rtwCAPI_ModelMappingInfo *mmi, std::unordered_map<map_key_2s,size_t,pair_hash,Compare> &sig_map, const char* block=nullptr, const char* signNam=nullptr);
 
     py::buffer_info
     format_pybuffer(const rtwCAPI_ModelMappingInfo *mmi, rtwCAPI_DataTypeMap dt, rtwCAPI_DimensionMap sigDim, void *addr);

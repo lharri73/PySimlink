@@ -92,7 +92,7 @@ py::buffer_info PYSIMLINK::get_block_param(const rtwCAPI_ModelMappingInfo *mmi, 
     return PYSIMLINK::format_pybuffer(mmi, dt, sigDim, addr);
 }
 
-py::buffer_info PYSIMLINK::get_signal_val(const rtwCAPI_ModelMappingInfo *mmi,
+    struct PYSIMLINK::signal_info PYSIMLINK::get_signal_val(const rtwCAPI_ModelMappingInfo *mmi,
                                           std::unordered_map<map_key_2s, size_t, pair_hash, Compare> &sig_map,
                                           const char *block, const char *sigName) {
     assert(mmi != nullptr);
@@ -142,7 +142,18 @@ py::buffer_info PYSIMLINK::get_signal_val(const rtwCAPI_ModelMappingInfo *mmi,
     rtwCAPI_DataTypeMap dt = rtwCAPI_GetDataTypeMap(mmi)[rtwCAPI_GetSignalDataTypeIdx(capiSignals, param_index)];
     rtwCAPI_DimensionMap sigDim = rtwCAPI_GetDimensionMap(mmi)[rtwCAPI_GetSignalDimensionIdx(capiSignals, param_index)];
     void *addr = rtwCAPI_GetDataAddressMap(mmi)[rtwCAPI_GetSignalAddrIdx(capiSignals, param_index)];
-    return PYSIMLINK::format_pybuffer(mmi, dt, sigDim, addr);
+    struct PYSIMLINK::signal_info ret;
+    if(strcmp(dt.cDataName, "struct") != 0){
+        ret.is_array = false;
+        strcpy(ret.struct_name, dt.mwDataName);
+        ret.data.addr = addr;
+    }else{
+        ret.is_array = true;
+        py::buffer_info tmp = PYSIMLINK::format_pybuffer(mmi, dt, sigDim, addr);
+        ret.data.arr = &tmp;
+        return ret;
+    }
+    return ret;
 }
 
 py::buffer_info

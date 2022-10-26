@@ -7,6 +7,7 @@ extern "C"{
 
 #include <string>
 #include <vector>
+#include "pybind11/pybind11.h"
 
 #ifndef ssize_t
 #define ssize_t long int
@@ -41,6 +42,16 @@ namespace PYSIMLINK{
     struct Compare{
         bool operator()(const map_key_2s &lhs, const map_key_2s &rhs) const;
         bool operator()(const map_key_1s &lhs, const map_key_1s &rhs) const;
+    };
+
+    struct signal_info {
+        bool is_array;
+        char struct_name[128];
+        union _garb {
+            void *addr;
+            pybind11::buffer_info *arr;
+            //<<MODEL_TYPES>>
+        } data;
     };
 
     struct DataType{

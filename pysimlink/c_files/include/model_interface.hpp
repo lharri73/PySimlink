@@ -42,7 +42,7 @@ namespace PYSIMLINK{
             void reset();
 
             std::vector<struct ModelInfo> get_params() const;
-            py::array get_sig(const std::string& model, const std::string& path, const std::string& sig_name);
+            py::object get_sig(const std::string& model, const std::string& path, const std::string& sig_name);
             py::array get_block_param(const std::string& model, const std::string& block_path, const std::string& param);
             py::array get_model_param(const std::string& model, const std::string& param);
 
