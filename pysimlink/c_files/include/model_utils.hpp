@@ -87,6 +87,7 @@ namespace PYSIMLINK{
         struct DataType ret;
         ret.cDataType = rtwCAPI_GetDataTypeMap(mmi)[capi_struct.dataTypeIndex].cDataName;
         ret.pythonType = PYSIMLINK::translate_c_type_name(ret.cDataType);
+        ret.mwDataType = rtwCAPI_GetDataTypeMap(mmi)[capi_struct.dataTypeIndex].mwDataName;
         ret.orientation = rtwCAPI_GetDimensionMap(mmi)[capi_struct.dimIndex].orientation;
         for(size_t j = 0; j < rtwCAPI_GetDimensionMap(mmi)[capi_struct.dimIndex].numDims; j++){
             ret.dims.push_back(rtwCAPI_GetDimensionArray(mmi)[rtwCAPI_GetDimensionMap(mmi)[capi_struct.dimIndex].dimArrayIndex + j]);

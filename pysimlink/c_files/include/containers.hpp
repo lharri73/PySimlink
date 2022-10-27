@@ -48,16 +48,17 @@ namespace PYSIMLINK{
     struct signal_info {
         bool is_array;
         char struct_name[128];
+        unsigned int type_size;
         union _garb {
             void *addr;
             pybind11::buffer_info *arr;
-            //<<MODEL_TYPES>>
         } data;
     };
 
     struct DataType{
         std::string cDataType;
         std::string pythonType;
+        std::string mwDataType;
         std::vector<ssize_t> dims;
         rtwCAPI_Orientation orientation;
     };
@@ -87,6 +88,7 @@ namespace PYSIMLINK{
     };
 
     union all_dtypes {
+        void *addr;
         <<ALL_DTYPES>>
     };
 };

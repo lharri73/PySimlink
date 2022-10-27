@@ -143,8 +143,9 @@ struct PYSIMLINK::signal_info PYSIMLINK::get_signal_val(const rtwCAPI_ModelMappi
     rtwCAPI_DimensionMap sigDim = rtwCAPI_GetDimensionMap(mmi)[rtwCAPI_GetSignalDimensionIdx(capiSignals, param_index)];
     void *addr = rtwCAPI_GetDataAddressMap(mmi)[rtwCAPI_GetSignalAddrIdx(capiSignals, param_index)];
     struct PYSIMLINK::signal_info ret;
-    if(strcmp(dt.cDataName, "struct") != 0){
+    if(strcmp(dt.cDataName, "void") == 0 || strcmp(dt.cDataName, "struct") == 0){
         ret.is_array = false;
+        ret.type_size = dt.dataSize;
         strcpy(ret.struct_name, dt.mwDataName);
         ret.data.addr = addr;
     }else{

@@ -269,3 +269,29 @@ struct PYSIMLINK::DataType Model::model_param_info(const std::string &model, con
     }
     return PYSIMLINK::describe_model_param(mmi_idx->second, param.c_str());
 }
+
+all_dtypes PYSIMLINK::Model::get_sig_union(const std::string &model, const std::string &block_path,
+                                     const std::string &sig_name_raw) {
+    all_dtypes ret;
+    if(!initialized){
+        throw std::runtime_error("Model must be initialized before calling get_sig. Call `reset()` first!");
+    }
+
+    if(block_path.empty())
+        throw std::runtime_error("No path provided to get_sig!");
+    if(model.empty())
+        throw std::runtime_error("No model name provided to get_sig!");
+
+    auto mmi_idx = mmi_map.find(model);
+    if(mmi_idx == mmi_map.end()){
+        char buf[256];
+        sprintf(buf, "Cannot find model with name: %s", model.c_str());
+        throw std::runtime_error(buf);
+    }
+
+
+    const char* sig_name = sig_name_raw.empty() ? nullptr : sig_name_raw.c_str();
+    struct PYSIMLINK::signal_info sig_info = PYSIMLINK::get_signal_val(mmi_idx->second, sig_map, block_path.c_str(), sig_name);
+    (void)memcpy(ret.addr, sig_info.data.addr, sig_info.type_size);
+    return ret;
+}
