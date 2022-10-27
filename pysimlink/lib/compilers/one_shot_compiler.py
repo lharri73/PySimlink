@@ -63,3 +63,7 @@ class NoRefCompiler(Compiler):
             os.path.join(self.model_paths.tmp_dir, "CMakeLists.txt"), "w", encoding="utf-8"
         ) as f:
             f.write(cmake_text)
+
+
+    def gather_types(self):
+        return ""

@@ -145,7 +145,29 @@ std::vector<std::string> Model::get_models() const{
     return ret;
 }
 
-py::object Model::get_sig(const std::string& model, const std::string& block_path, const std::string& sig_name_raw){
+PYSIMLINK::DataType Model::signal_info(const std::string &model, const std::string &block_path,
+                                       const std::string &signal) {
+    if(!initialized){
+        throw std::runtime_error("Model must be initialized before calling get_sig. Call `reset()` first!");
+    }
+
+    if(block_path.empty())
+        throw std::runtime_error("No path provided to get_sig!");
+    if(model.empty())
+        throw std::runtime_error("No model name provided to get_sig!");
+
+    auto mmi_idx = mmi_map.find(model);
+    if(mmi_idx == mmi_map.end()){
+        char buf[256];
+        sprintf(buf, "Cannot find model with name: %s", model.c_str());
+        throw std::runtime_error(buf);
+    }
+
+    const char* sig_name = signal.empty() ? nullptr : signal.c_str();
+    return PYSIMLINK::describe_signal(mmi_idx->second, block_path.c_str(), sig_name, sig_map);
+}
+
+py::array Model::get_sig(const std::string& model, const std::string& block_path, const std::string& sig_name_raw){
     if(!initialized){
         throw std::runtime_error("Model must be initialized before calling get_sig. Call `reset()` first!");
     }
@@ -165,8 +187,8 @@ py::object Model::get_sig(const std::string& model, const std::string& block_pat
 
     const char* sig_name = sig_name_raw.empty() ? nullptr : sig_name_raw.c_str();
     struct PYSIMLINK::signal_info ret = PYSIMLINK::get_signal_val(mmi_idx->second, sig_map, block_path.c_str(), sig_name);
-    py::handle<PYSIMLINK::signal_info> tmp(ret);
-    return py::object(ret);
+//    py::handle<PYSIMLINK::signal_info> tmp(ret);
+    return py::array(*ret.data.arr);
 }
 
 py::array Model::get_block_param(const std::string& model, const std::string& block_path, const std::string& param){

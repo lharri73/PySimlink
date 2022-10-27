@@ -9,6 +9,7 @@ if typing.TYPE_CHECKING:
     from typing import Union
     from numpy import ndarray
     from typing import Optional
+    from pysimlink.lib.struct_parser import Struct
 
     c_model_info = typing.Any
     c_model_param = typing.Any

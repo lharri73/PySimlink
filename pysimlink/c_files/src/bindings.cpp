@@ -2,6 +2,12 @@
 #include "containers.hpp"
 #include <pybind11/pybind11.h>
 
+extern "C"{
+#include "<<ROOT_MODEL>>"
+#include "<<ROOT_MODEL_PRIVATE>>"
+}
+
+
 #define NEW_TEMPLATE_FUNC(A,B) \
     .def(A, B<char>) \
     .def(A, B<unsigned char>) \
@@ -24,7 +30,8 @@ PYBIND11_MODULE(<<MODEL_INTERFACE_C>>, m) {
             .def("set_tFinal", &PYSIMLINK::Model::set_tFinal)
             .def("step", &PYSIMLINK::Model::step)
             .def("get_models", &PYSIMLINK::Model::get_models)
-            .def("get_signal", &PYSIMLINK::Model::get_sig)
+            .def("get_signal_arr", &PYSIMLINK::Model::get_sig)
+            .def("desc_signal", &PYSIMLINK::Model::signal_info)
             .def("get_block_param", &PYSIMLINK::Model::get_block_param)
             NEW_TEMPLATE_FUNC("set_block_param", &PYSIMLINK::Model::set_block_param)
             .def("get_model_param", &PYSIMLINK::Model::get_model_param)
@@ -66,4 +73,6 @@ PYBIND11_MODULE(<<MODEL_INTERFACE_C>>, m) {
             .def_readonly("pythonType", &PYSIMLINK::DataType::pythonType)
             .def_readonly("dims", &PYSIMLINK::DataType::dims)
             .def_readonly("orientation", &PYSIMLINK::DataType::orientation);
+
+    <<DATA_TYPE>>
 }

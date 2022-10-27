@@ -1,11 +1,13 @@
 import os
 import re
 import glob
+import warnings
 
 from pysimlink.lib.dependency_graph import DepGraph
 from pysimlink.lib.cmake_gen import CmakeTemplate
 from pysimlink.lib.compilers.compiler import Compiler
 from pysimlink.utils import annotation_utils as anno
+from pysimlink.lib.struct_parser import parse_struct
 
 
 class ModelRefCompiler(Compiler):
@@ -23,12 +25,13 @@ class ModelRefCompiler(Compiler):
         self._build_deps_tree()
         self._gen_custom_srcs()
         self._gen_cmake()
+        self.gather_types()
         self._build()
 
     def _build_deps_tree(self):
         """
-        Get the dependencies for this _model and all child models recursively,
-        starting at the root _model.
+        Get the dependencies for this model and all child models recursively,
+        starting at the root model.
 
         """
         self.models = DepGraph()
@@ -62,7 +65,7 @@ class ModelRefCompiler(Compiler):
             self.update_recurse(dep, models)
 
     def _get_deps(self, path, model_name):
-        """Get all dependencies of a _model
+        """Get all dependencies of a model
 
         Args:
             path: Path to the _model (including it's name). Must contain
@@ -145,5 +148,62 @@ class ModelRefCompiler(Compiler):
 
     @property
     def _module_name(self):
-        return
         return super()._module_name
+
+    def gather_types(self):
+        types_files = []
+        for lib in self.models.dep_map:
+            if lib == self.model_paths.root_model_path:
+                files = glob.glob(self.model_paths.root_model_path + "/*_types.h")
+            else:
+                files = glob.glob(os.path.join(self.model_paths.slprj_dir, lib) + "/*_types.h")
+
+            types_files += files
+
+        for file in types_files:
+            with open(file, "r") as f:
+                lines = f.readlines()
+
+            define_re = re.compile(r"^#define DEFINED_TYPEDEF")
+            endif = re.compile(r"^#endif")
+            pairs = []
+            cur = None
+            for i, line in enumerate(lines):
+                test1 = re.search(define_re, line)
+                test2 = re.search(endif, line)
+                if test1 is not None:
+                    if cur is not None:
+                        warnings.warn("types file malformed")
+                    else:
+                        cur = i
+                    continue
+                if test2 is not None:
+                    if cur is not None:
+                        pairs.append((cur, i))
+                        cur = None
+
+            for pair in pairs:
+                new_struct = parse_struct(lines[pair[0]+2:pair[1]-1])
+                for struct in self.types:
+                    ## Prevent duplicate types
+                    if struct.name == new_struct.name:
+                        break
+                else:
+                    self.types.append(new_struct)
+
+        ret = []
+        for type in self.types:
+            ret += [f'    py::class_<{type.name}>(m, "{type.name}", py::module_local())']
+            for field in type.fields:
+                ret += [f'            .def_readonly("{field.name}", &{type.name}::{field.name})']
+            ret[-1] += ';'
+            ret.append('')
+
+        return '\n'.join(ret)
+
+    def get_type_names(self):
+        ret = []
+        for struct in self.types:
+            ret.append(f"{struct.name} {struct.name}_obj;")
+
+        return '\n        '.join(ret)

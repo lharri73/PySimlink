@@ -180,7 +180,12 @@ class Model:
             Value of the signal at the current timestep
         """
         model_name = self._model_paths.root_model_name if model_name is None else model_name
-        return self._model.get_signal(model_name, block_path, sig_name)
+
+        sig_type = self._model.desc_signal(model_name, block_path, sig_name)
+        if sig_type.cDataType == "struct":
+            print("here")
+        else:
+            return self._model.get_signal_arr(model_name, block_path, sig_name)
 
     def get_block_param(self, block_path, param, model_name=None) -> "np.ndarray":
         """

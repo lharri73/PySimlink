@@ -24,9 +24,11 @@ class Compiler:
     defines: "list[str]"  ## All defines that should be set during _model compilation
     custom_includes: str  ## Include files directory defined by this python module
     custom_sources: str  ## Source files directory defined by this python module
+    types: "list[anno.Struct]"  ## Name of types used by signals (usually manifested as busses).
 
     def __init__(self, model_paths: "anno.ModelPaths"):
         self.model_paths = model_paths
+        self.types = []
 
     def clean(self):
         """
@@ -37,6 +39,18 @@ class Compiler:
     def compile(self):
         """
         Builds the cmake file, calls cmake, and builds the extension.
+        """
+        raise NotImplementedError
+
+    def gather_types(self):
+        """
+        Gather all the types (structs) used in all models
+        """
+        raise NotImplementedError
+
+    def get_type_names(self):
+        """
+        return name of all structs used as bus names
         """
         raise NotImplementedError
 
@@ -111,12 +125,15 @@ class Compiler:
             "<<ROOT_MODEL_PRIVATE>>": self.model_paths.root_model_name + "_private.h",
             "<<MODEL_INTERFACE_C>>": self.model_paths.module_name,
             "<<ROOT_MODEL_NAME>>": sanitize_model_name(self.model_paths.root_model_name),
+            "<<DATA_TYPE>>": self.gather_types(),
+            "<<ALL_DTYPES>>": self.get_type_names(),
         }
         self._replace_macros(os.path.join(self.custom_includes, "model_utils.hpp"), replacements)
         self._replace_macros(
             os.path.join(self.custom_includes, "model_interface.hpp"), replacements
         )
         self._replace_macros(os.path.join(self.custom_sources, "bindings.cpp"), replacements)
+        self._replace_macros(os.path.join(self.custom_includes, "containers.hpp"), replacements)
 
         defines = os.path.join(self.model_paths.root_model_path, "defines.txt")
         if os.path.exists(defines):

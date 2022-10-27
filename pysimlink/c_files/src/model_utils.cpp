@@ -92,7 +92,7 @@ py::buffer_info PYSIMLINK::get_block_param(const rtwCAPI_ModelMappingInfo *mmi, 
     return PYSIMLINK::format_pybuffer(mmi, dt, sigDim, addr);
 }
 
-    struct PYSIMLINK::signal_info PYSIMLINK::get_signal_val(const rtwCAPI_ModelMappingInfo *mmi,
+struct PYSIMLINK::signal_info PYSIMLINK::get_signal_val(const rtwCAPI_ModelMappingInfo *mmi,
                                           std::unordered_map<map_key_2s, size_t, pair_hash, Compare> &sig_map,
                                           const char *block, const char *sigName) {
     assert(mmi != nullptr);
@@ -183,7 +183,7 @@ PYSIMLINK::format_pybuffer(const rtwCAPI_ModelMappingInfo *mmi, rtwCAPI_DataType
         ret.format = py::format_descriptor<unsigned long>::format();
     } else {
         std::stringstream err("");
-        err << "Parameter ( has invalid cDataName(" << dt.cDataName << ") (internal error)";
+        err << "Parameter has invalid cDataName(" << dt.cDataName << ") (internal error)";
         throw std::runtime_error(err.str().c_str());
     }
     ret.ndim = sigDim.numDims;
@@ -415,3 +415,58 @@ struct PYSIMLINK::DataType PYSIMLINK::describe_model_param(const rtwCAPI_ModelMa
     }
 }
 
+struct PYSIMLINK::DataType PYSIMLINK::describe_signal(const rtwCAPI_ModelMappingInfo *mmi, const char* block, const char* sigName, std::unordered_map<map_key_2s, size_t, pair_hash, Compare> &sig_map){
+    assert(mmi != nullptr);
+    std::unordered_map<map_key_2s, size_t, pair_hash, Compare>::const_iterator it;
+
+    if (block == nullptr && sigName == nullptr)
+        throw std::runtime_error("get_signal_val: Must specify signal name or origin block to search for signal");
+//    if(block == nullptr){
+//        fprintf(stderr, "Warning: Searching for signal by signal name only. Signal names are not guaranteed unique!\n");
+//    }
+
+    uint_T numSigs = rtwCAPI_GetNumSignals(mmi);
+    const rtwCAPI_Signals *capiSignals = rtwCAPI_GetSignals(mmi);
+
+    int param_index = -1;
+
+    std::string first(block == nullptr ? "" : block);
+    std::string second(sigName == nullptr ? "" : sigName);
+    map_key_2s key{first, second, mmi};
+    it = sig_map.find(key);
+    if (it == sig_map.end()) {
+
+        for (size_t i = 0; i < numSigs; i++) {
+            if ((sigName == nullptr && strcmp(block, rtwCAPI_GetSignalBlockPath(capiSignals, i)) == 0) ||
+                (block == nullptr && strcmp(sigName, rtwCAPI_GetSignalName(capiSignals, i)) == 0) ||
+                ((sigName != nullptr && block != nullptr) &&
+                 (strcmp(rtwCAPI_GetSignalName(capiSignals, i), sigName) == 0 && strcmp(
+                         rtwCAPI_GetSignalBlockPath(capiSignals, i), block) == 0))) {
+                // signal match
+                sig_map[key] = i;
+                param_index = i;
+                break;
+            }
+        }
+    } else {
+        param_index = it->second;
+    }
+
+    if (param_index == -1) {
+        std::stringstream err("");
+        err << "get_signal_val: Parameter (" << block << ',' << (sigName == nullptr ? "" : sigName)
+            << ") does not exist in provided model";
+        throw std::runtime_error(err.str().c_str());
+    }
+
+    return PYSIMLINK::populate_dtype(mmi, capiSignals[param_index]);
+//
+//    rtwCAPI_DataTypeMap dt = rtwCAPI_GetDataTypeMap(mmi)[rtwCAPI_GetSignalDataTypeIdx(capiSignals, param_index)];
+//    rtwCAPI_DimensionMap sigDim = rtwCAPI_GetDimensionMap(mmi)[rtwCAPI_GetSignalDimensionIdx(capiSignals, param_index)];
+//    PYSIMLINK::DataType ret = {
+//            .cDataType = dt.cDataName,
+//            .orientation = sigDim.orientation,
+//            .dims = sigDim.numDims,
+//            .pythonType = dt.
+//    };
+}

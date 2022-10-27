@@ -3,6 +3,7 @@
 extern "C"{
 #include "rtw_capi.h"
 #include "rtw_modelmap.h"
+#include "<<ROOT_MODEL>>"
 }
 
 #include <string>
@@ -83,5 +84,9 @@ namespace PYSIMLINK{
         std::vector<struct ModelParam> model_params;
         std::vector<struct BlockParam> block_params;
         std::vector<struct Signal> signals;
+    };
+
+    union all_dtypes {
+        <<ALL_DTYPES>>
     };
 };

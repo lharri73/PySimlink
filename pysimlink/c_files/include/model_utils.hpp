@@ -50,6 +50,7 @@ namespace PYSIMLINK{
                          py::array value);
 
     struct signal_info get_signal_val(const rtwCAPI_ModelMappingInfo *mmi, std::unordered_map<map_key_2s,size_t,pair_hash,Compare> &sig_map, const char* block=nullptr, const char* signNam=nullptr);
+    struct PYSIMLINK::DataType describe_signal(const rtwCAPI_ModelMappingInfo *mmi, const char* block, const char* sigName, std::unordered_map<map_key_2s, size_t, pair_hash, Compare> &sig_map);
 
     py::buffer_info
     format_pybuffer(const rtwCAPI_ModelMappingInfo *mmi, rtwCAPI_DataTypeMap dt, rtwCAPI_DimensionMap sigDim, void *addr);
