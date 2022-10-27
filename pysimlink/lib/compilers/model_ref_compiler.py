@@ -8,6 +8,7 @@ from pysimlink.lib.cmake_gen import CmakeTemplate
 from pysimlink.lib.compilers.compiler import Compiler
 from pysimlink.utils import annotation_utils as anno
 from pysimlink.lib.struct_parser import parse_struct
+from pysimlink.utils.model_utils import sanitize_model_name
 
 
 class ModelRefCompiler(Compiler):
@@ -198,6 +199,12 @@ class ModelRefCompiler(Compiler):
                 ret += [f'            .def_readonly("{field.name}", &{type.name}::{field.name})']
             ret[-1] += ';'
             ret.append('')
+
+        ret += [f'    py::class_<PYSIMLINK::all_dtypes>(m, "{sanitize_model_name(self.model_paths.root_model_name)}_all_dtypes", py::module_local())']
+        for type in self.types:
+            ret += [f'            .def_readonly("{type.name}", &PYSIMLINK::all_dtypes::{type.name}_obj)']
+        ret[-1] += ';'
+        ret.append('')
 
         return '\n'.join(ret)
 

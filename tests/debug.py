@@ -30,7 +30,12 @@ def main(args):
     print(f"compiling took {toc-tic:.2f}s")
     model.reset()
     # print_all_params(model)
+    tic = time.time()
     model.get_signal("Blazer_MiL_Model/Subsystem3/Bus Creator", model_name="Blazer_MiL_Model", )
+    toc = time.time()
+    model.get_signal("Blazer_MiL_Model/Subsystem3/Bus Creator", model_name="Blazer_MiL_Model", )
+    toc2 = time.time()
+    print(f"first: {toc-tic}, second: {toc2-toc}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
