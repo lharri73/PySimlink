@@ -292,6 +292,6 @@ all_dtypes PYSIMLINK::Model::get_sig_union(const std::string &model, const std::
 
     const char* sig_name = sig_name_raw.empty() ? nullptr : sig_name_raw.c_str();
     struct PYSIMLINK::signal_info sig_info = PYSIMLINK::get_signal_val(mmi_idx->second, sig_map, block_path.c_str(), sig_name);
-    (void)memcpy(ret.addr, sig_info.data.addr, sig_info.type_size);
+    (void)memcpy(&ret, sig_info.data.addr, sig_info.type_size);
     return ret;
 }

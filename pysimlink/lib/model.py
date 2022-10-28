@@ -183,10 +183,8 @@ class Model:
 
         sig_type = self._model.desc_signal(model_name, block_path, sig_name)
         if sig_type.cDataType == "struct":
-            print(sig_type.mwType)
             data = self._model.get_signal_union(model_name, block_path, sig_name)
-            print(dir(data))
-            print("here")
+            return getattr(data, sig_type.mwType)
         else:
             return self._model.get_signal_arr(model_name, block_path, sig_name)
 

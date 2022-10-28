@@ -25,17 +25,21 @@ def main(args):
     # list(map(lambda f: f.start(), procs))
     # list(map(lambda f: f.join(), procs))
     tic = time.time()
-    model = Model(args.model_name, args.model_path, force_rebuild=True)
+    model = Model(args.model_name, args.model_path)# force_rebuild=True)
     toc = time.time()
     print(f"compiling took {toc-tic:.2f}s")
     model.reset()
     # print_all_params(model)
     tic = time.time()
-    model.get_signal("Blazer_MiL_Model/Subsystem3/Bus Creator", model_name="Blazer_MiL_Model", )
+    struct = model.get_signal("Blazer_MiL_Model/Subsystem3/Bus Creator", model_name="Blazer_MiL_Model", )
     toc = time.time()
-    model.get_signal("Blazer_MiL_Model/Subsystem3/Bus Creator", model_name="Blazer_MiL_Model", )
-    toc2 = time.time()
-    print(f"first: {toc-tic}, second: {toc2-toc}")
+    print(f"first: {toc-tic}")
+    print(dir(struct))
+    for i in range(20):
+        struct = model.get_signal("Blazer_MiL_Model/Subsystem3/Bus Creator", model_name="Blazer_MiL_Model")
+        print(struct.VehSpd)
+        model.step()
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
