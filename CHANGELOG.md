@@ -33,3 +33,8 @@ Compatibility Updates
 - Some models don't implement tFinal
 - Support for not enabling mat file logging
 - Added spinner during compile time
+
+## v1.2.0
+Bus signal capability
+
+- Fixed scalar valued block/model parameters

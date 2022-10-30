@@ -3,6 +3,8 @@ import pickle
 import time
 from pysimlink.utils import annotation_utils as anno
 from pysimlink.lib.model_types import DataType
+import numpy as np
+import warnings
 
 
 def infer_defines(model_paths: "anno.ModelPaths"):
@@ -136,3 +138,34 @@ def mt_rebuild_check(model_paths: "anno.ModelPaths", force_rebuild: bool) -> boo
 
 def sanitize_model_name(model_name):
     return model_name.replace(" ", "").replace("-", "_").lower()
+
+
+def cast_type(value: "anno.Value", dtype: "anno.DataType", orientations):
+    if not isinstance(value, np.ndarray):
+        value = np.array(value)
+
+    if str(value.dtype) != dtype.pythonType:
+        warnings.warn(
+            f"Datatype of value does not match parameter. Expected {dtype.pythonType} got {value.dtype}",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+
+    if dtype.dims != value.shape:
+        # We can perform reshaping and formatting in one operation
+        orientation = (
+            "F" if dtype.orientation in [orientations.col_major_nd, orientations.col_major] else "C"
+        )
+        value = np.reshape(value, tuple(dtype.dims), orientation)
+        if str(value.dtype) != dtype.pythonType:
+            value = value.astype(dtype.pythonType)
+    else:
+        ## We can perform type casting and formatting in one operation
+        if dtype.orientation in [orientations.col_major_nd, orientations.col_major]:
+            value = np.asfortranarray(value, dtype=dtype.pythonType)
+        elif dtype.orientation in [orientations.row_major_nd, orientations.row_major]:
+            value = np.ascontiguousarray(value, dtype=dtype.pythonType)
+        elif str(value.dtype) != dtype.pythonType:
+            value = value.astype(dtype.pythonType)
+
+    return value

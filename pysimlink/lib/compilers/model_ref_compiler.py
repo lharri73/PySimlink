@@ -184,7 +184,7 @@ class ModelRefCompiler(Compiler):
                         cur = None
 
             for pair in pairs:
-                new_struct = parse_struct(lines[pair[0]+2:pair[1]-1])
+                new_struct = parse_struct(lines[pair[0] + 2 : pair[1] - 1])
                 for struct in self.types:
                     ## Prevent duplicate types
                     if struct.name == new_struct.name:
@@ -197,20 +197,24 @@ class ModelRefCompiler(Compiler):
             ret += [f'    py::class_<{type.name}>(m, "{type.name}", py::module_local())']
             for field in type.fields:
                 ret += [f'            .def_readonly("{field.name}", &{type.name}::{field.name})']
-            ret[-1] += ';'
-            ret.append('')
+            ret[-1] += ";"
+            ret.append("")
 
-        ret += [f'    py::class_<PYSIMLINK::all_dtypes>(m, "{sanitize_model_name(self.model_paths.root_model_name)}_all_dtypes", py::module_local())']
+        ret += [
+            f'    py::class_<PYSIMLINK::all_dtypes>(m, "{sanitize_model_name(self.model_paths.root_model_name)}_all_dtypes", py::module_local())'
+        ]
         for type in self.types:
-            ret += [f'            .def_readonly("{type.name}", &PYSIMLINK::all_dtypes::{type.name}_obj)']
-        ret[-1] += ';'
-        ret.append('')
+            ret += [
+                f'            .def_readonly("{type.name}", &PYSIMLINK::all_dtypes::{type.name}_obj)'
+            ]
+        ret[-1] += ";"
+        ret.append("")
 
-        return '\n'.join(ret)
+        return "\n".join(ret)
 
     def get_type_names(self):
         ret = []
         for struct in self.types:
             ret.append(f"{struct.name} {struct.name}_obj;")
 
-        return '\n        '.join(ret)
+        return "\n        ".join(ret)

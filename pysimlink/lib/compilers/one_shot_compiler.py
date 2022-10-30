@@ -64,6 +64,5 @@ class NoRefCompiler(Compiler):
         ) as f:
             f.write(cmake_text)
 
-
     def gather_types(self):
         return ""

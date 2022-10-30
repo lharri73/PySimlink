@@ -23,8 +23,4 @@ def parse_struct(lines):
             struct = Struct(line[1][:-1], fields)
             return struct
         else:
-            fields.append(
-                Field(line[0], line[1][:-1])
-            )
-
-
+            fields.append(Field(line[0], line[1][:-1]))

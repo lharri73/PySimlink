@@ -8,7 +8,7 @@ import tempfile
 
 from pysimlink.lib.model_paths import ModelPaths
 from pysimlink.utils import annotation_utils as anno
-from pysimlink.utils.model_utils import mt_rebuild_check, sanitize_model_name
+from pysimlink.utils.model_utils import mt_rebuild_check, sanitize_model_name, cast_type
 from pysimlink.lib.model_types import DataType, ModelInfo
 from pysimlink.lib.spinner import open_spinner
 import pickle
@@ -244,34 +244,11 @@ class Model:
         Raises:
             RuntimeError: If the value array is not the correct shape or orientation as the parameter to change
         """
-        if not isinstance(value, np.ndarray):
-            value = np.array(value)
-
         model_name = self._model_paths.root_model_name if model_name is None else model_name
         info = self._model.block_param_info(model_name, block, param)
         dtype = DataType(info)
 
-        if str(value.dtype) != dtype.pythonType:
-            warnings.warn(
-                f"Datatype of value does not match parameter. Expected {dtype.pythonType} got {value.dtype}",
-                RuntimeWarning,
-                stacklevel=2,
-            )
-
-        if dtype.dims != value.shape:
-            ## We can perform reshaping and formatting in one operation
-            orientation = 'F' if dtype.orientation in [self.orientations.col_major_nd, self.orientations.col_major] else 'C'
-            value = np.reshape(value, tuple(dtype.dims), orientation)
-            if str(value.dtype) != dtype.pythonType:
-                value = value.astype(dtype.pythonType)
-        else:
-            ## We can perform type casting and formatting in one operation
-            if dtype.orientation in [self.orientations.col_major_nd, self.orientations.col_major]:
-                value = np.asfortranarray(value, dtype=dtype.pythonType)
-            elif dtype.orientation in [self.orientations.row_major_nd, self.orientations.row_major]:
-                value = np.ascontiguousarray(value, dtype=dtype.pythonType)
-            elif str(value.dtype) != dtype.pythonType:
-                value = value.astype(dtype.pythonType)
+        value = cast_type(value, dtype, self.orientations)
 
         self._model.set_block_param(model_name, block, param, value)
 
@@ -291,17 +268,6 @@ class Model:
         model_name = self._model_paths.root_model_name if model_name is None else model_name
         info = self._model.model_param_info(model_name, param)
         dtype = DataType(info)
-        if str(value.dtype) != dtype.pythonType:
-            warnings.warn(
-                f"Datatype of value does not match parameter. Expected {dtype.pythonType} got {value.dtype}",
-                RuntimeWarning,
-                stacklevel=2,
-            )
-        if dtype.orientation in [self.orientations.col_major_nd, self.orientations.col_major]:
-            value = np.asfortranarray(value, dtype=dtype.pythonType)
-        elif dtype.orientation in [self.orientations.row_major_nd, self.orientations.row_major]:
-            value = np.ascontiguousarray(value, dtype=dtype.pythonType)
-        elif str(value.dtype) != dtype.pythonType:
-            value = value.astype(dtype.pythonType)
+        value = cast_type(value, dtype, self.orientations)
 
         self._model.set_model_param(model_name, param, value)
