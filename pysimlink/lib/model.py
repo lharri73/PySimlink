@@ -244,21 +244,34 @@ class Model:
         Raises:
             RuntimeError: If the value array is not the correct shape or orientation as the parameter to change
         """
+        if not isinstance(value, np.ndarray):
+            value = np.array(value)
+
         model_name = self._model_paths.root_model_name if model_name is None else model_name
         info = self._model.block_param_info(model_name, block, param)
         dtype = DataType(info)
+
         if str(value.dtype) != dtype.pythonType:
             warnings.warn(
                 f"Datatype of value does not match parameter. Expected {dtype.pythonType} got {value.dtype}",
                 RuntimeWarning,
                 stacklevel=2,
             )
-        if dtype.orientation in [self.orientations.col_major_nd, self.orientations.col_major]:
-            value = np.asfortranarray(value, dtype=dtype.pythonType)
-        elif dtype.orientation in [self.orientations.row_major_nd, self.orientations.row_major]:
-            value = np.ascontiguousarray(value, dtype=dtype.pythonType)
-        elif str(value.dtype) != dtype.pythonType:
-            value = value.astype(dtype.pythonType)
+
+        if dtype.dims != value.shape:
+            ## We can perform reshaping and formatting in one operation
+            orientation = 'F' if dtype.orientation in [self.orientations.col_major_nd, self.orientations.col_major] else 'C'
+            value = np.reshape(value, tuple(dtype.dims), orientation)
+            if str(value.dtype) != dtype.pythonType:
+                value = value.astype(dtype.pythonType)
+        else:
+            ## We can perform type casting and formatting in one operation
+            if dtype.orientation in [self.orientations.col_major_nd, self.orientations.col_major]:
+                value = np.asfortranarray(value, dtype=dtype.pythonType)
+            elif dtype.orientation in [self.orientations.row_major_nd, self.orientations.row_major]:
+                value = np.ascontiguousarray(value, dtype=dtype.pythonType)
+            elif str(value.dtype) != dtype.pythonType:
+                value = value.astype(dtype.pythonType)
 
         self._model.set_block_param(model_name, block, param, value)
 

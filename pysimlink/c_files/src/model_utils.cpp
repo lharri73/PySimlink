@@ -335,7 +335,7 @@ PYSIMLINK::fill_from_buffer(const rtwCAPI_ModelMappingInfo *mmi, rtwCAPI_DataTyp
     if (blockDim.numDims != value.ndim()) {
         std::stringstream ss;
         ss << "Dimension mismatch. ";
-        ss << "Expected " << blockDim.numDims << " got " << value.ndim();
+        ss << "Expected " << (int)blockDim.numDims << " got " << value.ndim();
         throw std::runtime_error(ss.str());
     }
 
