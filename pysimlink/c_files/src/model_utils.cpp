@@ -102,9 +102,6 @@ struct std::unique_ptr<PYSIMLINK::signal_info> PYSIMLINK::get_signal_val(const r
 
     if (block == nullptr && sigName == nullptr)
         throw std::runtime_error("get_signal_val: Must specify signal name or origin block to search for signal");
-//    if(block == nullptr){
-//        fprintf(stderr, "Warning: Searching for signal by signal name only. Signal names are not guaranteed unique!\n");
-//    }
 
     uint_T numSigs = rtwCAPI_GetNumSignals(mmi);
     const rtwCAPI_Signals *capiSignals = rtwCAPI_GetSignals(mmi);
@@ -433,9 +430,6 @@ struct PYSIMLINK::DataType PYSIMLINK::describe_signal(const rtwCAPI_ModelMapping
 
     if (block == nullptr && sigName == nullptr)
         throw std::runtime_error("get_signal_val: Must specify signal name or origin block to search for signal");
-//    if(block == nullptr){
-//        fprintf(stderr, "Warning: Searching for signal by signal name only. Signal names are not guaranteed unique!\n");
-//    }
 
     uint_T numSigs = rtwCAPI_GetNumSignals(mmi);
     const rtwCAPI_Signals *capiSignals = rtwCAPI_GetSignals(mmi);
