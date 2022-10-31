@@ -50,7 +50,7 @@ py::buffer_info PYSIMLINK::get_model_param(const rtwCAPI_ModelMappingInfo *mmi, 
     void *addr = mmi->InstanceMap.dataAddrMap[rtwCAPI_GetModelParameterAddrIdx(capiModelParams, param_index)];
     rtwCAPI_DimensionMap paramDim = rtwCAPI_GetDimensionMap(mmi)[rtwCAPI_GetBlockParameterDimensionIdx(
             capiModelParams, param_index)];
-    return PYSIMLINK::format_pybuffer(mmi, dt, paramDim, addr);
+    return PYSIMLINK::from_buffer_struct(PYSIMLINK::format_pybuffer(mmi, dt, paramDim, addr));
 }
 
 py::buffer_info PYSIMLINK::get_block_param(const rtwCAPI_ModelMappingInfo *mmi, const char *block, const char *param,
@@ -89,12 +89,14 @@ py::buffer_info PYSIMLINK::get_block_param(const rtwCAPI_ModelMappingInfo *mmi, 
     rtwCAPI_DimensionMap sigDim = rtwCAPI_GetDimensionMap(mmi)[rtwCAPI_GetBlockParameterDimensionIdx(
             capiBlockParameters, param_iter)];
     void *addr = mmi->InstanceMap.dataAddrMap[rtwCAPI_GetBlockParameterAddrIdx(capiBlockParameters, param_iter)];
-    return PYSIMLINK::format_pybuffer(mmi, dt, sigDim, addr);
+    return PYSIMLINK::from_buffer_struct(PYSIMLINK::format_pybuffer(mmi, dt, sigDim, addr));
 }
 
-struct PYSIMLINK::signal_info PYSIMLINK::get_signal_val(const rtwCAPI_ModelMappingInfo *mmi,
+struct std::unique_ptr<PYSIMLINK::signal_info> PYSIMLINK::get_signal_val(const rtwCAPI_ModelMappingInfo *mmi,
                                           std::unordered_map<map_key_2s, size_t, pair_hash, Compare> &sig_map,
                                           const char *block, const char *sigName) {
+
+
     assert(mmi != nullptr);
     std::unordered_map<map_key_2s, size_t, pair_hash, Compare>::const_iterator it;
 
@@ -142,64 +144,66 @@ struct PYSIMLINK::signal_info PYSIMLINK::get_signal_val(const rtwCAPI_ModelMappi
     rtwCAPI_DataTypeMap dt = rtwCAPI_GetDataTypeMap(mmi)[rtwCAPI_GetSignalDataTypeIdx(capiSignals, param_index)];
     rtwCAPI_DimensionMap sigDim = rtwCAPI_GetDimensionMap(mmi)[rtwCAPI_GetSignalDimensionIdx(capiSignals, param_index)];
     void *addr = rtwCAPI_GetDataAddressMap(mmi)[rtwCAPI_GetSignalAddrIdx(capiSignals, param_index)];
-    struct PYSIMLINK::signal_info ret;
+
+    // use malloc instead of new so we don't call every constructor. This looks nasty because we also have to use free
+    std::unique_ptr<PYSIMLINK::signal_info> ret(new PYSIMLINK::signal_info);
     if(strcmp(dt.cDataName, "void") == 0 || strcmp(dt.cDataName, "struct") == 0){
-        ret.is_array = false;
-        ret.type_size = dt.dataSize;
-        strcpy(ret.struct_name, dt.mwDataName);
-        ret.data.addr = addr;
+        ret->is_array = false;
+        ret->type_size = dt.dataSize;
+        strcpy(ret->struct_name, dt.mwDataName);
+        ret->data.addr = addr;
     }else{
-        ret.is_array = true;
-        py::buffer_info tmp = PYSIMLINK::format_pybuffer(mmi, dt, sigDim, addr);
-        ret.data.arr = &tmp;
-        return ret;
+        ret->is_array = true;
+        PYSIMLINK::format_pybuffer(mmi, dt, sigDim, addr, &ret->data.arr);
     }
     return ret;
 }
 
-py::buffer_info
-PYSIMLINK::format_pybuffer(const rtwCAPI_ModelMappingInfo *mmi, rtwCAPI_DataTypeMap dt, rtwCAPI_DimensionMap sigDim,
-                           void *addr) {
-    py::buffer_info ret;
-    ret.ptr = addr;
-    ret.itemsize = dt.dataSize;
+
+void PYSIMLINK::format_pybuffer(const rtwCAPI_ModelMappingInfo *mmi, rtwCAPI_DataTypeMap dt, rtwCAPI_DimensionMap sigDim,
+                           void *addr, PYSIMLINK::BufferLike *ret) {
+
+    // doesn't matter where the buffer is (stack or heap), fill them the same
+    // this way we don't have to copy vectors from stack->heap when it's assigned to the heap
+    ret->ptr = addr;
+    ret->itemsize = dt.dataSize;
 
     if (strcmp(dt.cDataName, "int") == 0) {
-        ret.format = py::format_descriptor<int>::format();
+        strcpy(ret->format, py::format_descriptor<int>::format().c_str());
     } else if (strcmp(dt.cDataName, "float") == 0) {
-        ret.format = py::format_descriptor<float>::format();
+        strcpy(ret->format, py::format_descriptor<float>::format().c_str());
     } else if (strcmp(dt.cDataName, "double") == 0) {
-        ret.format = py::format_descriptor<double>::format();
+        strcpy(ret->format, py::format_descriptor<double>::format().c_str());
     } else if (strcmp(dt.cDataName, "char") == 0) {
-        ret.format = py::format_descriptor<char>::format();
+        strcpy(ret->format, py::format_descriptor<char>::format().c_str());
     } else if (strcmp(dt.cDataName, "short") == 0) {
-        ret.format = py::format_descriptor<short>::format();
+        strcpy(ret->format, py::format_descriptor<short>::format().c_str());
     } else if (strcmp(dt.cDataName, "unsigned short") == 0) {
-        ret.format = py::format_descriptor<unsigned short>::format();
+        strcpy(ret->format, py::format_descriptor<unsigned short>::format().c_str());
     } else if (strcmp(dt.cDataName, "long") == 0) {
-        ret.format = py::format_descriptor<long>::format();
+        strcpy(ret->format, py::format_descriptor<long>::format().c_str());
     } else if (strcmp(dt.cDataName, "unsigned int") == 0) {
-        ret.format = py::format_descriptor<unsigned int>::format();
+        strcpy(ret->format, py::format_descriptor<unsigned int>::format().c_str());
     } else if (strcmp(dt.cDataName, "unsigned long") == 0) {
-        ret.format = py::format_descriptor<unsigned long>::format();
+        strcpy(ret->format, py::format_descriptor<unsigned long>::format().c_str());
     } else {
         std::stringstream err("");
         err << "Parameter has invalid cDataName(" << dt.cDataName << ") (internal error)";
         throw std::runtime_error(err.str().c_str());
     }
-    ret.ndim = sigDim.numDims;
-    if (ret.ndim > 3) {
+    ret->ndim = sigDim.numDims;
+    if (ret->ndim > 3) {
         throw std::runtime_error(
                 "Cannot return values with more than 3 dimensions...yet. Fix the issue and open a pull request!");
     }
-    for (size_t i = 0; i < ret.ndim; i++) {
+    for (size_t i = 0; i < ret->ndim; i++) {
         ssize_t dim_size = rtwCAPI_GetDimensionArray(mmi)[sigDim.dimArrayIndex + i];
         ssize_t cur_stride;
-        ret.shape.push_back(dim_size);
+        ret->shape[i] = dim_size;
         switch (sigDim.orientation) {
             case rtwCAPI_Orientation::rtwCAPI_SCALAR:
             case rtwCAPI_Orientation::rtwCAPI_VECTOR:
-                ret.strides.push_back(dt.dataSize);
+                ret->strides[i] = dt.dataSize;
                 break;
             case rtwCAPI_Orientation::rtwCAPI_MATRIX_COL_MAJOR:
             case rtwCAPI_Orientation::rtwCAPI_MATRIX_COL_MAJOR_ND:
@@ -207,13 +211,13 @@ PYSIMLINK::format_pybuffer(const rtwCAPI_ModelMappingInfo *mmi, rtwCAPI_DataType
                 for(size_t j = 0; j < i; j++){
                     cur_stride *= rtwCAPI_GetDimensionArray(mmi)[sigDim.dimArrayIndex + j];
                 }
-                ret.strides.push_back(cur_stride);
+                ret->strides[i] = cur_stride;
                 break;
             case rtwCAPI_Orientation::rtwCAPI_MATRIX_ROW_MAJOR:
                 if (i == 0)
-                    ret.strides.push_back(dt.dataSize * dim_size);
+                    ret->strides[i] = dt.dataSize * dim_size;
                 else
-                    ret.strides.push_back(dt.dataSize);
+                    ret->strides[i] = dt.dataSize;
                 break;
             case rtwCAPI_Orientation::rtwCAPI_MATRIX_ROW_MAJOR_ND:
                 throw std::runtime_error(
@@ -224,8 +228,15 @@ PYSIMLINK::format_pybuffer(const rtwCAPI_ModelMappingInfo *mmi, rtwCAPI_DataType
         }
     }
 
-//    std::reverse(ret.strides.begin(), ret.strides.end());
-    ret.readonly = true;
+    ret->readonly = true;
+}
+
+PYSIMLINK::BufferLike
+PYSIMLINK::format_pybuffer(const rtwCAPI_ModelMappingInfo *mmi, rtwCAPI_DataTypeMap dt, rtwCAPI_DimensionMap sigDim,
+                           void *addr) {
+    // allocate the buffer on the stack, proceed like normal
+    PYSIMLINK::BufferLike ret;
+    format_pybuffer(mmi, dt, sigDim, addr, &ret);
     return ret;
 }
 
@@ -470,4 +481,20 @@ struct PYSIMLINK::DataType PYSIMLINK::describe_signal(const rtwCAPI_ModelMapping
 //            .dims = sigDim.numDims,
 //            .pythonType = dt.
 //    };
+}
+
+py::buffer_info PYSIMLINK::from_buffer_struct(const PYSIMLINK::BufferLike &buffer){
+    py::buffer_info ret;
+
+    ret.ptr = buffer.ptr;
+    ret.itemsize = buffer.itemsize;
+    ret.format = buffer.format;
+    ret.ndim = buffer.ndim;
+    for(size_t i=0; i < ret.ndim; i++){
+        ret.shape.push_back(buffer.shape[i]);
+        ret.strides.push_back(buffer.strides[i]);
+    }
+    ret.readonly = buffer.readonly;
+
+    return ret;
 }

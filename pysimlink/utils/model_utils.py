@@ -142,13 +142,20 @@ def sanitize_model_name(model_name):
 
 def cast_type(value: "anno.Value", dtype: "anno.DataType", orientations):
     if not isinstance(value, np.ndarray):
-        value = np.array(value)
+        value_cp = np.array(value, dtype=dtype.pythonType)
+        if value_cp != value:
+            warnings.warn(
+                f"Datatype of value does not match parameter: Data loss detected! ({value} -> {value_cp})",
+                RuntimeWarning,
+                stacklevel=3,
+            )
+        value = value_cp
 
     if str(value.dtype) != dtype.pythonType:
         warnings.warn(
             f"Datatype of value does not match parameter. Expected {dtype.pythonType} got {value.dtype}",
             RuntimeWarning,
-            stacklevel=2,
+            stacklevel=3,
         )
 
     if dtype.dims != value.shape:

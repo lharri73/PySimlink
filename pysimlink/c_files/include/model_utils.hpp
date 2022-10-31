@@ -9,11 +9,13 @@ extern "C"{
 #include "rtw_matlogging.h"
 #include "rtw_modelmap.h"
 }
+#include <string.h>
 #include <sstream>
 #include <stdexcept>
 #include <unordered_map>
 #include <vector>
 #include <variant>
+#include <memory>
 #include "pybind11/pybind11.h"
 #include "pybind11/numpy.h"
 #include "pybind11/stl.h"
@@ -49,12 +51,15 @@ namespace PYSIMLINK{
                          const char *param,
                          py::array value);
 
-    struct signal_info get_signal_val(const rtwCAPI_ModelMappingInfo *mmi, std::unordered_map<map_key_2s,size_t,pair_hash,Compare> &sig_map, const char* block=nullptr, const char* signNam=nullptr);
+    struct std::unique_ptr<PYSIMLINK::signal_info> get_signal_val(const rtwCAPI_ModelMappingInfo *mmi, std::unordered_map<map_key_2s,size_t,pair_hash,Compare> &sig_map, const char* block=nullptr, const char* signNam=nullptr);
     struct PYSIMLINK::DataType describe_signal(const rtwCAPI_ModelMappingInfo *mmi, const char* block, const char* sigName, std::unordered_map<map_key_2s, size_t, pair_hash, Compare> &sig_map);
 
-    py::buffer_info
+    PYSIMLINK::BufferLike
     format_pybuffer(const rtwCAPI_ModelMappingInfo *mmi, rtwCAPI_DataTypeMap dt, rtwCAPI_DimensionMap sigDim, void *addr);
+    void format_pybuffer(const rtwCAPI_ModelMappingInfo *mmi, rtwCAPI_DataTypeMap dt, rtwCAPI_DimensionMap sigDim, void *addr, PYSIMLINK::BufferLike *ret);
+
     void fill_from_buffer(const rtwCAPI_ModelMappingInfo *mmi, rtwCAPI_DataTypeMap dt, rtwCAPI_DimensionMap blockDim, void* addr, py::array value);
+    py::buffer_info from_buffer_struct(const PYSIMLINK::BufferLike &buffer);
 
     struct PYSIMLINK::DataType describe_block_param(const rtwCAPI_ModelMappingInfo *mmi, const char *block_path, const char *param);
     struct PYSIMLINK::DataType describe_model_param(const rtwCAPI_ModelMappingInfo *mmi, const char *param);
@@ -65,33 +70,5 @@ namespace PYSIMLINK{
     PYSIMLINK::ModelInfo debug_model_info(const rtwCAPI_ModelMappingInfo *mmi);
 
 
-    template <typename T>
-    void validate_scalar(const rtwCAPI_ModelMappingInfo *mmi, T param, const char* funcName, const char* identifier){
-        rtwCAPI_DimensionMap sigDim = mmi->staticMap->Maps.dimensionMap[param.dimIndex];
-        rtwCAPI_DataTypeMap dt = mmi->staticMap->Maps.dataTypeMap[param.dataTypeIndex];
-
-        if(sigDim.orientation != rtwCAPI_Orientation::rtwCAPI_SCALAR){
-            std::stringstream err("");
-            err << funcName << ": signal (" << identifier << ") has too many dimensions(" << (int)sigDim.numDims;
-            err << ") or is not a scalar(" << sigDim.orientation << ")";
-            throw std::runtime_error(err.str().c_str());
-        }
-        if(dt.isPointer){
-            std::stringstream err("");
-            err << funcName << ": Cannot read value from pointer (isPointer=True) for parameter (" << identifier << ")";
-            throw std::runtime_error(err.str().c_str());
-        }
-    }
-    template <typename T>
-    struct DataType populate_dtype(const rtwCAPI_ModelMappingInfo *mmi, T capi_struct){
-        struct DataType ret;
-        ret.cDataType = rtwCAPI_GetDataTypeMap(mmi)[capi_struct.dataTypeIndex].cDataName;
-        ret.pythonType = PYSIMLINK::translate_c_type_name(ret.cDataType);
-        ret.mwDataType = rtwCAPI_GetDataTypeMap(mmi)[capi_struct.dataTypeIndex].mwDataName;
-        ret.orientation = rtwCAPI_GetDimensionMap(mmi)[capi_struct.dimIndex].orientation;
-        for(size_t j = 0; j < rtwCAPI_GetDimensionMap(mmi)[capi_struct.dimIndex].numDims; j++){
-            ret.dims.push_back(rtwCAPI_GetDimensionArray(mmi)[rtwCAPI_GetDimensionMap(mmi)[capi_struct.dimIndex].dimArrayIndex + j]);
-        }
-        return ret;
-    }
+    #include "model_utils.tpp"
 };

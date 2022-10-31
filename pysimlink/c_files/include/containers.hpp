@@ -45,15 +45,6 @@ namespace PYSIMLINK{
         bool operator()(const map_key_1s &lhs, const map_key_1s &rhs) const;
     };
 
-    struct signal_info {
-        bool is_array;
-        char struct_name[128];
-        unsigned int type_size;
-        union _garb {
-            void *addr;
-            pybind11::buffer_info *arr;
-        } data;
-    };
 
     struct DataType{
         std::string cDataType;
@@ -85,6 +76,26 @@ namespace PYSIMLINK{
         std::vector<struct ModelParam> model_params;
         std::vector<struct BlockParam> block_params;
         std::vector<struct Signal> signals;
+    };
+
+    struct BufferLike{
+        void *ptr;
+        ssize_t itemsize;
+        char format[256];
+        ssize_t ndim;
+        ssize_t shape[32];
+        ssize_t strides[32];
+        bool readonly;
+    };
+
+    struct signal_info {
+        bool is_array;
+        char struct_name[128];
+        unsigned int type_size;
+        union _garb {
+            void *addr;
+            BufferLike arr;
+        } data;
     };
 
     union all_dtypes {

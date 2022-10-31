@@ -186,9 +186,9 @@ py::array Model::get_sig(const std::string& model, const std::string& block_path
 
 
     const char* sig_name = sig_name_raw.empty() ? nullptr : sig_name_raw.c_str();
-    struct PYSIMLINK::signal_info ret = PYSIMLINK::get_signal_val(mmi_idx->second, sig_map, block_path.c_str(), sig_name);
+    auto ret = PYSIMLINK::get_signal_val(mmi_idx->second, sig_map, block_path.c_str(), sig_name);
 //    py::handle<PYSIMLINK::signal_info> tmp(ret);
-    return py::array(*ret.data.arr);
+    return py::array(PYSIMLINK::from_buffer_struct(ret->data.arr));
 }
 
 py::array Model::get_block_param(const std::string& model, const std::string& block_path, const std::string& param){
@@ -291,7 +291,7 @@ all_dtypes PYSIMLINK::Model::get_sig_union(const std::string &model, const std::
 
 
     const char* sig_name = sig_name_raw.empty() ? nullptr : sig_name_raw.c_str();
-    struct PYSIMLINK::signal_info sig_info = PYSIMLINK::get_signal_val(mmi_idx->second, sig_map, block_path.c_str(), sig_name);
-    (void)memcpy(&ret, sig_info.data.addr, sig_info.type_size);
+    auto sig_info = PYSIMLINK::get_signal_val(mmi_idx->second, sig_map, block_path.c_str(), sig_name);
+    (void)memcpy(&ret, sig_info->data.addr, sig_info->type_size);
     return ret;
 }
