@@ -173,6 +173,8 @@ void PYSIMLINK::format_pybuffer(const rtwCAPI_ModelMappingInfo *mmi, rtwCAPI_Dat
         strcpy(ret->format, py::format_descriptor<double>::format().c_str());
     } else if (strcmp(dt.cDataName, "char") == 0) {
         strcpy(ret->format, py::format_descriptor<char>::format().c_str());
+    } else if (strcmp(dt.cDataName, "unsigned char") == 0) {
+        strcpy(ret->format, py::format_descriptor<unsigned char>::format().c_str());
     } else if (strcmp(dt.cDataName, "short") == 0) {
         strcpy(ret->format, py::format_descriptor<short>::format().c_str());
     } else if (strcmp(dt.cDataName, "unsigned short") == 0) {

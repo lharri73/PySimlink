@@ -245,9 +245,7 @@ class Model:
             RuntimeError: If the value array is not the correct shape or orientation as the parameter to change
         """
         model_name = self._model_paths.root_model_name if model_name is None else model_name
-        print("getting param info")
         info = self._model.block_param_info(model_name, block, param)
-        print('got')
         dtype = DataType(info)
 
         value = cast_type(value, dtype, self.orientations)
