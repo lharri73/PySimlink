@@ -1,4 +1,4 @@
-recursive-include pysimlink *.py *.cpp *.hpp
+recursive-include pysimlink *.py *.cpp *.hpp *.tpp
 recursive-include tests *.py
 include *.*
 prune dist/*
