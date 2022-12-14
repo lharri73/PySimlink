@@ -67,5 +67,4 @@ jobs:
           python .github/scripts/fetch_models.py ci
 
       - name: Test Models
-        run: |
-          python .github/scripts/run_tests.py ci 
+        run: python .github/scripts/run_tests.py ci 
