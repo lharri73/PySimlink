@@ -25,11 +25,15 @@ class DataType:
     def __init__(self, obj: "anno.c_model_datatype"):
         self.cDataType = obj.cDataType
         self.pythonType = obj.pythonType
+        self.mwDataType = getattr(obj, "mwType", None) or getattr(obj, "mwDataType", None)
         self.dims = obj.dims
         self.orientation = obj.orientation
 
     def __repr__(self):
-        return f"{self.pythonType} ({self.cDataType}) dims: {self.dims} order: {self.orientation}"
+        if self.cDataType == "struct":
+            return f"{self.mwDataType} (struct)"
+        else:
+            return f"{self.pythonType} ({self.cDataType}) dims: {self.dims} order: {self.orientation}"
 
 
 @dataclass

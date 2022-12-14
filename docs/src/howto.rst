@@ -162,7 +162,7 @@ run it in Python. It's as simple as importing PySimlink and calling :code:`print
 
     from pysimlink import Model, print_all_params
 
-    model = Model("my_awesome_mode", "./my_awesome_model.zip")
+    model = Model("my_awesome_model", "./my_awesome_model.zip")
     model.reset()
     print_all_params(model)
 
@@ -205,3 +205,33 @@ properly in Simulink, you can change this value at every timestep to get your de
 .. tip:: If you're making changes to your model like this just for code generation or for PySimlink and don't want to
     change its normal behavior, check out `Variant Subsystems <https://www.mathworks.com/help/simulink/ug/variant-subsystems.html>`_.
     You can have one subsystem for code generation and one for Simulink simulation.
+
+Read The Value of Bus Signals
+-----------------------------
+
+.. note:: New in pysimlink 1.2.0
+
+Bus signals are a bit more complicated than other signals.
+They are a collection of other signals, and can even be nested in other busses. PySimlink
+allows you to read bus signal types and their contents. To see the available signals,
+you can use the :code:`dir` function. 
+
+.. code-block:: python
+   
+    model = Model("my_awesome_model", "./my_awesome_model.zip")
+    model.reset()
+    struct_signal = model.get_signal("my_awesome_model/sig1")
+    print(dir(struct_signal))
+
+
+.. note:: There are a few python-internal properties prepended and appended by two
+   underscores. These are not part of your bus and can be ignored.
+
+You can access the signals in the bus as follows:
+
+.. code-block:: python
+
+   print(struct_signal.a)
+   print(struct_signal.b)
+
+

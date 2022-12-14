@@ -116,7 +116,10 @@ class ModelPaths:
         the function in the capi, but we need the model mapping interface (mmi).
         """
         files = glob.glob(self.root_model_path + "/*.c", recursive=False)
-        files = map(os.path.basename, files)
+        files = list(map(os.path.basename, files))
+        assert self.root_model_name + ".c" in files, \
+            f"Cannot find {self.root_model_name}.c in {self.root_model_path}. Is the model name correct?"
+
         assert self.root_model_name + "_capi.c" in files, (
             "Model not generated with capi. Enable the following options in the Code Generation model settings: \n"
             "\tGenerate C API for: signals, parameters, states, root-level I/O"

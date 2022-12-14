@@ -48,7 +48,6 @@ def print_all_params(model: "anno.Model"):
             )
         print("-" * 80)
 
-
 def get_other_in_dir(directory: str, known: str):
     """In a directory containing only two directories, get the name of the other we don't know
 

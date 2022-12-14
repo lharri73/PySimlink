@@ -12,8 +12,8 @@ dist/
 .idea
 cmake-build-debug
 
-tests/*
-!tests/*.py
+tests
 
 docs/_build
 dev_files/
+*.txt
