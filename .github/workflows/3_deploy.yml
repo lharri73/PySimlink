@@ -7,7 +7,7 @@ on:
 
 jobs:
   branch_check:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     outputs:
       tag: ${{ steps.ref.outputs.result }}
       master: ${{ steps.master.outputs.result }}
@@ -28,7 +28,7 @@ jobs:
   deploy_wheels:
     needs: branch_check
     name: Deploy wheels
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     if: needs.branch_check.outputs.tag == needs.branch_check.outputs.master
 
     steps:
