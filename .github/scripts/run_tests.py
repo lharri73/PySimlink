@@ -134,9 +134,9 @@ def main(pth):
 
     runner = unittest.TextTestRunner(failfast=True)
     ret = runner.run(test_suite)
-    if ret.failures:
-        exit(1)
-    exit(0)
+    if ret.wasSuccessful():
+        exit(0)
+    exit(1)
 
 
 if __name__ == "__main__":
