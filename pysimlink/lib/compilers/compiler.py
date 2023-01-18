@@ -25,10 +25,12 @@ class Compiler:
     custom_includes: str  ## Include files directory defined by this python module
     custom_sources: str  ## Source files directory defined by this python module
     types: "list[anno.Struct]"  ## Name of types used by signals (usually manifested as busses).
+    matlogging: bool  ## Whether matfile logging is enabled
 
     def __init__(self, model_paths: "anno.ModelPaths"):
         self.model_paths = model_paths
         self.types = []
+        self.matlogging = False
 
     def clean(self):
         """
@@ -102,6 +104,11 @@ class Compiler:
         if rt_main is not None:
             simulink_deps.remove(rt_main)
 
+        for file in self.simulink_deps:
+            if file == "rtw_matlogging":
+                self.matlogging = True
+                break
+
         self.simulink_deps_src = simulink_deps
 
     def _gen_custom_srcs(self):
@@ -127,6 +134,7 @@ class Compiler:
             "<<ROOT_MODEL_NAME>>": sanitize_model_name(self.model_paths.root_model_name),
             "<<DATA_TYPE>>": self.gather_types(),
             "<<ALL_DTYPES>>": self.get_type_names(),
+            "<<RTW_MATLOGGING>>": "#include \"rtw_matlogging.h\"" if self.matlogging else ""
         }
         self._replace_macros(os.path.join(self.custom_includes, "model_utils.hpp"), replacements)
         self._replace_macros(

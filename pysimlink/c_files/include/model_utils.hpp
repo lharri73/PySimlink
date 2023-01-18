@@ -6,7 +6,7 @@ extern "C"{
 #include "<<ROOT_MODEL>>"
 #include "rtw_capi.h"
 #include "rtw_modelmap_logging.h"
-#include "rtw_matlogging.h"
+<<RTW_MATLOGGING>>
 #include "rtw_modelmap.h"
 }
 #include <string.h>
