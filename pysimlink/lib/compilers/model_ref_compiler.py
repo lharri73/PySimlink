@@ -86,8 +86,6 @@ class ModelRefCompiler(Compiler):
                     dep = inc_test.groups()[0]
                     ## Could probably replace this with .split('.')[0] but can _model names have a '.'?
                     suffix_idx = dep.find(".h")
-                    if dep[:suffix_idx] == "math":
-                        continue
                     deps.add(dep[:suffix_idx])
                     continue
                 if re.match(end, line):

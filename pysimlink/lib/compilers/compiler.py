@@ -3,6 +3,7 @@ import glob
 import os
 from datetime import datetime
 from subprocess import Popen, PIPE
+import shutil
 
 import cmake
 

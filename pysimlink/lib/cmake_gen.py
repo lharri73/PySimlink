@@ -143,6 +143,9 @@ set_target_properties(
         for dep, deps in dep_map.items():
             if len(deps) == 0:
                 continue
+            if "math" in deps:
+                midx = deps.index("math")
+                deps[midx] = "m"
             deps_exp = "\n        ".join(deps)
             ret += f"""
 target_link_libraries(
