@@ -134,7 +134,7 @@ class Compiler:
             "<<ROOT_MODEL_NAME>>": sanitize_model_name(self.model_paths.root_model_name),
             "<<DATA_TYPE>>": self.gather_types(),
             "<<ALL_DTYPES>>": self.get_type_names(),
-            "<<RTW_MATLOGGING>>": "#include \"rtw_matlogging.h\"" if self.matlogging else ""
+            "<<RTW_MATLOGGING>>": '#include "rtw_matlogging.h"' if self.matlogging else "",
         }
         self._replace_macros(os.path.join(self.custom_includes, "model_utils.hpp"), replacements)
         self._replace_macros(

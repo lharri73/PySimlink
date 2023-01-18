@@ -33,7 +33,9 @@ class DataType:
         if self.cDataType == "struct":
             return f"{self.mwDataType} (struct)"
         else:
-            return f"{self.pythonType} ({self.cDataType}) dims: {self.dims} order: {self.orientation}"
+            return (
+                f"{self.pythonType} ({self.cDataType}) dims: {self.dims} order: {self.orientation}"
+            )
 
 
 @dataclass

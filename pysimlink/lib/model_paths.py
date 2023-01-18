@@ -117,8 +117,9 @@ class ModelPaths:
         """
         files = glob.glob(self.root_model_path + "/*.c", recursive=False)
         files = list(map(os.path.basename, files))
-        assert self.root_model_name + ".c" in files, \
-            f"Cannot find {self.root_model_name}.c in {self.root_model_path}. Is the model name correct?"
+        assert (
+            self.root_model_name + ".c" in files
+        ), f"Cannot find {self.root_model_name}.c in {self.root_model_path}. Is the model name correct?"
 
         assert self.root_model_name + "_capi.c" in files, (
             "Model not generated with capi. Enable the following options in the Code Generation model settings: \n"
@@ -139,8 +140,7 @@ class ModelPaths:
                 break
         else:
             raise RuntimeError(
-                "Model is setup with multitasking. Disable the following options in the Solver settings and recompile: \n"
-                "\t- 'Treat each discrete rate as a separate task'\n\t- 'Allow tasks to execute concurrently on target'"
+                "Model is setup with multitasking OR single output/update function is not enabled. See the docs for proper generation format (https://lharri73.github.io/PySimlink/src/howto.html#generate-code-from-your-simulink-model)"
             )
 
     def compiler_factory(self) -> "anno.Compiler":
