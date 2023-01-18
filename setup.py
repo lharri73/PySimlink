@@ -8,7 +8,7 @@ with open("README.md", "r") as f:
 
 setup(
     name="pysimlink",
-    version="1.2.0-dev4",
+    version="1.2.0-dev6",
     author="Landon Harris",
     author_email="lharri73@vols.utk.edu",
     description="Compile, run, and interact with Simulink models natively in Python!",

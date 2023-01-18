@@ -55,7 +55,6 @@ class ModelPaths:
         self.suffix = suffix
         zip_test = os.path.splitext(root_dir)
         if zip_test[-1] == ".zip":
-            self.was_zip = True
             with zipfile.ZipFile(root_dir, "r") as f:
                 if tmp_dir is None:
                     ext_dir = os.path.join(
@@ -64,7 +63,11 @@ class ModelPaths:
                         "extract",
                         os.path.basename(zip_test[0]),
                     )
+                else:
+                    ext_dir = os.path.join(tmp_dir, "extract", os.path.basename(zip_test[0]))
+                shutil.rmtree(ext_dir, ignore_errors=True)
                 f.extractall(ext_dir)
+
             self.root_dir = ext_dir
         else:
             self.root_dir = root_dir
@@ -169,7 +172,5 @@ class ModelPaths:
     def module_name(self):
         return sanitize_model_name(self.root_model_name) + "_interface_c"
 
-    def cleanup(self):
+    def clean(self):
         shutil.rmtree(self.tmp_dir, ignore_errors=True)
-        if self.was_zip:
-            shutil.rmtree(self.root_dir, ignore_errors=True)

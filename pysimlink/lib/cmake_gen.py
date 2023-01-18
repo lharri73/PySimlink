@@ -129,7 +129,7 @@ set_target_properties(
 )
 """
 
-    def add_link_libs(self, dep_map: "dict[str, list[str]]"):
+    def add_link_libs(self, dep_map: "dict[str, set[str]]"):
         """
         Link libraries according to the dependency map
 
@@ -141,6 +141,7 @@ set_target_properties(
         """
         ret = ""
         for dep, deps in dep_map.items():
+            deps = list(deps)
             if len(deps) == 0:
                 continue
             if "math" in deps:
