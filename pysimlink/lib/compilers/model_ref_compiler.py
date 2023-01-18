@@ -52,7 +52,7 @@ class ModelRefCompiler(Compiler):
         Returns:
             None: always
         """
-        if model_name in models:
+        if model_name in models or model_name in ["math"]:
             return
 
         model_path = (
@@ -86,6 +86,8 @@ class ModelRefCompiler(Compiler):
                     dep = inc_test.groups()[0]
                     ## Could probably replace this with .split('.')[0] but can _model names have a '.'?
                     suffix_idx = dep.find(".h")
+                    if dep[:suffix_idx] == "math":
+                        continue
                     deps.add(dep[:suffix_idx])
                     continue
                 if re.match(end, line):
