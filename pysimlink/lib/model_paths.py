@@ -4,6 +4,7 @@ import re
 import sys
 from typing import Union
 import zipfile
+import shutil
 
 from pysimlink.utils import annotation_utils as anno
 from pysimlink.utils.model_utils import get_other_in_dir, sanitize_model_name
@@ -25,6 +26,7 @@ class ModelPaths:
     models_dir: str  ## directory containing all simulink code related to the models
     slprj_dir: Union[str, None]  ## Directory will all child models (contains compile_type)
     tmp_dir: str  ## Directory where all compiled models will be built
+    was_zip: bool  ## Whether the source was a zip file or not
 
     def __init__(
         self,
@@ -53,6 +55,7 @@ class ModelPaths:
         self.suffix = suffix
         zip_test = os.path.splitext(root_dir)
         if zip_test[-1] == ".zip":
+            self.was_zip = True
             with zipfile.ZipFile(root_dir, "r") as f:
                 if tmp_dir is None:
                     ext_dir = os.path.join(
@@ -65,6 +68,7 @@ class ModelPaths:
             self.root_dir = ext_dir
         else:
             self.root_dir = root_dir
+            self.was_zip = False
 
         walk = os.walk(self.root_dir, followlinks=False)
         for (cur_path, folders, _) in walk:
@@ -164,3 +168,8 @@ class ModelPaths:
     @property
     def module_name(self):
         return sanitize_model_name(self.root_model_name) + "_interface_c"
+
+    def cleanup(self):
+        shutil.rmtree(self.tmp_dir, ignore_errors=True)
+        if self.was_zip:
+            shutil.rmtree(self.root_dir, ignore_errors=True)

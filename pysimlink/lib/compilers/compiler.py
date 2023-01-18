@@ -1,7 +1,6 @@
 from abc import abstractmethod
 import glob
 import os
-import shutil
 from datetime import datetime
 from subprocess import Popen, PIPE
 
@@ -36,7 +35,7 @@ class Compiler:
         """
         Remove all files from the temporary directory
         """
-        shutil.rmtree(self.model_paths.tmp_dir, ignore_errors=True)
+        self.model_paths.clean()
 
     def compile(self):
         """
