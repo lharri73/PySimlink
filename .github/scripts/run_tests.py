@@ -5,7 +5,6 @@ import os
 import time
 import numpy as np
 import shutil
-from math import floor
 
 from pysimlink import Model, GenerationError, BuildError
 
@@ -141,4 +140,5 @@ def main(pth):
 
 if __name__ == "__main__":
     pth = sys.argv[-1]
+    os.environ["PYSIMLINK_DEBUG"] = "TRUE"
     main(pth)
