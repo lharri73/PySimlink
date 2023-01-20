@@ -15,7 +15,10 @@ class GenerationError(Exception):
 
     def __str__(self):
         if os.environ.get("PYSIMLINK_DEBUG", "FALSE") == "TRUE":
-            return f"GENERATIONERROR\n\n{self.cmake}"
+            with open(self.cmake, 'r') as f:
+                contents = f.read()
+            ret = f"GENERATION ERROR\n\n{self.dump}\nCONTENTS\n{contents}"
+            return ret
         else:
             return (
                 "Generating the CMakeLists for this model failed. This could be a c/c++/cmake setup issue, bad paths, or a bug! "
@@ -38,7 +41,10 @@ class BuildError(Exception):
 
     def __str__(self):
         if os.environ.get("PYSIMLINK_DEBUG", "FALSE") == "TRUE":
-            return f"BUILDERROR\n\n{self.cmake}"
+            with open(self.cmake, 'r') as f:
+                contents = f.read()
+            ret = f"BUILD ERROR\n\n{self.dump}\n\n---\nCONTENTS\n{contents}"
+            return ret
         else:
             return (
                 "Building the model failed. This could be a c/c++/cmake setup issue, bad paths, or a bug! "
