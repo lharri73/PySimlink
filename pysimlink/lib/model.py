@@ -186,7 +186,11 @@ class Model:
             data = self._model.get_signal_union(model_name, block_path, sig_name)
             return getattr(data, sig_type.mwType)
         else:
-            return self._model.get_signal_arr(model_name, block_path, sig_name)
+            data: "np.ndarray" = self._model.get_signal_arr(model_name, block_path, sig_name)
+            if data.size == 1:
+                return data.item()
+            else:
+                return data
 
     def get_block_param(self, block_path, param, model_name=None) -> "np.ndarray":
         """

@@ -65,4 +65,13 @@ class NoRefCompiler(Compiler):
             f.write(cmake_text)
 
     def gather_types(self):
-        return ""
+        types_files = glob.glob(self.model_paths.root_model_path + "/*_types.h")
+
+        for file in types_files:
+            with open(file, "r") as f:
+                lines = f.readlines()
+
+            self._read_types_single_file(lines)
+
+
+        return self._gen_types()

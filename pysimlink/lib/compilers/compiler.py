@@ -4,12 +4,15 @@ import os
 from datetime import datetime
 from subprocess import Popen, PIPE
 import shutil
+import re
+import warnings
 
 import cmake
 
 from pysimlink.utils import annotation_utils as anno
 from pysimlink.utils.model_utils import infer_defines, sanitize_model_name
 from pysimlink.lib.exceptions import GenerationError, BuildError
+from pysimlink.lib.struct_parser import parse_struct
 
 
 class Compiler:
@@ -224,3 +227,59 @@ class Compiler:
 
         with open(path, "w", encoding="utf-8") as f:
             f.writelines(lines)
+
+    def _read_types_single_file(self, lines):
+        define_re = re.compile(r"^#define DEFINED_TYPEDEF")
+        endif = re.compile(r"^#endif")
+        pairs = []
+        cur = None
+        for i, line in enumerate(lines):
+            test1 = re.search(define_re, line)
+            test2 = re.search(endif, line)
+            if test1 is not None:
+                if cur is not None:
+                    warnings.warn("types file malformed")
+                else:
+                    cur = i
+                continue
+            if test2 is not None:
+                if cur is not None:
+                    pairs.append((cur, i))
+                    cur = None
+
+        for pair in pairs:
+            new_struct = parse_struct(lines[pair[0] + 2: pair[1] - 1])
+            for struct in self.types:
+                ## Prevent duplicate types
+                if struct.name == new_struct.name:
+                    break
+            else:
+                self.types.append(new_struct)
+
+    def _gen_types(self):
+        ret = []
+        for type in self.types:
+            ret += [f'    py::class_<{type.name}>(m, "{type.name}", py::module_local())']
+            for field in type.fields:
+                ret += [f'            .def_readonly("{field.name}", &{type.name}::{field.name})']
+            ret[-1] += ";"
+            ret.append("")
+
+        ret += [
+                f'    py::class_<PYSIMLINK::all_dtypes>(m, "{sanitize_model_name(self.model_paths.root_model_name)}_all_dtypes", py::module_local())'
+        ]
+        for type in self.types:
+            ret += [
+                    f'            .def_readonly("{type.name}", &PYSIMLINK::all_dtypes::{type.name}_obj)'
+            ]
+        ret[-1] += ";"
+        ret.append("")
+
+        return "\n".join(ret)
+
+    def get_type_names(self):
+        ret = []
+        for struct in self.types:
+            ret.append(f"{struct.name} {struct.name}_obj;")
+
+        return "\n        ".join(ret)
