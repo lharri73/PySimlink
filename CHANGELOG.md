@@ -38,3 +38,8 @@ Compatibility Updates
 Bus signal capability
 
 - Fixed scalar valued block/model parameters
+- Added struct capability
+- Fixed array->scalar when reading signals
+- Added math header for other solvers
+- Pinned fasteners requirement
+- Fixed cleanup of zipped files

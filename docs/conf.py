@@ -19,11 +19,11 @@ import sys, os
 # -- Project information -----------------------------------------------------
 sys.path.insert(0, os.path.abspath("../pysimlink"))
 project = "PySimlink"
-copyright = "2022, Landon Harris"
+copyright = "2023, Landon Harris"
 author = "Landon Harris"
 
 # The full version, including alpha/beta/rc tags
-release = "1.0.0-dev"
+release = "1.2.0"
 
 
 # -- General configuration ---------------------------------------------------

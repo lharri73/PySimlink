@@ -167,4 +167,3 @@ class ModelRefCompiler(Compiler):
             self._read_types_single_file(lines)
 
         return self._gen_types()
-
