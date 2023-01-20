@@ -146,7 +146,10 @@ set_target_properties(
                 continue
             if "math" in deps:
                 midx = deps.index("math")
-                deps[midx] = "m"
+                if os.name == 'nt':
+                    del deps[midx]
+                else:
+                    deps[midx] = "m"
             deps_exp = "\n        ".join(deps)
             ret += f"""
 target_link_libraries(
