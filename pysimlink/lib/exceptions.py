@@ -17,7 +17,9 @@ class GenerationError(Exception):
         if os.environ.get("PYSIMLINK_DEBUG", "FALSE") == "TRUE":
             with open(self.cmake, 'r') as f:
                 contents = f.read()
-            ret = f"GENERATION ERROR\n\n{self.dump}\nCONTENTS\n{contents}"
+            with open(self.dump, 'r') as f:
+                dump = f.read()
+            ret = f"GENERATION ERROR\n\n{dump}\nCMAKE_LISTS\n{contents}"
             return ret
         else:
             return (
@@ -43,7 +45,9 @@ class BuildError(Exception):
         if os.environ.get("PYSIMLINK_DEBUG", "FALSE") == "TRUE":
             with open(self.cmake, 'r') as f:
                 contents = f.read()
-            ret = f"BUILD ERROR\n\n{self.dump}\n\n---\nCONTENTS\n{contents}"
+            with open(self.dump, 'r') as f:
+                dump = f.read()
+            ret = f"BUILD ERROR\n\n{dump}\n\n---\nCMAKE_LISTS\n{contents}"
             return ret
         else:
             return (
