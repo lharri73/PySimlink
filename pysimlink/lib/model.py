@@ -15,6 +15,10 @@ import pickle
 import time
 import importlib
 
+if os.name == "nt":
+    warnings.warn("Windows is not supported with PySimlink version >=1.2.0. Although not supported, it may still work."
+                  "Support is planned to continue in future.")
+
 
 class Model:
     """
