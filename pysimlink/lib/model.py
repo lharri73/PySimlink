@@ -3,8 +3,9 @@ import sys
 import warnings
 
 import numpy as np
-from fasteners import InterProcessReaderWriterLock
-import tempfile
+# from fasteners import InterProcessReaderWriterLock
+from fcntl import lockf, LOCK_EX, LOCK_UN
+# import tempfile
 
 from pysimlink.lib.model_paths import ModelPaths
 from pysimlink.utils import annotation_utils as anno
@@ -56,20 +57,21 @@ class Model:
         self._model_paths = ModelPaths(path_to_model, model_name, compile_type, suffix, tmp_dir)
         self._compiler = self._model_paths.compiler_factory()
         self._lock = InterProcessReaderWriterLock(
-            os.path.join(tempfile.gettempdir(), model_name + ".lock")
+            os.path.join(self._model_paths.tmp_dir, model_name + ".lock")
         )
-        with self._lock.write_lock():
-            # Check need to compile
-            if (
-                mt_rebuild_check(self._model_paths, force_rebuild)
-                or self._compiler.needs_to_compile()
-            ):
-                # Need to compile
-                with open_spinner("Compiling"):
-                    self._compiler.compile()
-                with open(os.path.join(self._model_paths.tmp_dir, "compile_info.pkl"), "wb") as f:
-                    obj = {"pid": os.getpid(), "parent": os.getppid(), "time": time.time()}
-                    pickle.dump(obj, f)
+        self._lock.acquire()
+        # Check need to compile
+        if (
+            mt_rebuild_check(self._model_paths, force_rebuild)
+            or self._compiler.needs_to_compile()
+        ):
+            # Need to compile
+            with open_spinner("Compiling"):
+                self._compiler.compile()
+            with open(os.path.join(self._model_paths.tmp_dir, "compile_info.pkl"), "wb") as f:
+                obj = {"pid": os.getpid(), "parent": os.getppid(), "time": time.time()}
+                pickle.dump(obj, f)
+        self._unlock()
 
         self.path_dirs = []
         for dir, _, _ in os.walk(
@@ -103,6 +105,15 @@ class Model:
         Get the total number of steps this model can run
         """
         return int(self.tFinal / self.step_size)
+
+    def _lock(self):
+        f = open(os.path.join(self._model_paths.tmp_dir, self._model_paths.root_model_name + ".lock"))
+        rv = lockf(f, LOCK_EX, os.O_NDELAY)
+        f.write(str(os.getpid()))
+
+    def _unlock(self):
+        f = open(os.path.join(self._model_paths.tmp_dir, self._model_paths.root_model_name + ".lock"))
+        rv = lockf(f, LOCK_UN, os.O_NDELAY)
 
     def get_params(self) -> "list[anno.ModelInfo]":
         """

@@ -1,5 +1,4 @@
 cmake
-fasteners>=0.16
 numpy
 pybind11
 
