@@ -56,9 +56,9 @@ class Model:
 
         self._model_paths = ModelPaths(path_to_model, model_name, compile_type, suffix, tmp_dir)
         self._compiler = self._model_paths.compiler_factory()
-        self._lock = InterProcessReaderWriterLock(
-            os.path.join(self._model_paths.tmp_dir, model_name + ".lock")
-        )
+        # self._lock = InterProcessReaderWriterLock(
+        #     os.path.join(self._model_paths.tmp_dir, model_name + ".lock")
+        # )
         self._lock.acquire()
         # Check need to compile
         if (
