@@ -32,13 +32,14 @@ class Model:
     _compiler: "anno.Compiler"
 
     def __init__(  # pylint: disable=R0913
-        self,
-        model_name: str,
-        path_to_model: str,
-        compile_type: str = "grt",
-        suffix: str = "rtw",
-        tmp_dir: "anno.Optional[str]" = None,
-        force_rebuild: bool = False,
+            self,
+            model_name: str,
+            path_to_model: str,
+            compile_type: str = "grt",
+            suffix: str = "rtw",
+            tmp_dir: "anno.Optional[str]" = None,
+            force_rebuild: bool = False,
+            skip_compile: bool = False
     ):
         """
         Args:
@@ -48,22 +49,23 @@ class Model:
             suffix (str): Simulink Coder folders are almost always suffixed with rtw (real time workshop).
             tmp_dir (Optional[str]): Path to the directory that will be used to build the model. Defaults to :file:`__pycache__/{model_name}`
             force_rebuild (bool): force pysimlink to recompile the model from the source located at :code:`path_to_model`. Removes all build artifacts.
+            skip_compile (bool): skip compilation of the model. This is useful if you have already compiled the model and just want to import it.
 
         Attributes:
             orientations: enumeration describing matrix orientations (row major, column major, etc.). This enumeration is
                 likely the same among all models, but could change across MATLAB versions.
         """
 
-        self._model_paths = ModelPaths(path_to_model, model_name, compile_type, suffix, tmp_dir)
+        self._model_paths = ModelPaths(path_to_model, model_name, compile_type, suffix, tmp_dir, skip_compile)
         self._compiler = self._model_paths.compiler_factory()
         # self._lock = InterProcessReaderWriterLock(
         #     os.path.join(self._model_paths.tmp_dir, model_name + ".lock")
         # )
-        self._lock.acquire()
+        self._lock()
         # Check need to compile
         if (
-            mt_rebuild_check(self._model_paths, force_rebuild)
-            or self._compiler.needs_to_compile()
+                (mt_rebuild_check(self._model_paths, force_rebuild)
+                 or self._compiler.needs_to_compile()) and not skip_compile
         ):
             # Need to compile
             with open_spinner("Compiling"):
@@ -75,21 +77,21 @@ class Model:
 
         self.path_dirs = []
         for dir, _, _ in os.walk(
-            os.path.join(self._model_paths.tmp_dir, "build", "out", "library")
+                os.path.join(self._model_paths.tmp_dir, "build", "out", "library")
         ):
             sys.path.append(dir)
             self.path_dirs.append(dir)
 
         self.module = importlib.import_module(self._model_paths.module_name)
         model_class = getattr(
-            self.module, sanitize_model_name(self._model_paths.root_model_name) + "_Model"
+                self.module, sanitize_model_name(self._model_paths.root_model_name) + "_Model"
         )
 
         self._model = model_class(self._model_paths.root_model_name)
 
         self.orientations = getattr(
-            self.module,
-            sanitize_model_name(self._model_paths.root_model_name) + "_rtwCAPI_Orientation",
+                self.module,
+                sanitize_model_name(self._model_paths.root_model_name) + "_rtwCAPI_Orientation",
         )
 
     def __del__(self):
@@ -107,13 +109,15 @@ class Model:
         return int(self.tFinal / self.step_size)
 
     def _lock(self):
-        f = open(os.path.join(self._model_paths.tmp_dir, self._model_paths.root_model_name + ".lock"))
-        rv = lockf(f, LOCK_EX, os.O_NDELAY)
+        f = open(os.path.join(self._model_paths.tmp_dir, self._model_paths.root_model_name + ".lock"), "w")
+        rv = lockf(f, LOCK_EX)
         f.write(str(os.getpid()))
+        f.close()
 
     def _unlock(self):
-        f = open(os.path.join(self._model_paths.tmp_dir, self._model_paths.root_model_name + ".lock"))
-        rv = lockf(f, LOCK_UN, os.O_NDELAY)
+        f = open(os.path.join(self._model_paths.tmp_dir, self._model_paths.root_model_name + ".lock"), "w")
+        rv = lockf(f, LOCK_UN)
+        f.close()
 
     def get_params(self) -> "list[anno.ModelInfo]":
         """
@@ -246,11 +250,11 @@ class Model:
         return self._model.get_models()
 
     def set_block_param(
-        self,
-        block: str,
-        param: str,
-        value: "anno.ndarray",
-        model_name: "anno.Union[str,None]" = None,
+            self,
+            block: str,
+            param: str,
+            value: "anno.ndarray",
+            model_name: "anno.Union[str,None]" = None,
     ):
         """
         Set the parameter of a block within the model.
@@ -272,7 +276,7 @@ class Model:
         self._model.set_block_param(model_name, block, param, value)
 
     def set_model_param(
-        self, param: str, value: "anno.ndarray", model_name: "anno.Union[str,None]" = None
+            self, param: str, value: "anno.ndarray", model_name: "anno.Union[str,None]" = None
     ):
         """
         Set a model parameter.

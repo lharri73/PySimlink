@@ -35,6 +35,7 @@ class ModelPaths:
         compile_type: str = "grt",
         suffix: str = "rtw",
         tmp_dir: "Union[str, None]" = None,
+        skip_compile: bool = False,
     ):
         """
         Args:
@@ -43,6 +44,7 @@ class ModelPaths:
             compile_type: grt, ert, etc...
             suffix: the suffix added to the model name directory. usually 'rtw'
             tmp_dir: Where to store the build files. Defaults to __pycache__
+            skip_compile: Don't extract the model, assume this has already been done
         """
         self.compile_type = compile_type
         if self.compile_type != "grt":
@@ -55,18 +57,32 @@ class ModelPaths:
         self.suffix = suffix
         zip_test = os.path.splitext(root_dir)
         if zip_test[-1] == ".zip":
-            with zipfile.ZipFile(root_dir, "r") as f:
+            if skip_compile:
                 if tmp_dir is None:
                     ext_dir = os.path.join(
                         os.path.dirname(sys.argv[0]),
                         "__pycache__",
-                        "extract",
-                        os.path.basename(zip_test[0]),
+                        "extract"
                     )
                 else:
-                    ext_dir = os.path.join(tmp_dir, "extract", os.path.basename(zip_test[0]))
-                shutil.rmtree(ext_dir, ignore_errors=True)
-                f.extractall(ext_dir)
+                    ext_dir = os.path.join(tmp_dir, "extract")
+                zip_name = os.listdir(ext_dir)[0]
+                self.root_dir = os.path.join(ext_dir, zip_name)
+                ext_dir = self.root_dir
+                self.was_zip = True
+            else:
+                with zipfile.ZipFile(root_dir, "r") as f:
+                    if tmp_dir is None:
+                        ext_dir = os.path.join(
+                            os.path.dirname(sys.argv[0]),
+                            "__pycache__",
+                            "extract",
+                            os.path.basename(zip_test[0]),
+                        )
+                    else:
+                        ext_dir = os.path.join(tmp_dir, "extract", os.path.basename(zip_test[0]))
+                    shutil.rmtree(ext_dir, ignore_errors=True)
+                    f.extractall(ext_dir)
 
             self.root_dir = ext_dir
         else:
