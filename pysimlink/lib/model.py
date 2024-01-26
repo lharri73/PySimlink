@@ -3,8 +3,12 @@ import sys
 import warnings
 
 import numpy as np
-from fasteners import InterProcessReaderWriterLock
-import tempfile
+
+if os.name != "nt":
+    from fcntl import lockf, LOCK_EX, LOCK_UN
+else:
+    import msvcrt
+# import tempfile
 
 from pysimlink.lib.model_paths import ModelPaths
 from pysimlink.utils import annotation_utils as anno
@@ -14,10 +18,6 @@ from pysimlink.lib.spinner import open_spinner
 import pickle
 import time
 import importlib
-
-if os.name == "nt":
-    warnings.warn("Windows is not supported with PySimlink version >=1.2.0. Although not supported, it may still work."
-                  "Support is planned to continue in future.")
 
 
 class Model:
@@ -31,13 +31,15 @@ class Model:
     _compiler: "anno.Compiler"
 
     def __init__(  # pylint: disable=R0913
-        self,
-        model_name: str,
-        path_to_model: str,
-        compile_type: str = "grt",
-        suffix: str = "rtw",
-        tmp_dir: "anno.Optional[str]" = None,
-        force_rebuild: bool = False,
+            self,
+            model_name: str,
+            path_to_model: str,
+            compile_type: str = "grt",
+            suffix: str = "rtw",
+            tmp_dir: "anno.Optional[str]" = None,
+            force_rebuild: bool = False,
+            skip_compile: bool = False,
+            generator: str = None,
     ):
         """
         Args:
@@ -47,47 +49,56 @@ class Model:
             suffix (str): Simulink Coder folders are almost always suffixed with rtw (real time workshop).
             tmp_dir (Optional[str]): Path to the directory that will be used to build the model. Defaults to :file:`__pycache__/{model_name}`
             force_rebuild (bool): force pysimlink to recompile the model from the source located at :code:`path_to_model`. Removes all build artifacts.
+            skip_compile (bool): skip compilation of the model. This is useful if you have already compiled the model and just want to import it.
+            generator (str): Type of generator to use for cmake. defaults to :code:`NMake Makefiles` on windows and :code:`Unix Makefiles` on mac/linux.
+
 
         Attributes:
             orientations: enumeration describing matrix orientations (row major, column major, etc.). This enumeration is
                 likely the same among all models, but could change across MATLAB versions.
         """
 
-        self._model_paths = ModelPaths(path_to_model, model_name, compile_type, suffix, tmp_dir)
-        self._compiler = self._model_paths.compiler_factory()
-        self._lock = InterProcessReaderWriterLock(
-            os.path.join(tempfile.gettempdir(), model_name + ".lock")
-        )
-        with self._lock.write_lock():
-            # Check need to compile
-            if (
-                mt_rebuild_check(self._model_paths, force_rebuild)
-                or self._compiler.needs_to_compile()
-            ):
-                # Need to compile
-                with open_spinner("Compiling"):
-                    self._compiler.compile()
-                with open(os.path.join(self._model_paths.tmp_dir, "compile_info.pkl"), "wb") as f:
-                    obj = {"pid": os.getpid(), "parent": os.getppid(), "time": time.time()}
-                    pickle.dump(obj, f)
+        self._model_paths = ModelPaths(path_to_model, model_name, compile_type, suffix, tmp_dir, skip_compile)
+
+        if generator is None:
+            if os.name == "nt":
+                generator = "NMake Makefiles"
+            else:
+                generator = "Unix Makefiles"
+
+        self._compiler = self._model_paths.compiler_factory(generator)
+
+        self._lock()
+        # Check need to compile
+        if (
+                (mt_rebuild_check(self._model_paths, force_rebuild)
+                 or self._compiler.needs_to_compile()) and not skip_compile
+        ):
+            # Need to compile
+            with open_spinner("Compiling"):
+                self._compiler.compile()
+            with open(os.path.join(self._model_paths.tmp_dir, "compile_info.pkl"), "wb") as f:
+                obj = {"pid": os.getpid(), "parent": os.getppid(), "time": time.time()}
+                pickle.dump(obj, f)
+        self._unlock()
 
         self.path_dirs = []
         for dir, _, _ in os.walk(
-            os.path.join(self._model_paths.tmp_dir, "build", "out", "library")
+                os.path.join(self._model_paths.tmp_dir, "build", "out", "library")
         ):
             sys.path.append(dir)
             self.path_dirs.append(dir)
 
         self.module = importlib.import_module(self._model_paths.module_name)
         model_class = getattr(
-            self.module, sanitize_model_name(self._model_paths.root_model_name) + "_Model"
+                self.module, sanitize_model_name(self._model_paths.root_model_name) + "_Model"
         )
 
         self._model = model_class(self._model_paths.root_model_name)
 
         self.orientations = getattr(
-            self.module,
-            sanitize_model_name(self._model_paths.root_model_name) + "_rtwCAPI_Orientation",
+                self.module,
+                sanitize_model_name(self._model_paths.root_model_name) + "_rtwCAPI_Orientation",
         )
 
     def __del__(self):
@@ -103,6 +114,23 @@ class Model:
         Get the total number of steps this model can run
         """
         return int(self.tFinal / self.step_size)
+
+    def _lock(self):
+        f = open(os.path.join(self._model_paths.tmp_dir, self._model_paths.root_model_name + ".lock"), "w")
+        if os.name == "nt":
+            rv = msvcrt.locking(f.fileno(), msvcrt.LK_LOCK, 1)
+        else:
+            rv = lockf(f, LOCK_EX)
+        f.write(str(os.getpid()))
+        f.close()
+
+    def _unlock(self):
+        f = open(os.path.join(self._model_paths.tmp_dir, self._model_paths.root_model_name + ".lock"), "w")
+        if os.name == "nt":
+            rv = msvcrt.locking(f.fileno(), msvcrt.LK_UNLCK, 1)
+        else:
+            rv = lockf(f, LOCK_UN)
+        f.close()
 
     def get_params(self) -> "list[anno.ModelInfo]":
         """
@@ -235,11 +263,11 @@ class Model:
         return self._model.get_models()
 
     def set_block_param(
-        self,
-        block: str,
-        param: str,
-        value: "anno.ndarray",
-        model_name: "anno.Union[str,None]" = None,
+            self,
+            block: str,
+            param: str,
+            value: "anno.ndarray",
+            model_name: "anno.Union[str,None]" = None,
     ):
         """
         Set the parameter of a block within the model.
@@ -261,7 +289,7 @@ class Model:
         self._model.set_block_param(model_name, block, param, value)
 
     def set_model_param(
-        self, param: str, value: "anno.ndarray", model_name: "anno.Union[str,None]" = None
+            self, param: str, value: "anno.ndarray", model_name: "anno.Union[str,None]" = None
     ):
         """
         Set a model parameter.

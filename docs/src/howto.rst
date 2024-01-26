@@ -24,6 +24,11 @@ doesn't mean you have to dig into the c++ code. We just need to be able to compi
 | Linux   | All you need is gcc, g++, ld, and make. How you get that is up to your distribution.                                                                                              |
 +---------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
+If you use ninja or another build system, you'll need to modify the
+:code:`generator` argument of the :code:`Model` constructor to match. You can
+see the list of available generators by running :code:`cmake --help` (these are
+what cmake knows how to generate, not what is installed on your system). 
+
 .. [#f1] You can also use WSL instead and install gcc & g++.
 
 Install PySimlink with pip

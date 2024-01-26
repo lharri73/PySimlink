@@ -14,7 +14,7 @@ extern "C"{
 #include <stdexcept>
 #include <unordered_map>
 #include <vector>
-#include <variant>
+//#include <variant>
 #include <memory>
 #include "pybind11/pybind11.h"
 #include "pybind11/numpy.h"

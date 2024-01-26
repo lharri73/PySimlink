@@ -11,8 +11,8 @@ class NoRefCompiler(Compiler):
     Compiler for a model that does not use model references
     """
 
-    def __init__(self, model_paths: "anno.ModelPaths"):
-        super().__init__(model_paths)
+    def __init__(self, model_paths: "anno.ModelPaths", generator: str):
+        super().__init__(model_paths, generator)
         self.model_srcs = []
         self.model_incs = []
 
