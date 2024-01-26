@@ -3,8 +3,11 @@ import sys
 import warnings
 
 import numpy as np
-# from fasteners import InterProcessReaderWriterLock
-from fcntl import lockf, LOCK_EX, LOCK_UN
+
+if os.name != "nt":
+    from fcntl import lockf, LOCK_EX, LOCK_UN
+else:
+    import msvcrt
 # import tempfile
 
 from pysimlink.lib.model_paths import ModelPaths
@@ -15,10 +18,6 @@ from pysimlink.lib.spinner import open_spinner
 import pickle
 import time
 import importlib
-
-if os.name == "nt":
-    warnings.warn("Windows is not supported with PySimlink version >=1.2.0. Although not supported, it may still work."
-                  "Support is planned to continue in future.")
 
 
 class Model:
@@ -39,7 +38,8 @@ class Model:
             suffix: str = "rtw",
             tmp_dir: "anno.Optional[str]" = None,
             force_rebuild: bool = False,
-            skip_compile: bool = False
+            skip_compile: bool = False,
+            generator: str = None,
     ):
         """
         Args:
@@ -50,6 +50,8 @@ class Model:
             tmp_dir (Optional[str]): Path to the directory that will be used to build the model. Defaults to :file:`__pycache__/{model_name}`
             force_rebuild (bool): force pysimlink to recompile the model from the source located at :code:`path_to_model`. Removes all build artifacts.
             skip_compile (bool): skip compilation of the model. This is useful if you have already compiled the model and just want to import it.
+            generator (str): Type of generator to use for cmake. defaults to :code:`NMake Makefiles` on windows and :code:`Unix Makefiles` on mac/linux.
+
 
         Attributes:
             orientations: enumeration describing matrix orientations (row major, column major, etc.). This enumeration is
@@ -57,10 +59,15 @@ class Model:
         """
 
         self._model_paths = ModelPaths(path_to_model, model_name, compile_type, suffix, tmp_dir, skip_compile)
-        self._compiler = self._model_paths.compiler_factory()
-        # self._lock = InterProcessReaderWriterLock(
-        #     os.path.join(self._model_paths.tmp_dir, model_name + ".lock")
-        # )
+
+        if generator is None:
+            if os.name == "nt":
+                generator = "NMake Makefiles"
+            else:
+                generator = "Unix Makefiles"
+
+        self._compiler = self._model_paths.compiler_factory(generator)
+
         self._lock()
         # Check need to compile
         if (
@@ -110,13 +117,19 @@ class Model:
 
     def _lock(self):
         f = open(os.path.join(self._model_paths.tmp_dir, self._model_paths.root_model_name + ".lock"), "w")
-        rv = lockf(f, LOCK_EX)
+        if os.name == "nt":
+            rv = msvcrt.locking(f.fileno(), msvcrt.LK_LOCK, 1)
+        else:
+            rv = lockf(f, LOCK_EX)
         f.write(str(os.getpid()))
         f.close()
 
     def _unlock(self):
         f = open(os.path.join(self._model_paths.tmp_dir, self._model_paths.root_model_name + ".lock"), "w")
-        rv = lockf(f, LOCK_UN)
+        if os.name == "nt":
+            rv = msvcrt.locking(f.fileno(), msvcrt.LK_UNLCK, 1)
+        else:
+            rv = lockf(f, LOCK_UN)
         f.close()
 
     def get_params(self) -> "list[anno.ModelInfo]":

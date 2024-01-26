@@ -37,7 +37,7 @@ class CmakeTemplate:
         Returns:
             str: header section for cmake
         """
-        return f"""cmake_minimum_required(VERSION 3.4)
+        return f"""cmake_minimum_required(VERSION 3.5)
 project({self.model_name})
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

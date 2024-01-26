@@ -30,10 +30,11 @@ class Compiler:
     types: "list[anno.Struct]"  ## Name of types used by signals (usually manifested as busses).
     matlogging: bool  ## Whether matfile logging is enabled
 
-    def __init__(self, model_paths: "anno.ModelPaths"):
+    def __init__(self, model_paths: "anno.ModelPaths", generator: str):
         self.model_paths = model_paths
         self.types = []
         self.matlogging = False
+        self.generator=generator
 
     def clean(self):
         """
@@ -166,6 +167,8 @@ class Compiler:
                 "-S",
                 self.model_paths.tmp_dir,
                 "-DCMAKE_BUILD_TYPE=Release",
+                '-G',
+                self.generator,
                 "-B",
                 build_dir,
             ],

@@ -166,7 +166,7 @@ class ModelPaths:
                 "Model is setup with multitasking OR single output/update function is not enabled. See the docs for proper generation format (https://lharri73.github.io/PySimlink/src/howto.html#generate-code-from-your-simulink-model)"
             )
 
-    def compiler_factory(self) -> "anno.Compiler":
+    def compiler_factory(self, generator) -> "anno.Compiler":
         """
         Return the correct compiler. This could be simplified later -or- more
         compilers could be added if we want to use something other than cmake.
@@ -176,13 +176,13 @@ class ModelPaths:
                 ModelRefCompiler,
             )
 
-            return ModelRefCompiler(self)
+            return ModelRefCompiler(self, generator)
         else:
             from pysimlink.lib.compilers.one_shot_compiler import (  # pylint: disable=C0415
                 NoRefCompiler,
             )
 
-            return NoRefCompiler(self)
+            return NoRefCompiler(self, generator)
 
     @property
     def module_name(self):

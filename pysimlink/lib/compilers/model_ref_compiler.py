@@ -15,8 +15,8 @@ class ModelRefCompiler(Compiler):
     Compiler for a model that do use model references
     """
 
-    def __init__(self, model_paths: "anno.ModelPaths"):
-        super().__init__(model_paths)
+    def __init__(self, model_paths: "anno.ModelPaths", generator: str):
+        super().__init__(model_paths, generator)
         self.models = None
 
     def compile(self):
