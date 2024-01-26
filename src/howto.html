@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>How-To and Basic Usage Guide &mdash; PySimlink 1.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/rtd_sphinx_search.min.css" />
+
+  
+    <link rel="canonical" href="https://lharri73.github.io/PySimlink/src/howto.html"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=4c8675c2"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+        <script src="../_static/js/rtd_search_config.js"></script>
+        <script src="../_static/js/rtd_sphinx_search.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="API" href="autodoc.html" />
+    <link rel="prev" title="Quickstart" href="quickstart.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/banner_white.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">How-To and Basic Usage Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#install-pysimlink">Install PySimlink</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#setup">Setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#install-pysimlink-with-pip">Install PySimlink with pip</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#generate-code-from-your-simulink-model">Generate Code From Your Simulink Model</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#update-model-parameters">1. Update Model Parameters</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#solver-settings">Solver Settings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#code-generation-settings">Code Generation Settings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#code-interface-settings">Code Interface Settings</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#generate-code">2. Generate Code!</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#find-the-name-of-your-root-model-without-simulink">Find the Name of Your Root Model Without Simulink</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#compile-and-run-a-model">Compile and Run a Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#change-the-value-of-signals">Change the Value of Signals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#read-the-value-of-bus-signals">Read The Value of Bus Signals</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="autodoc.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License &amp; Notices</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PySimlink</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">How-To and Basic Usage Guide</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/lharri73/PySimlink/blob/master/docs/src/howto.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="how-to-and-basic-usage-guide">
+<h1>How-To and Basic Usage Guide<a class="headerlink" href="#how-to-and-basic-usage-guide" title="Permalink to this heading"></a></h1>
+<section id="install-pysimlink">
+<h2>Install PySimlink<a class="headerlink" href="#install-pysimlink" title="Permalink to this heading"></a></h2>
+<p>PySimlink installs with pip, but requires compiler to build models. This compiler needs to be discoverable by the
+cmake binary that’s installed with pip.</p>
+<p>While mingw is a valid compiler on Windows, it’s much simpler to use the Visual Studio tools.</p>
+<section id="setup">
+<span id="compiler-setup"></span><h3>Setup<a class="headerlink" href="#setup" title="Permalink to this heading"></a></h3>
+<p>A couple of os-specific steps are required if you’ve never done any c/c++ development before. Don’t worry though, this
+doesn’t mean you have to dig into the c++ code. We just need to be able to compile it.</p>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p>Windows</p></td>
+<td><p>Download <a class="reference external" href="https://github.com/MicrosoftDocs/cpp-docs/blob/main/docs/build/vscpp-step-0-installation.md">Visual Studio</a> (Only the “Desktop Development with C++” workload) <a class="footnote-reference brackets" href="#f1" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>OSX</p></td>
+<td><p>Install the <a class="reference external" href="https://developer.apple.com/download/all/">Command Line Tools for Xcode</a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Linux</p></td>
+<td><p>All you need is gcc, g++, ld, and make. How you get that is up to your distribution.</p></td>
+</tr>
+</tbody>
+</table>
+<p>If you use ninja or another build system, you’ll need to modify the
+<code class="code docutils literal notranslate"><span class="pre">generator</span></code> argument of the <code class="code docutils literal notranslate"><span class="pre">Model</span></code> constructor to match. You can
+see the list of available generators by running <code class="code docutils literal notranslate"><span class="pre">cmake</span> <span class="pre">--help</span></code> (these are
+what cmake knows how to generate, not what is installed on your system).</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="f1" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>You can also use WSL instead and install gcc &amp; g++.</p>
+</aside>
+</aside>
+</section>
+<section id="install-pysimlink-with-pip">
+<h3>Install PySimlink with pip<a class="headerlink" href="#install-pysimlink-with-pip" title="Permalink to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>pysimlink
+</pre></div>
+</div>
+</section>
+</section>
+<section id="generate-code-from-your-simulink-model">
+<h2>Generate Code From Your Simulink Model<a class="headerlink" href="#generate-code-from-your-simulink-model" title="Permalink to this heading"></a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To be able to generate code, you must have a license to
+the <a class="reference external" href="https://www.mathworks.com/products/simulink-coder.html">Simulink Coder</a>.</p>
+</div>
+<p>PySimlink requires a set of model parameters be set before the code generation process.
+This comes with a few limitations, the most important is that the model must run using a fixed-step solver.</p>
+<section id="update-model-parameters">
+<span id="gen-model-params"></span><h3>1. Update Model Parameters<a class="headerlink" href="#update-model-parameters" title="Permalink to this heading"></a></h3>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>If you are using model references, try using <a class="reference external" href="https://www.mathworks.com/help/simulink/ug/referencing-configuration-sets.html?searchHighlight=configuration%20reference&amp;s_tid=srchtitle_configuration%2520reference_1">configuration references</a>
+so you don’t have to change these settings in <strong>each</strong> model’s configuration set.</p>
+</div>
+<p>PySimlink requires a few model settings to generate code in a format that it can interact with.</p>
+<p>You can do this either using the script provided in the <a class="reference internal" href="quickstart.html#param-set-script"><span class="std std-ref">Quickstart page</span></a>
+<em>or</em> manually by changing the parameters manually in the following steps.</p>
+<p>First, open the model settings under the modelling tab.</p>
+<figure class="align-center" id="id2">
+<a class="reference internal image-reference" href="../_images/model_settings.png"><img alt="../_images/model_settings.png" src="../_images/model_settings.png" style="height: 85px;" /></a>
+<figcaption>
+<p><span class="caption-text">Model Settings located in the modelling Menu Bar.</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<section id="solver-settings">
+<h4>Solver Settings<a class="headerlink" href="#solver-settings" title="Permalink to this heading"></a></h4>
+<p>On the <span class="guilabel">Solver</span> page, make sure you’re using a <span class="guilabel">Fixed-step</span> solver. Also uncheck the
+<span class="guilabel">Treat each discrete rate as a separate task</span> box. Finally, uncheck the <span class="guilabel">Allow tasks to execute concurrently on the target</span> box.</p>
+<figure class="align-center" id="id3">
+<a class="reference internal image-reference" href="../_images/solver_settings.png"><img alt="../_images/solver_settings.png" src="../_images/solver_settings.png" style="height: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">Solver settings</span><a class="headerlink" href="#id3" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="code-generation-settings">
+<h4>Code Generation Settings<a class="headerlink" href="#code-generation-settings" title="Permalink to this heading"></a></h4>
+<p>On the <span class="guilabel">Code Generation</span> page, use <code class="file docutils literal notranslate"><span class="pre">grt.tlc</span></code> as the System target file. Also check the <span class="guilabel">Generate code only</span> and
+the <span class="guilabel">Package code and artifacts</span> boxes. This will generate a zip file with all of the code generated that you
+can use with PySimlink. Since we’re not building anything, uncheck the <span class="guilabel">Generate makefile</span> box.</p>
+<figure class="align-center" id="id4">
+<a class="reference internal image-reference" href="../_images/codegen_settings.png"><img alt="../_images/codegen_settings.png" src="../_images/codegen_settings.png" style="height: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">Code Generation Settings</span><a class="headerlink" href="#id4" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="code-interface-settings">
+<h4>Code Interface Settings<a class="headerlink" href="#code-interface-settings" title="Permalink to this heading"></a></h4>
+<p>On the <span class="guilabel">Code Generation -&gt; Interface</span> page, check the <span class="guilabel">signals</span>, <span class="guilabel">parameters</span>, <span class="guilabel">states</span>,
+and <span class="guilabel">root-level I/O</span> (even if you won’t be interacting with some of them, PySimlink requires these functions to be defined).</p>
+<p>Next, scroll down and click the <span class="guilabel">…</span> at the bottom of this page to reveal more Advanced parameters.</p>
+<figure class="align-center" id="id5">
+<a class="reference internal image-reference" href="../_images/code_interface.png"><img alt="../_images/code_interface.png" src="../_images/code_interface.png" style="height: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">Basic Code Generation Interface Settings</span><a class="headerlink" href="#id5" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>Under the <span class="guilabel">Advanced parameters</span> section, <em>uncheck</em> the <span class="guilabel">Classic call interface</span> box and check the
+<span class="guilabel">Single output/update function</span> box.</p>
+<figure class="align-center" id="id6">
+<a class="reference internal image-reference" href="../_images/code_interface_advanced.png"><img alt="../_images/code_interface_advanced.png" src="../_images/code_interface_advanced.png" style="height: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">Advanced Code Generation Interface Settings</span><a class="headerlink" href="#id6" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>Done with model settings! If it’s a model reference, you’ll need to propagate these changes to each model.</p>
+</section>
+</section>
+<section id="generate-code">
+<h3>2. Generate Code!<a class="headerlink" href="#generate-code" title="Permalink to this heading"></a></h3>
+<p>Now you can execute the code generation step. Open the Simulink Coder app and click the <span class="guilabel">Generate Code</span> button!</p>
+<figure class="align-center" id="id7">
+<a class="reference internal image-reference" href="../_images/toolbar_1.png"><img alt="../_images/toolbar_1.png" src="../_images/toolbar_1.png" style="height: 85px;" /></a>
+<figcaption>
+<p><span class="caption-text">Simulink Coder in the Simulink Apps Menu Bar.</span><a class="headerlink" href="#id7" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id8">
+<a class="reference internal image-reference" href="../_images/gen_code.png"><img alt="../_images/gen_code.png" src="../_images/gen_code.png" style="height: 85px;" /></a>
+<figcaption>
+<p><span class="caption-text"><span class="guilabel">Generate Code</span> button within Simulink Coder.</span><a class="headerlink" href="#id8" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>This will produce the <code class="file docutils literal notranslate"><span class="pre">my_awesome_model.zip</span></code> file that you can use with PySimlink. Unless you modified the
+<span class="guilabel">Zip file name</span> parameter in the Code generation settings, this will also be the name of your root model.</p>
+</section>
+</section>
+<section id="find-the-name-of-your-root-model-without-simulink">
+<h2>Find the Name of Your Root Model Without Simulink<a class="headerlink" href="#find-the-name-of-your-root-model-without-simulink" title="Permalink to this heading"></a></h2>
+<p>Let’s say the file you’ve been given is called <code class="file docutils literal notranslate"><span class="pre">my_awesome_model.zip</span></code>. It’s a good guess that the root model is
+called “my_awesome_mode”, but here’s how you can double check without having to whip out Simulink.</p>
+<p>Inside the archive, you’ll find 2 folders (if you don’t, then this was not generated by Simulink and PySimlink will
+throw an error). One folder will contain <code class="file docutils literal notranslate"><span class="pre">extern</span></code>, <code class="file docutils literal notranslate"><span class="pre">rtw</span></code>, and <code class="file docutils literal notranslate"><span class="pre">simulink</span></code>. The other will contain two
+folders: <code class="file docutils literal notranslate"><span class="pre">slprj</span></code> and <code class="file docutils literal notranslate"><span class="pre">[your_model_name]_grt_rtw</span></code>.</p>
+<p>In short, it looks like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>my_awesome_model.zip/
+├─ [a]/
+│  ├─ extern/
+│  ├─ rtw/
+│  ├─ simulink/
+├─ [b]/
+│  ├─ slprj/
+│  ├─ [your_model_name]_grt_rtw/
+</pre></div>
+</div>
+<p><code class="file docutils literal notranslate"><span class="pre">your_model_name</span></code> is the name of the root model.</p>
+</section>
+<section id="compile-and-run-a-model">
+<h2>Compile and Run a Model<a class="headerlink" href="#compile-and-run-a-model" title="Permalink to this heading"></a></h2>
+<p>You’ve been given a zip file with a generated model (or you’ve generated it yourself. Way to go!). Now you want to
+run it in Python. It’s as simple as importing PySimlink and calling <code class="code docutils literal notranslate"><span class="pre">print_all_params</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pysimlink</span> <span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">print_all_params</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="s2">&quot;my_awesome_model&quot;</span><span class="p">,</span> <span class="s2">&quot;./my_awesome_model.zip&quot;</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="n">print_all_params</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Once you’ve figured out what signals you need to read, you can call <code class="code docutils literal notranslate"><span class="pre">model.step()</span></code> to iterate over the model!</p>
+</section>
+<section id="change-the-value-of-signals">
+<span id="change-signals"></span><h2>Change the Value of Signals<a class="headerlink" href="#change-the-value-of-signals" title="Permalink to this heading"></a></h2>
+<p>This feature is not directly supported by PySimlink. The reason why is kind of complex. In short, it would work for
+the fixed-step discrete solver. But for a solver with minor timesteps, changing the value of a signal could cause a
+singularity in an integrator, or might not even affect anything at all (if the signal is changed on the major time step
+from PySimlink, then updated by the originating block at the next minor timestep (which PySimlink does not control),
+then the change from PySimlink would have no affect).</p>
+<p>How do we get around this? You’ll have to tweak the model and generate it again… While this is not ideal, this keeps
+us from violating solver during simulation.</p>
+<p>Take this model, for example. And say you want to change the value of the highlighted signal during simulation.</p>
+<figure class="align-center" id="id9">
+<a class="reference internal image-reference" href="../_images/signal_highlight.png"><img alt="../_images/signal_highlight.png" src="../_images/signal_highlight.png" style="height: 290px;" /></a>
+<figcaption>
+<p><span class="caption-text">A garbage model with a signal whose value we want to change during simulation.</span><a class="headerlink" href="#id9" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>To be able to change the value, we need to terminate the signal and replace it with a constant. The resulting change
+looks like this.</p>
+<figure class="align-center" id="id10">
+<a class="reference internal image-reference" href="../_images/signal_highlight2.png"><img alt="../_images/signal_highlight2.png" src="../_images/signal_highlight2.png" style="height: 290px;" /></a>
+<figcaption>
+<p><span class="caption-text">The same model adjusted so we can change the value of this signal during simulation.</span><a class="headerlink" href="#id10" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>Now, during simulation, we change the “Value” parameter of the block labeled “Constant”. While this may not simulate
+properly in Simulink, you can change this value at every timestep to get your desired behavior.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>If you’re making changes to your model like this just for code generation or for PySimlink and don’t want to
+change its normal behavior, check out <a class="reference external" href="https://www.mathworks.com/help/simulink/ug/variant-subsystems.html">Variant Subsystems</a>.
+You can have one subsystem for code generation and one for Simulink simulation.</p>
+</div>
+</section>
+<section id="read-the-value-of-bus-signals">
+<h2>Read The Value of Bus Signals<a class="headerlink" href="#read-the-value-of-bus-signals" title="Permalink to this heading"></a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>New in pysimlink 1.2.0</p>
+</div>
+<p>Bus signals are a bit more complicated than other signals.
+They are a collection of other signals, and can even be nested in other busses. PySimlink
+allows you to read bus signal types and their contents. To see the available signals,
+you can use the <code class="code docutils literal notranslate"><span class="pre">dir</span></code> function.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="s2">&quot;my_awesome_model&quot;</span><span class="p">,</span> <span class="s2">&quot;./my_awesome_model.zip&quot;</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="n">struct_signal</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_signal</span><span class="p">(</span><span class="s2">&quot;my_awesome_model/sig1&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">dir</span><span class="p">(</span><span class="n">struct_signal</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>There are a few python-internal properties prepended and appended by two
+underscores. These are not part of your bus and can be ignored.</p>
+</div>
+<p>You can access the signals in the bus as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">struct_signal</span><span class="o">.</span><span class="n">a</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">struct_signal</span><span class="o">.</span><span class="n">b</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="quickstart.html" class="btn btn-neutral float-left" title="Quickstart" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="autodoc.html" class="btn btn-neutral float-right" title="API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Landon Harris.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+    <!-- Theme Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-K9ME9NLFYB"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-K9ME9NLFYB', {
+          'anonymize_ip': false,
+      });
+    </script> 
+
+</body>
+</html>

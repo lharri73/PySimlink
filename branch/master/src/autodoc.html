@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API &mdash; PySimlink 1.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/rtd_sphinx_search.min.css" />
+
+  
+    <link rel="canonical" href="https://lharri73.github.io/PySimlink/src/autodoc.html"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=4c8675c2"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+        <script src="../_static/js/rtd_search_config.js"></script>
+        <script src="../_static/js/rtd_sphinx_search.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="License &amp; Notices" href="license.html" />
+    <link rel="prev" title="How-To and Basic Usage Guide" href="howto.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/banner_white.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="howto.html">How-To and Basic Usage Guide</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#model">Model</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pysimlink.Model"><code class="docutils literal notranslate"><span class="pre">Model</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pysimlink.Model.__init__"><code class="docutils literal notranslate"><span class="pre">Model.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pysimlink.Model.orientations"><code class="docutils literal notranslate"><span class="pre">Model.orientations</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pysimlink.Model.__len__"><code class="docutils literal notranslate"><span class="pre">Model.__len__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pysimlink.Model.get_block_param"><code class="docutils literal notranslate"><span class="pre">Model.get_block_param()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pysimlink.Model.get_model_param"><code class="docutils literal notranslate"><span class="pre">Model.get_model_param()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pysimlink.Model.get_models"><code class="docutils literal notranslate"><span class="pre">Model.get_models()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pysimlink.Model.get_params"><code class="docutils literal notranslate"><span class="pre">Model.get_params()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pysimlink.Model.get_signal"><code class="docutils literal notranslate"><span class="pre">Model.get_signal()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pysimlink.Model.reset"><code class="docutils literal notranslate"><span class="pre">Model.reset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pysimlink.Model.set_block_param"><code class="docutils literal notranslate"><span class="pre">Model.set_block_param()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pysimlink.Model.set_model_param"><code class="docutils literal notranslate"><span class="pre">Model.set_model_param()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pysimlink.Model.set_tFinal"><code class="docutils literal notranslate"><span class="pre">Model.set_tFinal()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pysimlink.Model.step"><code class="docutils literal notranslate"><span class="pre">Model.step()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pysimlink.Model.step_size"><code class="docutils literal notranslate"><span class="pre">Model.step_size</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pysimlink.Model.tFinal"><code class="docutils literal notranslate"><span class="pre">Model.tFinal</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#model-structures">Model Structures</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pysimlink.types.ModelInfo"><code class="docutils literal notranslate"><span class="pre">ModelInfo</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pysimlink.types.ModelInfo.model_name"><code class="docutils literal notranslate"><span class="pre">ModelInfo.model_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pysimlink.types.ModelInfo.model_params"><code class="docutils literal notranslate"><span class="pre">ModelInfo.model_params</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pysimlink.types.ModelInfo.block_params"><code class="docutils literal notranslate"><span class="pre">ModelInfo.block_params</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pysimlink.types.ModelInfo.signals"><code class="docutils literal notranslate"><span class="pre">ModelInfo.signals</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#pysimlink.types.ModelParam"><code class="docutils literal notranslate"><span class="pre">ModelParam</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pysimlink.types.ModelParam.model_param"><code class="docutils literal notranslate"><span class="pre">ModelParam.model_param</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pysimlink.types.ModelParam.data_type"><code class="docutils literal notranslate"><span class="pre">ModelParam.data_type</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#pysimlink.types.BlockParam"><code class="docutils literal notranslate"><span class="pre">BlockParam</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pysimlink.types.BlockParam.block_name"><code class="docutils literal notranslate"><span class="pre">BlockParam.block_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pysimlink.types.BlockParam.block_param"><code class="docutils literal notranslate"><span class="pre">BlockParam.block_param</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pysimlink.types.BlockParam.data_type"><code class="docutils literal notranslate"><span class="pre">BlockParam.data_type</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#pysimlink.types.Signal"><code class="docutils literal notranslate"><span class="pre">Signal</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pysimlink.types.Signal.block_name"><code class="docutils literal notranslate"><span class="pre">Signal.block_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pysimlink.types.Signal.signal_name"><code class="docutils literal notranslate"><span class="pre">Signal.signal_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pysimlink.types.Signal.data_type"><code class="docutils literal notranslate"><span class="pre">Signal.data_type</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#pysimlink.types.DataType"><code class="docutils literal notranslate"><span class="pre">DataType</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pysimlink.types.DataType.cDataType"><code class="docutils literal notranslate"><span class="pre">DataType.cDataType</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pysimlink.types.DataType.pythonType"><code class="docutils literal notranslate"><span class="pre">DataType.pythonType</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pysimlink.types.DataType.dims"><code class="docutils literal notranslate"><span class="pre">DataType.dims</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pysimlink.types.DataType.orientation"><code class="docutils literal notranslate"><span class="pre">DataType.orientation</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#utility-functions">Utility Functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pysimlink.print_all_params"><code class="docutils literal notranslate"><span class="pre">print_all_params()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#errors">Errors</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pysimlink.BuildError"><code class="docutils literal notranslate"><span class="pre">BuildError</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pysimlink.BuildError.dump"><code class="docutils literal notranslate"><span class="pre">BuildError.dump</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pysimlink.BuildError.cmake"><code class="docutils literal notranslate"><span class="pre">BuildError.cmake</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#pysimlink.GenerationError"><code class="docutils literal notranslate"><span class="pre">GenerationError</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pysimlink.GenerationError.dump"><code class="docutils literal notranslate"><span class="pre">GenerationError.dump</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pysimlink.GenerationError.cmake"><code class="docutils literal notranslate"><span class="pre">GenerationError.cmake</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License &amp; Notices</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PySimlink</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">API</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/lharri73/PySimlink/blob/master/docs/src/autodoc.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="api">
+<span id="autodoc"></span><h1>API<a class="headerlink" href="#api" title="Permalink to this heading"></a></h1>
+<section id="model">
+<h2>Model<a class="headerlink" href="#model" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pysimlink.Model">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pysimlink.</span></span><span class="sig-name descname"><span class="pre">Model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_to_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compile_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'grt'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suffix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'rtw'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmp_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">anno.Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_rebuild</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_compile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysimlink/lib/model.html#Model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysimlink.Model" title="Permalink to this definition"></a></dt>
+<dd><p>Instance of the simulink mode. This class compiles and imports
+the model once built. You can have multiple instances of the same
+model in one python runtime.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pysimlink.Model.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_to_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compile_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'grt'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suffix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'rtw'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmp_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">anno.Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_rebuild</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_compile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysimlink/lib/model.html#Model.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysimlink.Model.__init__" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_name</strong> (<em>str</em>) – name of the root simulink model</p></li>
+<li><p><strong>path_to_model</strong> (<em>str</em>) – path to the directory containing code generated from the Simulink Coder <em>or</em> the packaged zip file</p></li>
+<li><p><strong>compile_type</strong> (<em>str</em>) – Makefile template used to generate code from Simulink Coder. Only GRT is supported.</p></li>
+<li><p><strong>suffix</strong> (<em>str</em>) – Simulink Coder folders are almost always suffixed with rtw (real time workshop).</p></li>
+<li><p><strong>tmp_dir</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) – Path to the directory that will be used to build the model. Defaults to <code class="file docutils literal notranslate"><span class="pre">__pycache__/</span><em><span class="pre">model_name</span></em></code></p></li>
+<li><p><strong>force_rebuild</strong> (<em>bool</em>) – force pysimlink to recompile the model from the source located at <code class="code docutils literal notranslate"><span class="pre">path_to_model</span></code>. Removes all build artifacts.</p></li>
+<li><p><strong>skip_compile</strong> (<em>bool</em>) – skip compilation of the model. This is useful if you have already compiled the model and just want to import it.</p></li>
+<li><p><strong>generator</strong> (<em>str</em>) – Type of generator to use for cmake. defaults to <code class="code docutils literal notranslate"><span class="pre">NMake</span> <span class="pre">Makefiles</span></code> on windows and <code class="code docutils literal notranslate"><span class="pre">Unix</span> <span class="pre">Makefiles</span></code> on mac/linux.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pysimlink.Model.orientations">
+<span class="sig-name descname"><span class="pre">orientations</span></span><a class="headerlink" href="#pysimlink.Model.orientations" title="Permalink to this definition"></a></dt>
+<dd><p>enumeration describing matrix orientations (row major, column major, etc.). This enumeration is
+likely the same among all models, but could change across MATLAB versions.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pysimlink.Model.__len__">
+<span class="sig-name descname"><span class="pre">__len__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysimlink/lib/model.html#Model.__len__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysimlink.Model.__len__" title="Permalink to this definition"></a></dt>
+<dd><p>Get the total number of steps this model can run</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pysimlink.Model.get_block_param">
+<span class="sig-name descname"><span class="pre">get_block_param</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">block_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/pysimlink/lib/model.html#Model.get_block_param"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysimlink.Model.get_block_param" title="Permalink to this definition"></a></dt>
+<dd><p>Get the value of a block parameter</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>block_path</strong> – Path the block within the model</p></li>
+<li><p><strong>param</strong> – Name of the parameter to retrieve</p></li>
+<li><p><strong>model_name</strong> – Name of the model provided by <a class="reference internal" href="#pysimlink.print_all_params" title="pysimlink.print_all_params"><code class="xref py py-func docutils literal notranslate"><span class="pre">pysimlink.print_all_params()</span></code></a>. None if there are no model references.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.ndarray with the value of the parameter</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pysimlink.Model.get_model_param">
+<span class="sig-name descname"><span class="pre">get_model_param</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/pysimlink/lib/model.html#Model.get_model_param"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysimlink.Model.get_model_param" title="Permalink to this definition"></a></dt>
+<dd><p>Get the value of a model parameter</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>param</strong> – Name of the parameter to retrieve</p></li>
+<li><p><strong>model_name</strong> – Name of the model provided by <a class="reference internal" href="#pysimlink.print_all_params" title="pysimlink.print_all_params"><code class="xref py py-func docutils literal notranslate"><span class="pre">pysimlink.print_all_params()</span></code></a>. None if there are no model references.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.ndarray with the value of the parameter</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pysimlink.Model.get_models">
+<span class="sig-name descname"><span class="pre">get_models</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pysimlink/lib/model.html#Model.get_models"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysimlink.Model.get_models" title="Permalink to this definition"></a></dt>
+<dd><p>Gets a list of all reference models (and the root model) in this model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of paths, one for each model</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pysimlink.Model.get_params">
+<span class="sig-name descname"><span class="pre">get_params</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">anno.ModelInfo</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pysimlink/lib/model.html#Model.get_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysimlink.Model.get_params" title="Permalink to this definition"></a></dt>
+<dd><p>Return an instance of all parameters, blocks, and signals in the _model</p>
+<p>See <a class="reference internal" href="#pysimlink.print_all_params" title="pysimlink.print_all_params"><code class="xref py py-func docutils literal notranslate"><span class="pre">pysimlink.print_all_params()</span></code></a> for iterating and printing the contents of this object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List of model info, one for each model (if reference models present). One ModelInfo if no reference models</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[<a class="reference internal" href="#pysimlink.types.ModelInfo" title="pysimlink.types.ModelInfo"><code class="xref py py-class docutils literal notranslate"><span class="pre">pysimlink.types.ModelInfo</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pysimlink.Model.get_signal">
+<span class="sig-name descname"><span class="pre">get_signal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">block_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sig_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/pysimlink/lib/model.html#Model.get_signal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysimlink.Model.get_signal" title="Permalink to this definition"></a></dt>
+<dd><p>Get the value of a signal</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>block_path</strong> – Path to the originating block</p></li>
+<li><p><strong>model_name</strong> – Name of the model provided by <a class="reference internal" href="#pysimlink.print_all_params" title="pysimlink.print_all_params"><code class="xref py py-func docutils literal notranslate"><span class="pre">pysimlink.print_all_params()</span></code></a>. None if there are no model
+references (using <code class="code docutils literal notranslate"><span class="pre">None</span></code> will retrieve from the root model).</p></li>
+<li><p><strong>sig_name</strong> – Name of the signal</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Value of the signal at the current timestep</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pysimlink.Model.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysimlink/lib/model.html#Model.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysimlink.Model.reset" title="Permalink to this definition"></a></dt>
+<dd><p>Reset the simulink model. This clears all signal values and reinstantiates the model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pysimlink.Model.set_block_param">
+<span class="sig-name descname"><span class="pre">set_block_param</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">block</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">anno.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">anno.Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysimlink/lib/model.html#Model.set_block_param"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysimlink.Model.set_block_param" title="Permalink to this definition"></a></dt>
+<dd><p>Set the parameter of a block within the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>block</strong> – Path to the block within the model</p></li>
+<li><p><strong>param</strong> – Name of the parameter to change</p></li>
+<li><p><strong>value</strong> – new value of the parameter</p></li>
+<li><p><strong>model_name</strong> – Name of the model provided by <a class="reference internal" href="#pysimlink.print_all_params" title="pysimlink.print_all_params"><code class="xref py py-func docutils literal notranslate"><span class="pre">pysimlink.print_all_params()</span></code></a>. None if there are no model references.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – If the value array is not the correct shape or orientation as the parameter to change</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pysimlink.Model.set_model_param">
+<span class="sig-name descname"><span class="pre">set_model_param</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">anno.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">anno.Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysimlink/lib/model.html#Model.set_model_param"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysimlink.Model.set_model_param" title="Permalink to this definition"></a></dt>
+<dd><p>Set a model parameter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>param</strong> – Name of the parameter to change</p></li>
+<li><p><strong>value</strong> – new value of the parameter</p></li>
+<li><p><strong>model_name</strong> – Name of the model provided by <a class="reference internal" href="#pysimlink.print_all_params" title="pysimlink.print_all_params"><code class="xref py py-func docutils literal notranslate"><span class="pre">pysimlink.print_all_params()</span></code></a>. None if there are no model references.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – If the value array is not the correct shape or orientation as the parameter to change</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pysimlink.Model.set_tFinal">
+<span class="sig-name descname"><span class="pre">set_tFinal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tFinal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysimlink/lib/model.html#Model.set_tFinal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysimlink.Model.set_tFinal" title="Permalink to this definition"></a></dt>
+<dd><p>Change the final timestep of the model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tFinal</strong> – New final timestep of the model (seconds from zero).</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – if tFinal is &lt;= 0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pysimlink.Model.step">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysimlink/lib/model.html#Model.step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysimlink.Model.step" title="Permalink to this definition"></a></dt>
+<dd><p>Step the simulink model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>iterations</strong> – Number of timesteps to step internally.
+<code class="code docutils literal notranslate"><span class="pre">model.step(10)</span></code> is equivalent to calling <code class="code docutils literal notranslate"><span class="pre">for</span> <span class="pre">_</span> <span class="pre">range(10):</span> <span class="pre">model.step(1)</span></code> functionally, but compiled.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – If the model encounters an error (these will be raised from simulink). Most commonly, this
+    will be <cite>simulation complete</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pysimlink.Model.step_size">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">step_size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#pysimlink.Model.step_size" title="Permalink to this definition"></a></dt>
+<dd><p>Get the step size of the model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>step size of the fixed step solver.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pysimlink.Model.tFinal">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tFinal</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#pysimlink.Model.tFinal" title="Permalink to this definition"></a></dt>
+<dd><p>Get the final timestep of the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Final timestep of the model (seconds from zero).</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="model-structures">
+<h2>Model Structures<a class="headerlink" href="#model-structures" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pysimlink.types.ModelInfo">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pysimlink.types.</span></span><span class="sig-name descname"><span class="pre">ModelInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">anno.c_model_info</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pysimlink.types.ModelInfo" title="Permalink to this definition"></a></dt>
+<dd><p>Object returned from <a class="reference internal" href="#pysimlink.Model.get_params" title="pysimlink.Model.get_params"><code class="xref py py-func docutils literal notranslate"><span class="pre">pysimlink.Model.get_params()</span></code></a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This object only describes a single model. If a Simulink model contains model references,
+<a class="reference internal" href="#pysimlink.Model.get_params" title="pysimlink.Model.get_params"><code class="xref py py-func docutils literal notranslate"><span class="pre">pysimlink.Model.get_params()</span></code></a> will return a list of this object, each describing a reference model.</p>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pysimlink.types.ModelInfo.model_name">
+<span class="sig-name descname"><span class="pre">model_name</span></span><a class="headerlink" href="#pysimlink.types.ModelInfo.model_name" title="Permalink to this definition"></a></dt>
+<dd><p>Name of the model this object describes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pysimlink.types.ModelInfo.model_params">
+<span class="sig-name descname"><span class="pre">model_params</span></span><a class="headerlink" href="#pysimlink.types.ModelInfo.model_params" title="Permalink to this definition"></a></dt>
+<dd><p>List of all model parameters</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[<a class="reference internal" href="#pysimlink.types.ModelParam" title="pysimlink.types.ModelParam"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelParam</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pysimlink.types.ModelInfo.block_params">
+<span class="sig-name descname"><span class="pre">block_params</span></span><a class="headerlink" href="#pysimlink.types.ModelInfo.block_params" title="Permalink to this definition"></a></dt>
+<dd><p>List of all block parameters</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[<a class="reference internal" href="#pysimlink.types.BlockParam" title="pysimlink.types.BlockParam"><code class="xref py py-class docutils literal notranslate"><span class="pre">BlockParam</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pysimlink.types.ModelInfo.signals">
+<span class="sig-name descname"><span class="pre">signals</span></span><a class="headerlink" href="#pysimlink.types.ModelInfo.signals" title="Permalink to this definition"></a></dt>
+<dd><p>List of all signals</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[<a class="reference internal" href="#pysimlink.types.Signal" title="pysimlink.types.Signal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Signal</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pysimlink.types.ModelParam">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pysimlink.types.</span></span><span class="sig-name descname"><span class="pre">ModelParam</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">anno.c_model_param</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pysimlink.types.ModelParam" title="Permalink to this definition"></a></dt>
+<dd><p>Represents a single model parameter.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pysimlink.types.ModelParam.model_param">
+<span class="sig-name descname"><span class="pre">model_param</span></span><a class="headerlink" href="#pysimlink.types.ModelParam.model_param" title="Permalink to this definition"></a></dt>
+<dd><p>Name of the model parameter (these are usually stored withing the model workspace in simulink)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pysimlink.types.ModelParam.data_type">
+<span class="sig-name descname"><span class="pre">data_type</span></span><a class="headerlink" href="#pysimlink.types.ModelParam.data_type" title="Permalink to this definition"></a></dt>
+<dd><p>data type object describing this parameter</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#pysimlink.types.DataType" title="pysimlink.types.DataType"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataType</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pysimlink.types.BlockParam">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pysimlink.types.</span></span><span class="sig-name descname"><span class="pre">BlockParam</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">anno.c_model_block_param</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pysimlink.types.BlockParam" title="Permalink to this definition"></a></dt>
+<dd><p>Represents a single parameter in a block.</p>
+<p>If a block has <em>n</em> parameters, there will be <em>n</em> BlockParam instances. Each with the same <code class="code docutils literal notranslate"><span class="pre">block_name</span></code>.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pysimlink.types.BlockParam.block_name">
+<span class="sig-name descname"><span class="pre">block_name</span></span><a class="headerlink" href="#pysimlink.types.BlockParam.block_name" title="Permalink to this definition"></a></dt>
+<dd><p>The name (usually including the path) to this block.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pysimlink.types.BlockParam.block_param">
+<span class="sig-name descname"><span class="pre">block_param</span></span><a class="headerlink" href="#pysimlink.types.BlockParam.block_param" title="Permalink to this definition"></a></dt>
+<dd><p>The name of the parameter within the block</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pysimlink.types.BlockParam.data_type">
+<span class="sig-name descname"><span class="pre">data_type</span></span><a class="headerlink" href="#pysimlink.types.BlockParam.data_type" title="Permalink to this definition"></a></dt>
+<dd><p>data type object describing this parameter</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#pysimlink.types.DataType" title="pysimlink.types.DataType"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataType</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pysimlink.types.Signal">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pysimlink.types.</span></span><span class="sig-name descname"><span class="pre">Signal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">anno.c_model_signal</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pysimlink.types.Signal" title="Permalink to this definition"></a></dt>
+<dd><p>Represents a single signal in the model.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pysimlink.types.Signal.block_name">
+<span class="sig-name descname"><span class="pre">block_name</span></span><a class="headerlink" href="#pysimlink.types.Signal.block_name" title="Permalink to this definition"></a></dt>
+<dd><p>name and path to the block the signal originates from</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pysimlink.types.Signal.signal_name">
+<span class="sig-name descname"><span class="pre">signal_name</span></span><a class="headerlink" href="#pysimlink.types.Signal.signal_name" title="Permalink to this definition"></a></dt>
+<dd><p>name of the signal (empty if not named)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pysimlink.types.Signal.data_type">
+<span class="sig-name descname"><span class="pre">data_type</span></span><a class="headerlink" href="#pysimlink.types.Signal.data_type" title="Permalink to this definition"></a></dt>
+<dd><p>Data type information of this signal</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#pysimlink.types.DataType" title="pysimlink.types.DataType"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataType</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pysimlink.types.DataType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pysimlink.types.</span></span><span class="sig-name descname"><span class="pre">DataType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">anno.c_model_datatype</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pysimlink.types.DataType" title="Permalink to this definition"></a></dt>
+<dd><p>Contains data type information for a single parameter.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pysimlink.types.DataType.cDataType">
+<span class="sig-name descname"><span class="pre">cDataType</span></span><a class="headerlink" href="#pysimlink.types.DataType.cDataType" title="Permalink to this definition"></a></dt>
+<dd><p>The c equivalent name of this datatype</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pysimlink.types.DataType.pythonType">
+<span class="sig-name descname"><span class="pre">pythonType</span></span><a class="headerlink" href="#pysimlink.types.DataType.pythonType" title="Permalink to this definition"></a></dt>
+<dd><p>The python name of this datatype</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pysimlink.types.DataType.dims">
+<span class="sig-name descname"><span class="pre">dims</span></span><a class="headerlink" href="#pysimlink.types.DataType.dims" title="Permalink to this definition"></a></dt>
+<dd><p>List of dimension sizes. (the shape of the array)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pysimlink.types.DataType.orientation">
+<span class="sig-name descname"><span class="pre">orientation</span></span><a class="headerlink" href="#pysimlink.types.DataType.orientation" title="Permalink to this definition"></a></dt>
+<dd><p>Enumeration indicating if this is a scalar, vector, column major or row major array.
+Since this enum is evaluated at compile time, it is imported from the compiled model. To check this value
+dynamically, use <a class="reference internal" href="#pysimlink.Model.orientations" title="pysimlink.Model.orientations"><code class="xref py py-attr docutils literal notranslate"><span class="pre">pysimlink.Model.orientations</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="utility-functions">
+<h2>Utility Functions<a class="headerlink" href="#utility-functions" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="pysimlink.print_all_params">
+<span class="sig-prename descclassname"><span class="pre">pysimlink.</span></span><span class="sig-name descname"><span class="pre">print_all_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">anno.Model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysimlink/utils/model_utils.html#print_all_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysimlink.print_all_params" title="Permalink to this definition"></a></dt>
+<dd><p>Prints all parameters for the given model.</p>
+<p>Uses the ModelInfo object to print all model info about the root and each reference model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>model</strong> – instance of the Model to print params of</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="errors">
+<h2>Errors<a class="headerlink" href="#errors" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pysimlink.BuildError">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pysimlink.</span></span><span class="sig-name descname"><span class="pre">BuildError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysimlink/lib/exceptions.html#BuildError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysimlink.BuildError" title="Permalink to this definition"></a></dt>
+<dd><p>Exception raised when generating build files succeeded but compiling the model fails.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pysimlink.BuildError.dump">
+<span class="sig-name descname"><span class="pre">dump</span></span><a class="headerlink" href="#pysimlink.BuildError.dump" title="Permalink to this definition"></a></dt>
+<dd><p>stdout and stderr output of the <strong>build</strong> process</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pysimlink.BuildError.cmake">
+<span class="sig-name descname"><span class="pre">cmake</span></span><a class="headerlink" href="#pysimlink.BuildError.cmake" title="Permalink to this definition"></a></dt>
+<dd><p>contents of the <code class="file docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code> file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pysimlink.GenerationError">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pysimlink.</span></span><span class="sig-name descname"><span class="pre">GenerationError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysimlink/lib/exceptions.html#GenerationError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysimlink.GenerationError" title="Permalink to this definition"></a></dt>
+<dd><p>Exception raised when generating build files fails.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pysimlink.GenerationError.dump">
+<span class="sig-name descname"><span class="pre">dump</span></span><a class="headerlink" href="#pysimlink.GenerationError.dump" title="Permalink to this definition"></a></dt>
+<dd><p>stdout and stderr output of the <strong>generation</strong> process</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pysimlink.GenerationError.cmake">
+<span class="sig-name descname"><span class="pre">cmake</span></span><a class="headerlink" href="#pysimlink.GenerationError.cmake" title="Permalink to this definition"></a></dt>
+<dd><p>contents of the <code class="file docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code> file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="howto.html" class="btn btn-neutral float-left" title="How-To and Basic Usage Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="license.html" class="btn btn-neutral float-right" title="License &amp; Notices" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Landon Harris.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+    <!-- Theme Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-K9ME9NLFYB"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-K9ME9NLFYB', {
+          'anonymize_ip': false,
+      });
+    </script> 
+
+</body>
+</html>

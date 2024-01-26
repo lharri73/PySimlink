@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quickstart &mdash; PySimlink 1.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/rtd_sphinx_search.min.css" />
+
+  
+    <link rel="canonical" href="https://lharri73.github.io/PySimlink/src/quickstart.html"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=4c8675c2"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+        <script src="../_static/js/rtd_search_config.js"></script>
+        <script src="../_static/js/rtd_sphinx_search.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="How-To and Basic Usage Guide" href="howto.html" />
+    <link rel="prev" title="Python + Simulink = PySimlink!" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/banner_white.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Quickstart</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#step-1-generate-the-model-s-code">Step 1: Generate the Model’s Code.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-2-let-pysimlink-handle-the-rest">Step 2: Let PySimlink Handle The Rest</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="howto.html">How-To and Basic Usage Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autodoc.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License &amp; Notices</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PySimlink</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Quickstart</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/lharri73/PySimlink/blob/master/docs/src/quickstart.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="quickstart">
+<h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this heading"></a></h1>
+<p>If you already have the generated model code, skip to step 2. If you get the joy
+of generating the model source, well start from the top.</p>
+<section id="step-1-generate-the-model-s-code">
+<h2>Step 1: Generate the Model’s Code.<a class="headerlink" href="#step-1-generate-the-model-s-code" title="Permalink to this heading"></a></h2>
+<p>This is likely the hardest part of the whole process. But we’ve tried to make it
+simple for you. You just need to check a few settings and build the model. If
+you’re feeling bold, you can copy-paste a script to do it for you!</p>
+<p>Here’s said script:</p>
+<div class="highlight-matlab notranslate" id="param-set-script"><div class="highlight"><pre><span></span><span class="n">model</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&#39;MyAwesomeModel&#39;</span><span class="p">;</span><span class="w">        </span><span class="c">% &lt;-- The name of your model...change this!</span>
+<span class="n">configs</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">getActiveConfigSet</span><span class="p">(</span><span class="n">model</span><span class="p">);</span>
+<span class="n">mustProp</span><span class="p">=</span><span class="nb">false</span><span class="p">;</span>
+<span class="k">if</span><span class="w"> </span><span class="nb">isa</span><span class="p">(</span><span class="n">configs</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;Simulink.ConfigSetRef&#39;</span><span class="p">)</span>
+<span class="w">    </span><span class="n">configs</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">eval</span><span class="p">(</span><span class="n">configs</span><span class="p">.</span><span class="n">SourceName</span><span class="p">);</span>
+<span class="w">    </span><span class="n">mustProp</span><span class="p">=</span><span class="nb">true</span><span class="p">;</span>
+<span class="k">end</span>
+
+<span class="n">set_param</span><span class="p">(</span><span class="n">configs</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;ConcurrentTasks&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;off&#39;</span><span class="p">);</span>
+<span class="n">set_param</span><span class="p">(</span><span class="n">configs</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;EnableMultiTasking&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;off&#39;</span><span class="p">);</span>
+<span class="n">set_param</span><span class="p">(</span><span class="n">configs</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;SystemTargetFile&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;grt.tlc&#39;</span><span class="p">);</span>
+<span class="n">set_param</span><span class="p">(</span><span class="n">configs</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;GenerateMakefile&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;off&#39;</span><span class="p">);</span>
+<span class="n">set_param</span><span class="p">(</span><span class="n">configs</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;GenCodeOnly&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;on&#39;</span><span class="p">);</span>
+<span class="n">set_param</span><span class="p">(</span><span class="n">configs</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;PackageGeneratedCodeAndArtifacts&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;on&#39;</span><span class="p">);</span>
+<span class="n">set_param</span><span class="p">(</span><span class="n">configs</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;RTWCAPIParams&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;on&#39;</span><span class="p">);</span>
+<span class="n">set_param</span><span class="p">(</span><span class="n">configs</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;RTWCAPISignals&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;on&#39;</span><span class="p">);</span>
+<span class="n">set_param</span><span class="p">(</span><span class="n">configs</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;RTWCAPIRootIO&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;on&#39;</span><span class="p">);</span>
+<span class="n">set_param</span><span class="p">(</span><span class="n">configs</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;RTWCAPIStates&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;on&#39;</span><span class="p">);</span>
+<span class="n">set_param</span><span class="p">(</span><span class="n">configs</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;GRTInterface&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;off&#39;</span><span class="p">);</span>
+<span class="n">set_param</span><span class="p">(</span><span class="n">configs</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;CombineOutputUpdateFcns&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;on&#39;</span><span class="p">);</span>
+
+<span class="k">if</span><span class="w"> </span><span class="n">mustProp</span>
+<span class="w">    </span><span class="n">Simulink</span><span class="p">.</span><span class="n">BlockDiagram</span><span class="p">.</span><span class="n">propagateConfigSet</span><span class="p">(</span><span class="n">model</span><span class="p">);</span>
+<span class="k">end</span>
+<span class="n">slbuild</span><span class="p">(</span><span class="n">model</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>What’s going on here?</p>
+<p>It’s just changing a few settings in your model’s config. These are the minimum
+settings required for PySimlink, and should not affect your model’s ability to
+build (knock on wood)…</p>
+<p>Want to do this manually? Check out the <a class="reference internal" href="howto.html#gen-model-params"><span class="std std-ref">How-To guide</span></a> for details.</p>
+</section>
+<section id="step-2-let-pysimlink-handle-the-rest">
+<h2>Step 2: Let PySimlink Handle The Rest<a class="headerlink" href="#step-2-let-pysimlink-handle-the-rest" title="Permalink to this heading"></a></h2>
+<p>At this point, you should have a copy of the model in the form of generated code.
+Let’s say it’s called <code class="file docutils literal notranslate"><span class="pre">my_awesome_model.zip</span></code> and the name of your root model is “my_awesome_model”.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>The zip file does not needed to be named after the model. To slightly improve build time, you can also extract
+the zip file and provide the path to the directory that contains the zip folder’s contents instead.</p>
+</div>
+<p>First, install PySimlink</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>pysimlink
+</pre></div>
+</div>
+<p>Now, you can import and inspect the model.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pysimlink</span> <span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">print_all_params</span>
+
+<span class="n">my_awesome_model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="s2">&quot;my_awesome_model&quot;</span><span class="p">,</span> <span class="s2">&quot;./my_awesome_model.zip&quot;</span><span class="p">)</span>
+<span class="n">my_awesome_mode</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="n">print_all_params</span><span class="p">(</span><span class="n">my_awesome_model</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Which will show you all of the parameters that you can view and change.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Parameters</span> <span class="k">for</span> <span class="n">model</span> <span class="n">at</span> <span class="s1">&#39;my_awesome_model&#39;</span>
+    <span class="n">model</span> <span class="n">parameters</span><span class="p">:</span>
+    <span class="n">block</span> <span class="n">parameters</span><span class="p">:</span>
+        <span class="n">Block</span><span class="p">:</span> <span class="s1">&#39;my_awesome_model/Constant&#39;</span> <span class="o">|</span> <span class="n">Parameter</span><span class="p">:</span> <span class="s1">&#39;Value&#39;</span> <span class="o">|</span> <span class="n">data_type</span><span class="p">:</span> <span class="s1">&#39;float64 (double) dims: [3, 3, 2] order: rtwCAPI_Orientation.col_major_nd&#39;</span>
+        <span class="n">Block</span><span class="p">:</span> <span class="s1">&#39;my_awesome_model/Constant2&#39;</span> <span class="o">|</span> <span class="n">Parameter</span><span class="p">:</span> <span class="s1">&#39;Value&#39;</span> <span class="o">|</span> <span class="n">data_type</span><span class="p">:</span> <span class="s1">&#39;float64 (double) dims: [3, 4, 2] order: rtwCAPI_Orientation.col_major_nd&#39;</span>
+        <span class="n">Block</span><span class="p">:</span> <span class="s1">&#39;my_awesome_model/Constant4&#39;</span> <span class="o">|</span> <span class="n">Parameter</span><span class="p">:</span> <span class="s1">&#39;Value&#39;</span> <span class="o">|</span> <span class="n">data_type</span><span class="p">:</span> <span class="s1">&#39;float64 (double) dims: [3, 4, 3] order: rtwCAPI_Orientation.col_major_nd&#39;</span>
+    <span class="n">signals</span><span class="p">:</span>
+        <span class="n">Block</span><span class="p">:</span> <span class="s1">&#39;my_awesome_model/Clock&#39;</span> <span class="o">|</span> <span class="n">Signal</span> <span class="n">Name</span><span class="p">:</span> <span class="s1">&#39;&#39;</span> <span class="o">|</span> <span class="n">data_type</span><span class="p">:</span> <span class="s1">&#39;float64 (double) dims: [1, 1] order: rtwCAPI_Orientation.scalar&#39;</span>
+        <span class="n">Block</span><span class="p">:</span> <span class="s1">&#39;my_awesome_model/Clock1&#39;</span> <span class="o">|</span> <span class="n">Signal</span> <span class="n">Name</span><span class="p">:</span> <span class="s1">&#39;&#39;</span> <span class="o">|</span> <span class="n">data_type</span><span class="p">:</span> <span class="s1">&#39;float64 (double) dims: [1, 1] order: rtwCAPI_Orientation.scalar&#39;</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>Now you can run the model and start manipulating parameters.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pysimlink</span> <span class="kn">import</span> <span class="n">Model</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">my_awesome_model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="s2">&quot;my_awesome_model&quot;</span><span class="p">,</span> <span class="s2">&quot;./my_awesome_model.zip&quot;</span><span class="p">)</span>
+<span class="n">my_awesome_model</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">my_awesome_model</span><span class="p">)):</span>
+    <span class="n">Constant</span> <span class="o">=</span> <span class="n">my_awesome_model</span><span class="o">.</span><span class="n">get_block_param</span><span class="p">(</span><span class="s2">&quot;my_awesome_model/Constant&quot;</span><span class="p">,</span> <span class="n">param</span><span class="o">=</span><span class="s2">&quot;Value&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">Constant</span><span class="p">)</span> <span class="c1"># np.ndarray</span>
+    <span class="n">new_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">i</span><span class="p">)</span>
+    <span class="n">my_awesome_model</span><span class="o">.</span><span class="n">set_block_param</span><span class="p">(</span><span class="s2">&quot;my_awesome_model/Constant&quot;</span><span class="p">,</span> <span class="n">param</span><span class="o">=</span><span class="s2">&quot;Value&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">new_val</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Have a Generation error? Couldn’t find a compiler or <code class="code docutils literal notranslate"><span class="pre">nmake</span> <span class="pre">-?</span> <span class="pre">not</span> <span class="pre">found</span></code>? See the <a class="reference internal" href="howto.html#compiler-setup"><span class="std std-ref">compiler setup</span></a> page.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="Python + Simulink = PySimlink!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="howto.html" class="btn btn-neutral float-right" title="How-To and Basic Usage Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Landon Harris.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+    <!-- Theme Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-K9ME9NLFYB"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-K9ME9NLFYB', {
+          'anonymize_ip': false,
+      });
+    </script> 
+
+</body>
+</html>
