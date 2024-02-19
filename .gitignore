@@ -1,19 +1,29 @@
-models/
-.vscode
-__pycache__
-.DS_Store
-*.egg-info
-*.so
-*.dll
+# Directories
+.vscode/
+.venv/
+
+__pycache__/
+
 build/
-*.o
+dev_files/
 dist/
-*.log
+docs/_build/
+models/
+slprj/
+tests/
+
+*_grt_rtw/
+
+# Files
+.DS_Store
 .idea
 cmake-build-debug
 
-tests
-
-docs/_build
-dev_files/
+*.autosave
+*.dll
+*.egg-info
+*.log
+*.o
+*.slxc
+*.so
 *.txt
